@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  about.html — About / bio page
+  ----------------------------------------------------------------------------
+  Personal page: who I am beyond the casework. Structure:
+    1. .nav        shared navigation (About marked .here)
+    2. .phead      page header (title + one-line intro) — same pattern as
+                   the Casework / Lab / Projects sub-pages
+    3. "Bio"       two-column layout: prose on the left, quick-facts on right
+    4. "Beyond work"  interest cards (PC building, watchmaking, etc.)
+    5. footer
+  This page has no page-specific JavaScript. The only script is main.js,
+  included so the shared nav behaves consistently.
+  ============================================================================
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>About — Felix Naroditskiy</title>
+<meta name="description" content="About Felix Naroditskiy — background, approach, and the things I do when I'm not taking malware apart.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ===== NAV (shared) — About is the current page ===== -->
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="index.html"><i class="dot"></i>F. NARODITSKIY</a>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="casework.html">Casework</a>
+      <a href="lab.html">Lab</a>
+      <a href="projects.html">Projects</a>
+      <a href="about.html" class="here">About</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<!-- ===== PAGE HEADER ===== -->
+<div class="phead">
+  <div class="wrap">
+    <a class="back" href="index.html">&larr; Back</a>
+    <h1>About</h1>
+    <p class="sub">The short version of who I am, how I got here, and what I do when I'm not reconstructing someone else's bad day.</p>
+  </div>
+</div>
+
+<!-- ===== BIO =====
+     Two-column layout (.bio): narrative prose on the left, a compact
+     quick-facts panel on the right. On narrow screens the CSS stacks
+     them into a single column. -->
+<section class="first">
+  <div class="wrap">
+    <div class="shead"><h2>Who I am</h2><span class="fill"></span></div>
+
+    <div class="bio">
+      <!-- Left column: the story. -->
+      <div class="bio-main">
+        <p>I'm a recent Penn State graduate (B.S. Cybersecurity Analytics and Operations, <i>summa cum laude</i>) who got into security through the part most people skip: the aftermath. My academic work centered on digital forensics and incident response &mdash; reconstructing a ransomware attack packet by packet, taking malware apart to see what it does before it does it, and writing the playbooks that decide who gets called and when.</p>
+
+        <p>Alongside that, my day-to-day work at Stemuli has been the governance side of the house: privacy compliance, control assessments, and the documentation that keeps a live K-12 platform inside the lines of COPPA, FERPA, NIST, and CIS. It's taught me that security is a systems problem, not just a technical one &mdash; the best control in the world fails if nobody owns it or the policy behind it is unclear.</p>
+
+        <p>What I'm after now is a hands-on analyst seat &mdash; SOC, security analyst, or incident response &mdash; somewhere with mentorship and room to grow. I'm a coachable new grad, not a finished expert: I ask questions early, chase down the root cause instead of the symptom, and write things down so the next person doesn't have to relearn them. This site is part of that habit &mdash; everything on it is real work, documented so you can actually poke at it.</p>
+      </div>
+
+      <!-- Right column: scannable facts. Each .fact is one label/value pair. -->
+      <aside class="bio-facts">
+        <div class="fact"><span class="k">Based in</span><span class="v">Warminster, PA</span></div>
+        <div class="fact"><span class="k">Open to</span><span class="v">Remote &middot; Hybrid (Philly metro)</span></div>
+        <div class="fact"><span class="k">Targeting</span><span class="v">SOC &middot; Security analyst &middot; IR / DFIR &middot; GRC</span></div>
+        <div class="fact"><span class="k">Degree</span><span class="v">B.S. Cybersecurity Analytics &amp; Operations</span></div>
+        <div class="fact"><span class="k">Honors</span><span class="v">Summa cum laude</span></div>
+        <div class="fact"><span class="k">Certified</span><span class="v">Security+ &middot; SC-900 &middot; AZ-900 &middot; DP-900</span></div>
+        <div class="fact"><span class="k">Studying</span><span class="v wip">CompTIA CySA+</span></div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- ===== BEYOND WORK =====
+     Interest cards. Each .about-card is a static tile: an eyebrow label,
+     a title, and a short paragraph. Nothing interactive — they exist to
+     add a human dimension to the page. -->
+<section>
+  <div class="wrap">
+    <div class="shead"><h2>Beyond work</h2><span class="fill"></span></div>
+    <p class="sdesc">The things that keep me curious when I'm off the clock.</p>
+
+    <div class="about-grid">
+      <div class="about-card">
+        <span class="tag">Hands-on</span>
+        <h3>Building computers</h3>
+        <p>I build my own machines from parts, and that first successful boot never gets old. It's the same loop as the rest of my work &mdash; plan it, assemble it, and troubleshoot calmly when it doesn't post the first time.</p>
+      </div>
+
+      <div class="about-card">
+        <span class="tag">Obsession</span>
+        <h3>Haute horologie</h3>
+        <p>I'm fascinated by mechanical watchmaking &mdash; hundreds of tiny parts engineered to keep time with nothing but a wound spring. It's precision and constraint as a craft, which is probably why it appeals to the same part of my brain that likes forensics.</p>
+      </div>
+
+      <div class="about-card">
+        <span class="tag">Active</span>
+        <h3>Fitness &amp; biking</h3>
+        <p>Lifting and cycling are how I clear my head. Biking especially &mdash; long rides are good thinking time, and they're the counterweight to a job that's mostly done sitting in front of a screen.</p>
+      </div>
+
+      <div class="about-card">
+        <span class="tag">Reading</span>
+        <h3>Dystopian fiction</h3>
+        <p>I get completely absorbed in dystopian novels. There's an obvious throughline with security work &mdash; both are, at heart, about how systems fail and what people do when the rules stop holding.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="wrap">
+    <span>© 2026 F. NARODITSKIY</span>
+    <a href="index.html#contact">GET IN TOUCH →</a>
+  </div>
+</footer>
+
+<script src="main.js"></script>
+</body>
+</html>

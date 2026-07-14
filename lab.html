@@ -1,10 +1,28 @@
 <!DOCTYPE html>
+<!--
+  ============================================================================
+  lab.html — Lab page (self-directed work + interactive exercises)
+  ----------------------------------------------------------------------------
+  Structure, top to bottom:
+    1. .nav          shared navigation (Lab marked .here)
+    2. .phead        page header
+    3. "Home lab log"  collapsible entries (accordion behavior in main.js)
+    4. "SIEM triage"   INTERACTIVE — an alert queue you work through; picking
+                       a disposition for each alert is scored. Data + logic in
+                       the first <script> block near the bottom of this file.
+    5. "IR tabletop"   INTERACTIVE — a branching ransomware scenario. Data +
+                       logic in the second <script> block.
+    6. footer
+  Two page-specific <script> blocks live at the bottom (SIEM, then tabletop),
+  followed by the shared main.js.
+  ============================================================================
+-->
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Lab — Felix Naroditskiy</title>
-<meta name="description" content="Home lab log and interactive incident-response tabletop.">
+<meta name="description" content="Home lab log, an interactive SIEM triage console, and an incident-response tabletop.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -20,6 +38,7 @@
       <a href="casework.html">Casework</a>
       <a href="lab.html" class="here">Lab</a>
       <a href="projects.html">Projects</a>
+      <a href="about.html">About</a>
     </nav>
   </div>
 </header>
@@ -30,7 +49,7 @@
   <div class="wrap">
     <a class="back" href="index.html">&larr; Back</a>
     <h1>The lab</h1>
-    <p class="sub">The part that keeps growing. A running log of self-directed work while I study for CySA+ and sharpen toward SOC analysis &mdash; plus a tabletop you can run yourself.</p>
+    <p class="sub">The part that keeps growing. A running log of self-directed work while I study for CySA+ and sharpen toward SOC analysis &mdash; plus two things you can run yourself: a SIEM triage console and an incident-response tabletop.</p>
   </div>
 </div>
 
@@ -82,6 +101,41 @@
   </div>
 </section>
 
+<!-- ===== SIEM TRIAGE CONSOLE (interactive) =====
+     A simulated alert queue, like the first-line view a Tier-1 SOC analyst
+     works. The left rail (#siemQueue) lists alerts; clicking one loads its
+     detail into the right pane (#siemDetail). For each alert you choose a
+     disposition (Escalate / Investigate / Close) and the console tells you
+     whether that matched the correct call, with the reasoning.
+
+     A running tally (#siemScore) tracks how many you've triaged correctly.
+     All alert data and the scoring logic live in the SIEM <script> block
+     near the bottom of this file. -->
+<section>
+  <div class="wrap">
+    <div class="shead"><h2>SIEM triage</h2><span class="fill"></span></div>
+    <p class="sdesc">The Tier-1 SOC job, in miniature: a queue of alerts, each needing a call. Escalate, investigate, or close &mdash; then see whether you matched the right disposition and why. The hard part isn't the obvious true positive; it's the noisy alert that looks scary and isn't, and the quiet one that looks routine and isn't.</p>
+
+    <div class="siem">
+      <!-- Console header: fake product chrome + a live "triaged" counter. -->
+      <div class="siem-top">
+        <span class="t">ALERT QUEUE &middot; SOC TIER-1</span>
+        <span class="siem-score" id="siemScore">TRIAGED 0 / 6</span>
+      </div>
+      <div class="siem-grid">
+        <!-- Left rail: the alert list, built by JS into #siemQueue. -->
+        <div class="siem-queue" id="siemQueue"></div>
+        <!-- Right pane: detail + disposition buttons for the selected alert. -->
+        <div class="siem-detail" id="siemDetail"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== IR TABLETOP (interactive) =====
+     A branching, multi-stage ransomware scenario. Each stage presents a
+     situation and 2-3 choices scored against NCISS escalation tiers. Data
+     and logic are in the tabletop <script> block at the bottom of the file. -->
 <section>
   <div class="wrap">
     <div class="shead"><h2>IR tabletop</h2><span class="fill"></span></div>
@@ -116,6 +170,264 @@
   </div>
 </footer>
 
+<!-- ============================================================================
+     SIEM TRIAGE CONSOLE — script
+     ----------------------------------------------------------------------------
+     Renders an alert queue and scores the analyst's disposition choices.
+
+     ALERTS: array of alert objects. Each has:
+       sev    → severity band: 'crit' | 'high' | 'med' | 'low' (drives color)
+       rule   → the detection rule name (fake but realistic)
+       host   → affected asset
+       time   → relative timestamp string
+       src    → data source (EDR, firewall, etc.)
+       detail → array of [label, value] rows shown in the detail pane
+       correct→ the right disposition id: 'escalate' | 'investigate' | 'close'
+       why    → object keyed by disposition id, giving the feedback text for
+                each possible choice, so every answer gets a tailored response
+
+     The three dispositions an analyst can pick are defined in DISPOS.
+     Everything is client-side; nothing is sent anywhere.
+============================================================================ -->
+<script>
+/* The three possible calls, with the label shown on each button. */
+var DISPOS = [
+  { id: 'escalate',    label: 'Escalate' },
+  { id: 'investigate', label: 'Investigate' },
+  { id: 'close',       label: 'Close as benign' }
+];
+
+/* The alert queue. Order here is the order shown in the left rail. */
+var ALERTS = [
+  {
+    sev: 'crit', rule: 'Ransomware canary file modified', host: 'FS-02 (file server)',
+    time: 'T+00:02', src: 'EDR',
+    detail: [
+      ['Rule', 'Canary file write + rapid mass rename'],
+      ['Host', 'FS-02 \u00b7 Finance share'],
+      ['Process', 'wscript.exe \u2192 unknown child'],
+      ['Files touched', '1,240 in 90 seconds'],
+      ['Extensions', '.docx \u2192 .ghost']
+    ],
+    correct: 'escalate',
+    why: {
+      escalate: 'Correct. A tripped ransomware canary plus mass rename in seconds is an active encryption event, not a maybe. This is the one you page someone for immediately \u2014 every minute of triage is more files gone.',
+      investigate: 'Too slow. Investigating is the right instinct for an ambiguous alert, but mass file rename on a canary is already confirmed impact. While you gather more detail, the encryption keeps running.',
+      close: 'This is the worst possible call. A canary exists precisely so it is never touched in normal operation. If it fired, something is encrypting the share right now.'
+    }
+  },
+  {
+    sev: 'high', rule: 'Impossible-travel sign-in', host: 'jsmith@corp',
+    time: 'T+00:07', src: 'Identity provider',
+    detail: [
+      ['Rule', 'Two logins, geographically impossible'],
+      ['User', 'jsmith (Finance)'],
+      ['Login 1', 'Philadelphia, PA \u00b7 09:41'],
+      ['Login 2', 'Lagos, NG \u00b7 09:52'],
+      ['MFA', 'Satisfied on both']
+    ],
+    correct: 'escalate',
+    why: {
+      escalate: 'Correct. Eleven minutes between Philadelphia and Lagos is physically impossible, and MFA being satisfied on both makes it worse, not better \u2014 it points to session-token theft or MFA fatigue. Escalate for a credential reset and session revocation.',
+      investigate: 'Defensible as a first move, but do not sit on it. The MFA-satisfied detail is the tell that a token was likely stolen; treat it as compromise and escalate rather than merely watching.',
+      close: 'Wrong. A VPN can explain one odd location; it cannot explain two valid MFA logins on two continents eleven minutes apart. This is a compromised session.'
+    }
+  },
+  {
+    sev: 'med', rule: 'Outbound to newly-registered domain', host: 'mkt-07',
+    time: 'T+00:15', src: 'DNS / proxy',
+    detail: [
+      ['Rule', 'DNS to domain registered < 48h ago'],
+      ['Host', 'mkt-07 (Marketing laptop)'],
+      ['Domain', 'cdn-assets-delivery[.]shop'],
+      ['Frequency', 'Every 60s, exactly'],
+      ['Bytes', 'Small, uniform']
+    ],
+    correct: 'investigate',
+    why: {
+      investigate: 'Correct. A brand-new domain contacted on an exact 60-second heartbeat with small uniform payloads is classic C2 beaconing behavior \u2014 but it is not yet confirmed. This is the alert you dig into: pull the process, check the other hosts, decide if it escalates.',
+      escalate: 'Understandable, but premature. Beacon-like patterns are suspicious, not confirmed \u2014 newly-registered domains are also used by legitimate CDNs and marketing tools. Investigate first so you escalate with evidence, not just a hunch.',
+      close: 'Too hasty. The regular heartbeat interval is exactly what separates this from normal browsing noise. It might be benign, but you do not know that yet.'
+    }
+  },
+  {
+    sev: 'low', rule: 'Multiple failed logins then success', host: 'reception-pc',
+    time: 'T+00:22', src: 'Windows security log',
+    detail: [
+      ['Rule', '4625 \u00d7 6 then 4624 success'],
+      ['Host', 'reception-pc (shared kiosk)'],
+      ['Account', 'frontdesk (shared)'],
+      ['Interval', 'Over 4 minutes'],
+      ['Source', 'Local console, not remote']
+    ],
+    correct: 'close',
+    why: {
+      close: 'Correct, in context. Six failures over four minutes at the local console of a shared reception kiosk, ending in success, is what a human fat-fingering a shared password looks like. No remote source, no lockout, slow human pace. Note it and move on.',
+      investigate: 'Not wrong, just low-value. You can open it, but the signals \u2014 local console, human pace, shared account \u2014 all point to a mistyped password. Spending triage time here is the opportunity cost that lets real alerts age.',
+      escalate: 'Over-escalation. Paging someone for six slow failed logins at a lobby kiosk is how you train responders to ignore your pages. Save escalation for the impossible-travel alert above, which actually earned it.'
+    }
+  },
+  {
+    sev: 'high', rule: 'PowerShell w/ encoded command', host: 'hr-03',
+    time: 'T+00:31', src: 'EDR',
+    detail: [
+      ['Rule', 'powershell.exe -enc (base64)'],
+      ['Host', 'hr-03 (HR workstation)'],
+      ['Parent', 'WINWORD.EXE'],
+      ['Decoded', 'DownloadString \u2192 http://…'],
+      ['User', 'Non-admin']
+    ],
+    correct: 'escalate',
+    why: {
+      escalate: 'Correct. A Word document spawning encoded PowerShell that pulls a remote payload is the textbook macro-to-loader chain. The parent being WINWORD.EXE is the smoking gun. Escalate and isolate the host.',
+      investigate: 'Half-right, but do not linger. You can confirm the decode, but WINWORD.EXE spawning encoded PowerShell with a DownloadString is malicious on its face. Isolate now, investigate the scope after.',
+      close: 'Wrong. Encoded PowerShell exists to hide intent, and legitimate documents do not launch it. The Office-spawns-PowerShell parent/child relationship is one of the most reliable malicious signals there is.'
+    }
+  },
+  {
+    sev: 'low', rule: 'Port scan from internal host', host: 'it-bench-01',
+    time: 'T+00:44', src: 'Firewall',
+    detail: [
+      ['Rule', 'Sequential connects across /24'],
+      ['Host', 'it-bench-01 (IT bench)'],
+      ['Target', 'Internal 10.0.5.0/24'],
+      ['Ports', '22, 80, 443, 3389'],
+      ['Change ticket', 'CHG-4471 open']
+    ],
+    correct: 'close',
+    why: {
+      close: 'Correct \u2014 because you checked the context. A scan from the IT bench host, against internal ranges, with an open change ticket (CHG-4471) referencing authorized vulnerability scanning, is sanctioned work. The ticket is what makes this benign; without it, this would be an investigate.',
+      investigate: 'Reasonable if you had not seen the ticket, but the open change record for authorized scanning is right there in the detail. Reading it is the difference between diligent and slow.',
+      escalate: 'Over-escalation. This would be alarming from a random workstation, but from the IT bench with an authorizing change ticket, it is expected activity. Escalating sanctioned work erodes trust in the queue.'
+    }
+  }
+];
+
+/* Cache the two container elements we render into. */
+var siemQueue  = document.getElementById('siemQueue');
+var siemDetail = document.getElementById('siemDetail');
+var siemScore  = document.getElementById('siemScore');
+
+/* Track which alerts have been answered and how many were correct.
+   answered[i] is undefined until alert i is dispositioned, then holds
+   the chosen disposition id so re-clicking shows the locked result. */
+var answered = [];
+var correctCount = 0;
+
+/* Small helper: escape user-visible text so stray < or & can't break markup.
+   (Our data is trusted, but this keeps the render function safe by habit.) */
+function esc(x){return String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+/* Build the left-rail queue once. Each row shows severity, rule, host, time. */
+function renderQueue(){
+  siemQueue.innerHTML = '';
+  ALERTS.forEach(function(a, i){
+    var row = document.createElement('button');
+    // .done marks rows already triaged so they can be visually dimmed/ticked.
+    row.className = 'siem-row sev-' + a.sev + (answered[i] ? ' done' : '');
+    row.innerHTML =
+      '<span class="siem-sev">' + a.sev.toUpperCase() + '</span>' +
+      '<span class="siem-rule">' + esc(a.rule) + '</span>' +
+      '<span class="siem-host">' + esc(a.host) + ' \u00b7 ' + esc(a.time) + '</span>' +
+      (answered[i] ? '<span class="siem-tick">\u2713</span>' : '');
+    row.addEventListener('click', function(){ selectAlert(i, row); });
+    siemQueue.appendChild(row);
+  });
+}
+
+/* Render the detail pane for alert i and wire up its disposition buttons. */
+function selectAlert(i, row){
+  // Highlight the active row in the queue.
+  siemQueue.querySelectorAll('.siem-row').forEach(function(r){ r.classList.remove('on'); });
+  if (row) row.classList.add('on');
+
+  var a = ALERTS[i];
+
+  // Build the detail rows (label/value pairs) from the alert's data.
+  var rows = a.detail.map(function(d){
+    return '<div><span>' + esc(d[0]) + '</span><b>' + esc(d[1]) + '</b></div>';
+  }).join('');
+
+  // Build the three disposition buttons.
+  var btns = DISPOS.map(function(d){
+    return '<button class="siem-act" data-do="' + d.id + '">' + d.label + '</button>';
+  }).join('');
+
+  siemDetail.innerHTML =
+    '<div class="siem-dh"><span class="siem-sev sev-' + a.sev + '">' + a.sev.toUpperCase() + '</span>' +
+      '<span class="siem-src">' + esc(a.src) + '</span></div>' +
+    '<h4>' + esc(a.rule) + '</h4>' +
+    '<div class="siem-meta">' + rows + '</div>' +
+    '<span class="tag">Your call</span>' +
+    '<div class="siem-acts">' + btns + '</div>' +
+    '<div class="siem-verdict" id="siemVerdict"></div>';
+
+  // If this alert was already answered, re-show its locked result.
+  if (answered[i]) {
+    lockResult(i, answered[i]);
+  } else {
+    // Otherwise, wire each button to record the disposition on click.
+    siemDetail.querySelectorAll('.siem-act').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var choice = btn.getAttribute('data-do');
+        if (!answered[i]) {                       // first answer only
+          answered[i] = choice;
+          if (choice === a.correct) correctCount++;
+          updateScore();
+          renderQueue();                          // refresh ticks in the rail
+        }
+        lockResult(i, choice);
+      });
+    });
+  }
+}
+
+/* Show the graded result for a disposition and disable further changes. */
+function lockResult(i, choice){
+  var a = ALERTS[i];
+  var right = (choice === a.correct);
+
+  // Mark the chosen button, and always mark the correct one green.
+  siemDetail.querySelectorAll('.siem-act').forEach(function(btn){
+    btn.disabled = true;
+    var id = btn.getAttribute('data-do');
+    if (id === choice) btn.classList.add(right ? 'picked-good' : 'picked-bad');
+    if (id === a.correct) btn.classList.add('is-correct');
+  });
+
+  var verdict = document.getElementById('siemVerdict');
+  verdict.className = 'siem-verdict show ' + (right ? 'good' : 'bad');
+  verdict.innerHTML =
+    '<span class="v">' + (right ? 'Correct call' : 'Not the call') + '</span>' +
+    '<p>' + esc(a.why[choice]) + '</p>';
+}
+
+/* Update the "TRIAGED n / total" counter in the console header. */
+function updateScore(){
+  var done = answered.filter(function(x){ return x; }).length;
+  siemScore.textContent = 'TRIAGED ' + done + ' / ' + ALERTS.length +
+    (done === ALERTS.length ? '  \u00b7  ' + correctCount + ' correct' : '');
+}
+
+/* Initial paint: build the queue and open the first alert. */
+renderQueue();
+selectAlert(0, siemQueue.querySelector('.siem-row'));
+</script>
+
+<!-- ============================================================================
+     IR TABLETOP — script
+     ----------------------------------------------------------------------------
+     TT: array of scenario stages, shown one at a time. Each stage has:
+       clock → the incident timestamp shown in the header
+       scene → the situation (may contain <b> for emphasis)
+       q     → the decision the player must make
+       opts  → array of choices, each with:
+                 t (button text), v (verdict: 'good'|'mid'|'bad'),
+                 r (reasoning shown after choosing),
+                 n (the NCISS / real-world note)
+     Picking an option reveals its result and unlocks the "Next scenario"
+     button, which advances (and loops back to the start at the end).
+============================================================================ -->
 <script>
 var TT=[
  {clock:"T+00:00",
@@ -143,30 +455,38 @@ var TT=[
    {t:"Escalate the payment decision to leadership with a recommendation",v:"mid",r:"Procedurally right \u2014 the final call sits with the CISO and leadership after risk and legal review, and you are correct not to make it unilaterally. But you are the analyst in the room, and they need a recommendation, not just a handoff. With viable backups, that recommendation is no payment.",n:"Leadership decides. Your job is to give them a defensible position."}
   ]}
 ];
+// ti = index of the current scenario. Cache all the elements we update.
 var ti=0,ttScene=document.getElementById('ttScene'),ttQ=document.getElementById('ttQ'),ttOpts=document.getElementById('ttOpts'),
     ttRes=document.getElementById('ttRes'),ttV=document.getElementById('ttV'),ttP=document.getElementById('ttP'),
     ttN=document.getElementById('ttN'),ttNext=document.getElementById('ttNext'),ttClock=document.getElementById('ttClock'),
     ttHd=document.querySelector('.tt-hd .t');
+
+// Render scenario ti: set the clock/header/scene, then build its option buttons.
 function loadTT(){
   var s=TT[ti];ttClock.textContent=s.clock;
   ttHd.textContent='RANSOMWARE TABLETOP \u00b7 SCENARIO '+(ti+1)+' OF '+TT.length;
   ttScene.innerHTML=s.scene;ttQ.textContent=s.q;
+  // Reset the result panel and clear any options from the previous scenario.
   ttRes.className='result';ttNext.className='btn tt-next';ttOpts.innerHTML='';
   s.opts.forEach(function(o){
     var b=document.createElement('button');b.className='opt';b.textContent=o.t;
     b.addEventListener('click',function(){
+      // Lock all options once a choice is made, mark the picked one,
+      // then reveal the verdict/reasoning/NCISS note for that choice.
       ttOpts.querySelectorAll('.opt').forEach(function(x){x.disabled=true});
       b.classList.add('picked');
       ttV.textContent=o.v==='good'?'Sound call':o.v==='mid'?'Defensible, but':'Not the call';
       ttP.textContent=o.r;ttN.textContent=o.n;ttRes.className='result show '+o.v;
       ttNext.className='btn tt-next show';
+      // On the last scenario, the Next button becomes a restart.
       if(ti>=TT.length-1)ttNext.textContent='Restart tabletop';
     });
     ttOpts.appendChild(b);
   });
 }
+// Advance to the next scenario, looping back to the first at the end.
 ttNext.addEventListener('click',function(){ti=(ti+1)%TT.length;if(ti===0)ttNext.textContent='Next scenario \u2192';loadTT();});
-loadTT();
+loadTT();  // paint the first scenario on load
 </script>
 <script src="main.js"></script>
 </body>

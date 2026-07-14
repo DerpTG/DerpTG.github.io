@@ -17,7 +17,7 @@ document.querySelectorAll('.e-btn').forEach(function(b){
     o.addEventListener('click',function(e){
       e.preventDefault();
       if(!frame.src||frame.src==='about:blank'||frame.src.indexOf('about:blank')>-1){
-        frame.src='resume.pdf';
+        frame.src='NaroditskiyFelixResume.pdf';
       }
       modal.classList.add('show');
     });

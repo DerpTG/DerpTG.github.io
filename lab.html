@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lab — Felix Naroditskiy</title>
+<meta name="description" content="Home lab log and interactive incident-response tabletop.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="index.html"><i class="dot"></i>F. NARODITSKIY</a>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="casework.html">Casework</a>
+      <a href="lab.html" class="here">Lab</a>
+      <a href="projects.html">Projects</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<div class="phead">
+  <div class="wrap">
+    <a class="back" href="index.html">&larr; Back</a>
+    <h1>The lab</h1>
+    <p class="sub">The part that keeps growing. A running log of self-directed work while I study for CySA+ and sharpen toward SOC analysis &mdash; plus a tabletop you can run yourself.</p>
+  </div>
+</div>
+
+<section class="first">
+  <div class="wrap">
+    <div class="shead"><h2>Home lab log</h2><span class="fill"></span></div>
+    <p class="sdesc">New entries land every week or two. Open one to read what I actually did and what it taught me.</p>
+
+    <div class="log">
+      <div class="log-hd">
+        <span class="t">LAB LOG</span>
+        <span class="c"><i></i>ACTIVE &middot; UPDATED WEEKLY</span>
+      </div>
+
+      <article class="entry">
+        <button class="e-btn" aria-expanded="false">
+          <span class="e-date">In progress</span>
+          <span><span class="e-ttl">Building an Active Directory attack range</span><span class="e-tools">VMWARE &middot; WINDOWS SERVER &middot; BLOODHOUND</span></span>
+          <span class="e-badge wip">In progress</span>
+        </button>
+        <div class="e-body"><div class="e-in"><div class="e-pad">
+          Standing up a small AD domain to practice attack paths and then detect them. The goal is to map the same lateral-movement chain I reconstructed forensically in my capstone &mdash; but from the defender's console this time, watching the telemetry as it happens instead of reading it after the fact.
+        </div></div></div>
+      </article>
+
+      <article class="entry">
+        <button class="e-btn" aria-expanded="false">
+          <span class="e-date">Recent</span>
+          <span><span class="e-ttl">Detection engineering: writing IDS rules on live PCAP</span><span class="e-tools">SURICATA &middot; WIRESHARK</span></span>
+          <span class="e-badge done">Complete</span>
+        </button>
+        <div class="e-body"><div class="e-in"><div class="e-pad">
+          Wrote custom IDS rules against a malware traffic capture, then tuned them down from a wall of alerts to a handful of real ones. The lesson wasn't writing the rule &mdash; it was learning how much of detection engineering is noise reduction, and how a rule that fires on everything is the same as a rule that fires on nothing.
+        </div></div></div>
+      </article>
+
+      <article class="entry">
+        <button class="e-btn" aria-expanded="false">
+          <span class="e-date">Recent</span>
+          <span><span class="e-ttl">Building a detection from raw Windows logs</span><span class="e-tools">SPLUNK &middot; SPL &middot; SYSMON</span></span>
+          <span class="e-badge done">Complete</span>
+        </button>
+        <div class="e-body"><div class="e-in"><div class="e-pad">
+          Ingested Sysmon data into Splunk and wrote SPL to surface parent/child process anomalies. Caught a simulated PowerShell spawn from a Word document &mdash; the classic macro chain &mdash; and turned it into a repeatable saved search. This is the day-to-day muscle a SOC runs on, so it's where I'm spending the most reps.
+        </div></div></div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="shead"><h2>IR tabletop</h2><span class="fill"></span></div>
+    <p class="sdesc">Step into the ransomware playbook I built and make the calls yourself. Each decision is scored against real NCISS escalation tiers &mdash; including the ones where the &ldquo;safe&rdquo; answer is the wrong one.</p>
+
+    <div class="tt">
+      <div class="tt-hd">
+        <span class="t">RANSOMWARE TABLETOP &middot; SCENARIO 1 OF 3</span>
+        <span class="clock" id="ttClock">T+00:00</span>
+      </div>
+      <div class="tt-body">
+        <p class="tt-scene" id="ttScene"></p>
+        <p class="tt-q" id="ttQ"></p>
+        <div class="opts" id="ttOpts"></div>
+        <div class="result" id="ttRes">
+          <span class="verdict" id="ttV"></span>
+          <p id="ttP"></p>
+          <p class="nciss" id="ttN"></p>
+        </div>
+        <button class="btn tt-next" id="ttNext">Next scenario &rarr;</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>WARMINSTER, PA</span>
+    <a href="projects.html">NEXT: PROJECTS &rarr;</a>
+  </div>
+</footer>
+
+<script>
+var TT=[
+ {clock:"T+00:00",
+  scene:"An employee reports that a file on her workstation won't open. Her machine is <b>slow but functional</b>. The SOC pulls the endpoint's recent activity and finds an unsigned executable that ran from her Desktop forty minutes ago.",
+  q:"How do you score and escalate this?",
+  opts:[
+   {t:"Baseline (0) \u2014 log it, SOC handles it, no escalation",v:"bad",r:"Too low. An unsigned binary executing from a user Desktop is a confirmed endpoint compromise, not routine noise. Scoring this as Baseline means nobody looks at it for hours \u2014 and in a ransomware chain, hours are how attackers reach the domain controllers.",n:"Actual NCISS: Medium (25\u201349) \u2192 CSIRT + MSPs within 30 minutes"},
+   {t:"Medium (25\u201349) \u2014 CSIRT + MSPs engaged within 30 minutes",v:"good",r:"Correct. Endpoint compromise with a confirmed malicious execution scores Medium. That pulls in the CSIRT and your MSPs inside 30 minutes, while you still have containment options and before the attacker has time to move laterally.",n:"NCISS scoring drives the timeline \u2014 the score is not paperwork, it is the clock"},
+   {t:"Emergency (100) \u2014 wake the entire C-suite immediately",v:"mid",r:"Over-escalation is a real failure mode, not a safe default. Emergency is reserved for threats to public safety or critical operations. Burn that tier on a single workstation and the next time you call it, people move slower \u2014 which is the failure you were trying to prevent.",n:"Actual NCISS: Medium (25\u201349) \u2192 CSIRT + MSPs within 30 minutes"}
+  ]},
+ {clock:"T+01:44",
+  scene:"CSIRT confirms the same binary is now running on <b>two domain controllers</b>. Memory analysis shows injected executable memory inside the endpoint-protection process itself. Backups exist but have not been tested this quarter.",
+  q:"First containment move?",
+  opts:[
+   {t:"Isolate the domain controllers from the network immediately",v:"mid",r:"Defensible, and it stops the spread \u2014 but pulling both DCs takes down authentication for the whole organization. You have just caused an outage the attacker didn't. Do it only if you've accepted that cost. The playbook isolates while preserving evidence and standing up auth continuity first.",n:"Containment always trades availability against spread. Name the trade before you make it."},
+   {t:"Reset all domain credentials, then isolate",v:"bad",r:"Wrong order. The attacker is inside the AV process on a DC \u2014 they will simply observe the new credentials as you issue them. Resetting credentials into a compromised authentication plane hands the attacker fresh keys. Contain first, then reset.",n:"Credential reset before containment is a gift to the attacker"},
+   {t:"Isolate DCs with evidence preservation, engage legal, assume exfiltration",v:"good",r:"This is the playbook. Injected memory inside the AV engine means your endpoint protection is no longer a control, so you cannot trust anything it reports. Isolate, image before you wipe, and treat exfiltration as assumed rather than waiting for proof \u2014 because breach-notification clocks start whether or not you have confirmed it.",n:"NCISS: High (50\u201374) \u2192 full CSIRT + CISO + Legal within 15 minutes"}
+  ]},
+ {clock:"T+4d",
+  scene:"A ransom note appears on the original workstation. The attackers demand payment and claim to hold <b>sensitive data</b>. Recovery from backups is estimated at nine days. Leadership is asking whether to pay.",
+  q:"What is your recommendation?",
+  opts:[
+   {t:"Pay \u2014 nine days of downtime is unacceptable",v:"bad",r:"Default policy is no payment. Paying funds the operation, offers no guarantee of decryption, and marks the organization as a soft target for the next crew. It may also carry legal exposure depending on who the actor is. Nine days is painful; it is not the same as impossible.",n:"Playbook default: no payment unless recovery is genuinely impossible"},
+   {t:"No payment \u2014 recover from backups, notify per breach requirements",v:"good",r:"Correct, and note what makes it correct: viable backups. The no-payment default holds only because preparation held. If those backups were encrypted too, this decision would look very different \u2014 which is exactly why \"encrypted, air-gapped, regularly tested\" sits in the preparation phase and not as an afterthought.",n:"The recovery decision is made months earlier, in the preparation phase"},
+   {t:"Escalate the payment decision to leadership with a recommendation",v:"mid",r:"Procedurally right \u2014 the final call sits with the CISO and leadership after risk and legal review, and you are correct not to make it unilaterally. But you are the analyst in the room, and they need a recommendation, not just a handoff. With viable backups, that recommendation is no payment.",n:"Leadership decides. Your job is to give them a defensible position."}
+  ]}
+];
+var ti=0,ttScene=document.getElementById('ttScene'),ttQ=document.getElementById('ttQ'),ttOpts=document.getElementById('ttOpts'),
+    ttRes=document.getElementById('ttRes'),ttV=document.getElementById('ttV'),ttP=document.getElementById('ttP'),
+    ttN=document.getElementById('ttN'),ttNext=document.getElementById('ttNext'),ttClock=document.getElementById('ttClock'),
+    ttHd=document.querySelector('.tt-hd .t');
+function loadTT(){
+  var s=TT[ti];ttClock.textContent=s.clock;
+  ttHd.textContent='RANSOMWARE TABLETOP \u00b7 SCENARIO '+(ti+1)+' OF '+TT.length;
+  ttScene.innerHTML=s.scene;ttQ.textContent=s.q;
+  ttRes.className='result';ttNext.className='btn tt-next';ttOpts.innerHTML='';
+  s.opts.forEach(function(o){
+    var b=document.createElement('button');b.className='opt';b.textContent=o.t;
+    b.addEventListener('click',function(){
+      ttOpts.querySelectorAll('.opt').forEach(function(x){x.disabled=true});
+      b.classList.add('picked');
+      ttV.textContent=o.v==='good'?'Sound call':o.v==='mid'?'Defensible, but':'Not the call';
+      ttP.textContent=o.r;ttN.textContent=o.n;ttRes.className='result show '+o.v;
+      ttNext.className='btn tt-next show';
+      if(ti>=TT.length-1)ttNext.textContent='Restart tabletop';
+    });
+    ttOpts.appendChild(b);
+  });
+}
+ttNext.addEventListener('click',function(){ti=(ti+1)%TT.length;if(ti===0)ttNext.textContent='Next scenario \u2192';loadTT();});
+loadTT();
+</script>
+<script src="main.js"></script>
+</body>
+</html>

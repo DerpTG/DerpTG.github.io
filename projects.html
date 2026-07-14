@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Projects — Felix Naroditskiy</title>
+<meta name="description" content="Incident-response playbooks, risk analysis, networking labs, and code.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="index.html"><i class="dot"></i>F. NARODITSKIY</a>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="casework.html">Casework</a>
+      <a href="lab.html">Lab</a>
+      <a href="projects.html" class="here">Projects</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<div class="phead">
+  <div class="wrap">
+    <a class="back" href="index.html">&larr; Back</a>
+    <h1>Projects</h1>
+    <p class="sub">Incident-response playbooks, risk analysis, networking labs, and code. Click any card for the full story; two ship with source on GitHub.</p>
+  </div>
+</div>
+
+<section class="first">
+  <div class="wrap">
+    <div class="pgrid" id="pgrid"></div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>WARMINSTER, PA</span>
+    <a href="casework.html">SEE THE CASEWORK &rarr;</a>
+  </div>
+</footer>
+
+<script>
+var PROJ=[
+ {tag:"Incident response",t:"Turbo Ransomware IR Playbook",
+  sum:"Led development of a full ransomware playbook for a scooter-share company \u2014 preparation through recovery, with NCISS-scored escalation tiers.",
+  more:["The escalation model ran from Baseline (SOC-only) up to Emergency (full C-suite in 10 minutes), each tier defined by a concrete NCISS score band and a fixed responder timeline. The playbook covered preventative controls, detection indicators, triage, containment, eradication, and staged recovery.",
+  "Then we ran it. I facilitated CISA-format tabletop exercises against the playbook to find out which steps held under pressure and which only read well on paper \u2014 the same gap the tabletop in the Lab section is built around."],
+  chips:["NIST RMF","MITRE ATT&CK","COBIT 2019","NCISS","CISA tabletops"]},
+ {tag:"Risk analysis",t:"Elder Tech-Support Fraud Risk Analysis",
+  sum:"Semester-long risk assessment of a $1M+ retirement fund against a Microsoft-refund scam, modeling the victim's situation as a system with a single point of failure.",
+  more:["The system was a series chain \u2014 answer call, trust caller, grant remote access, log into bank, authorize transfer \u2014 with trust as the single point of failure and no safeguards behind it. I built a scenario matrix mapping four compliance events to three loss outcomes and rated each risk by probability and impact.",
+  "The recommendation was a defense-in-depth strategy layering education, family check-ins, and technical safeguards, with a residual-risk assessment acknowledging that no single control holds under live social-engineering pressure."],
+  chips:["MECE","Scenario matrix","Benefit-cost","Defense in depth"]},
+ {tag:"Networking",t:"Networking & Systems Labs",
+  sum:"Built and hardened simulated enterprise topologies: VLAN segmentation, VTP, port security, telnet, password encryption, and VoIP.",
+  more:["Configured enterprise topologies end to end in Packet Tracer, then hardened them \u2014 segmenting broadcast domains with VLANs, locking down access ports, and encrypting device passwords.",
+  "Most of the value was in the troubleshooting: tracing why traffic wasn't landing where it should. That's the same muscle you use when a segmentation control is silently not doing its job in production."],
+  chips:["Packet Tracer","VLAN / VTP","Port security","VoIP"]},
+ {tag:"Secure engineering",t:"Secure Patient Data Pipeline",
+  sum:"A Java message-queuing pipeline that keeps patient records encrypted end to end across an input-to-display workflow.",
+  more:["Patient data is AES-encrypted before serialization, moves through RabbitMQ as JSON, and is decrypted only at the consumer. Sensitive data never sits in the queue in the clear, and that single constraint drove the whole architecture.",
+  "Built for IST 242 with a five-person team; I worked on the encryption/decryption stages and the queuing flow."],
+  chips:["Java","RabbitMQ","AES","Maven","Gson"],gh:"https://github.com/DerpTG/team6SystemIntegration"},
+ {tag:"Full stack",t:"Alpha Web Storefront",
+  sum:"Project manager and UI lead on a full-stack e-commerce storefront built across eight milestones on a MEAN stack.",
+  more:["Shopper management, product management, cart, shipping selection, billing, and returns \u2014 delivered milestone by milestone with CRUD functionality and a written test plan. Front end in Angular, Bootstrap, and jQuery; back end on Node.js and MongoDB.",
+  "As PM and UI lead I owned the schedule, coordinated the team, and drove the interface decisions."],
+  chips:["Angular","Node.js","MongoDB","Bootstrap","jQuery"],gh:"https://github.com/DerpTG/StoryTellersSite"},
+ {tag:"Forensics",t:"Forensic Analysis Labs",
+  sum:"Individual investigations across every evidence type \u2014 packet captures, memory dumps, Windows Event Logs, and disk images.",
+  more:["Each lab started from a different evidence class and asked the same question: what happened here. I identified compromised hosts from network traffic, pulled malicious processes out of memory, and reconstructed activity from event logs and disk artifacts.",
+  "Where the logs were too large to read by hand, I wrote custom Python parsers to surface indicators of compromise \u2014 the habit that made the capstone reconstruction possible."],
+  chips:["Wireshark","Volatility","Autopsy","Python"]}
+];
+var pgrid=document.getElementById('pgrid');
+PROJ.forEach(function(p){
+  var c=document.createElement('article');c.className='card';
+  var more=p.more.map(function(x){return '<p>'+x+'</p>'}).join('');
+  var foot=p.gh?'<div class="foot"><a class="gh" href="'+p.gh+'" target="_blank" rel="noopener">View code \u2192</a></div>':'<div class="pad-b"></div>';
+  c.innerHTML=
+    '<button class="card-btn"><span class="tag">'+p.tag+'</span>'+
+    '<h3>'+p.t+'<span class="ex">+</span></h3></button>'+
+    '<p class="sum">'+p.sum+'</p>'+
+    '<div class="more"><div class="more-in"><div class="more-pad">'+more+'</div></div></div>'+
+    '<div class="chips">'+p.chips.map(function(x){return '<span class="chip">'+x+'</span>'}).join('')+'</div>'+
+    foot;
+  c.querySelector('.card-btn').addEventListener('click',function(){
+    var open=c.classList.toggle('on');
+    c.querySelector('.ex').textContent=open?'\u2212':'+';
+  });
+  pgrid.appendChild(c);
+});
+</script>
+<script src="main.js"></script>
+</body>
+</html>

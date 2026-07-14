@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Casework — Felix Naroditskiy</title>
+<meta name="description" content="Ransomware kill chain reconstruction and malware analysis casework.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="index.html"><i class="dot"></i>F. NARODITSKIY</a>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="casework.html" class="here">Casework</a>
+      <a href="lab.html">Lab</a>
+      <a href="projects.html">Projects</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<div class="phead">
+  <div class="wrap">
+    <a class="back" href="index.html">&larr; Back</a>
+    <h1>Casework</h1>
+    <p class="sub">Two investigations. One reconstructs an intrusion from the evidence it left behind; the other takes malware apart to find out what it does before it does it.</p>
+  </div>
+</div>
+
+<section class="first">
+  <div class="wrap">
+    <div class="shead"><h2>Kill chain reconstruction</h2><span class="fill"></span></div>
+    <p class="sdesc">Capstone forensic investigation of a simulated ransomware attack on a municipal network. Six disk images, seven memory captures, 12.7M packets, 90,000+ log entries. Walk the attacker's path &mdash; each stage shows the class of evidence that proved it.</p>
+
+    <div class="kc">
+      <div class="kc-top">
+        <span class="t">MUNICIPAL RANSOMWARE &mdash; CASE RECONSTRUCTION</span>
+        <span class="s">DWELL TIME: 4 DAYS &middot; TIME-TO-DC: 1H 44M</span>
+      </div>
+      <div class="rail" id="rail">
+        <button class="node on" data-sev="1" data-i="0"><span class="n">01</span><span class="nm">Initial access</span><span class="tm">Day 1</span><i class="bead"></i></button>
+        <button class="node" data-sev="2" data-i="1"><span class="n">02</span><span class="nm">Execution</span><span class="tm">Day 1</span><i class="bead"></i></button>
+        <button class="node" data-sev="3" data-i="2"><span class="n">03</span><span class="nm">Defense evasion</span><span class="tm">Day 1 &rarr;</span><i class="bead"></i></button>
+        <button class="node" data-sev="4" data-i="3"><span class="n">04</span><span class="nm">Lateral movement</span><span class="tm">+1h 44m</span><i class="bead"></i></button>
+        <button class="node" data-sev="5" data-i="4"><span class="n">05</span><span class="nm">Persistence</span><span class="tm">Day 3</span><i class="bead"></i></button>
+        <button class="node" data-sev="5" data-i="5"><span class="n">06</span><span class="nm">Exfiltration</span><span class="tm">Day 3</span><i class="bead"></i></button>
+        <button class="node" data-sev="6" data-i="6"><span class="n">07</span><span class="nm">Impact</span><span class="tm">Day 4</span><i class="bead"></i></button>
+      </div>
+      <div class="kc-body">
+        <div class="kc-nar">
+          <span class="ttl" id="kcT"></span>
+          <span class="att" id="kcA"></span>
+          <div id="kcP"></div>
+        </div>
+        <div class="kc-ioc">
+          <span class="tag">Evidence</span>
+          <div class="ioc" id="kcE"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="shead"><h2>Malware lab</h2><span class="fill"></span></div>
+    <p class="sdesc">Twelve public samples, detonated in an isolated FlareVM. Static triage, then dynamic detonation &mdash; families, indicators, and C2 behavior, including the one that bricked the VM. Select a sample to pull its triage record.</p>
+
+    <div class="term">
+      <div class="term-top">
+        <span class="lt"><i></i><i></i><i></i></span>
+        <span class="path">flarevm@win10-x64-malware:~/samples</span>
+      </div>
+      <div class="term-grid">
+        <div class="samples" id="smpList"></div>
+        <div class="out" id="smpOut"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>WARMINSTER, PA</span>
+    <a href="lab.html">NEXT: THE LAB &rarr;</a>
+  </div>
+</footer>
+
+<script>
+/* ===== KILL CHAIN ===== */
+var CHAIN=[
+{t:"Initial access",a:"T1566.001 \u2014 Spearphishing Attachment",
+p:["An employee in the target organization received an email from someone posing as an outside contractor. Attached was a malicious PDF.",
+"Browser history confirmed the PDF was downloaded immediately before the first malicious binary appeared on disk. The mail server logged a traffic spike of roughly 143\u00d7 the normal baseline that same hour."],
+e:[["Vector","Phishing PDF","warm"],["Entry point","User workstation",""],["Mail client","Thunderbird",""],["First signal","Mail spike 143\u00d7","warm"],["Confirmed by","Browser + disk artifacts",""]]},
+
+{t:"Execution",a:"T1204.002 \u2014 Malicious File",
+p:["Opening the PDF dropped a first-stage binary onto the user's Desktop. The attacker then introduced a second tool that would carry the rest of the intrusion.",
+"Memory analysis found that tool running from the Desktop under a Wow64 environment \u2014 a path and a binary that don't belong to Windows."],
+e:[["Stage 1","Dropper on Desktop","warm"],["Stage 2","Attacker toolkit","hot"],["Environment","Wow64 (32-on-64)",""],["Found by","Volatility psscan",""],["Clean hosts","4 of 7 captures","cool"]]},
+
+{t:"Defense evasion",a:"T1055 \u2014 Process Injection \u00b7 T1562.001 \u2014 Impair Defenses",
+p:["The malware didn't stay in its own process. Volatility's malfind returned Read-Write-Execute memory segments inside trusted system processes \u2014 the signature of injected code or unpacked shellcode.",
+"On one server, RWX memory turned up inside the endpoint-protection engine itself. When the attacker is living inside the antivirus process, the antivirus is no longer a control you can trust."],
+e:[["Technique","RWX injection","hot"],["Hidden in","System processes",""],["AV compromise","Yes","hot"],["Tool","Volatility malfind",""],["Systems affected","3+",""],["Disk footprint","Minimal \u2014 in-memory","warm"]]},
+
+{t:"Lateral movement",a:"T1021 \u2014 Remote Services \u00b7 T1078 \u2014 Valid Accounts",
+p:["The same tool appeared on the Administrator Desktop of both domain controllers. That placement means the attacker was executing with elevated domain privileges, not scraping around as a standard user.",
+"The gap between the initial compromise and the domain controllers was one hour and forty-four minutes. Once you own the DCs of a network, you own authentication for everything on it."],
+e:[["Targets","2 domain controllers","hot"],["Time to DC","1h 44m","hot"],["Privilege","Administrator","warm"],["Enabler","No segmentation","warm"],["Scope","Full domain","hot"]]},
+
+{t:"Persistence",a:"T1543 \u2014 Create or Modify System Process",
+p:["A second payload was planted on a domain controller alongside the primary tool. A secondary payload on a DC is the tell that the attacker was not planning to leave \u2014 it's a foothold built to survive incident response.",
+"System services on that host carried multiple persistent injected memory regions. Even a clean-looking reboot would not have removed them."],
+e:[["Payload","Secondary implant","hot"],["Location","Domain controller",""],["Method","Service injection",""],["Intent","Long-term access","hot"],["Found in","Memory + disk",""],["Weak point","Dormant accounts","warm"]]},
+
+{t:"Exfiltration",a:"T1041 \u2014 Exfiltration Over C2 Channel",
+p:["The mail server told the story. Baseline traffic ran 80\u201395 events per hour. The peak hour hit roughly 22,500 \u2014 about 235 times normal \u2014 with three more large spikes bracketing the intrusion.",
+"Volume alone isn't proof. What confirmed it: traffic clustered on non-standard ports, and IMAP made up 96.5% of all mail events \u2014 a ratio that means automated bulk access, not people reading email. Shared-drive files across multiple departments had been modified during the window."],
+e:[["Peak","~22,500 events/hr","hot"],["vs baseline","235\u00d7","hot"],["Ports","Non-standard","warm"],["IMAP share","96.5%","warm"],["Aborted conns","107",""],["At risk","Creds + sensitive data","hot"]]},
+
+{t:"Impact",a:"T1486 \u2014 Data Encrypted for Impact",
+p:["On the final day, ransomware was written to the original victim workstation. A ransom note appeared beside it minutes later. An employee found it, and that discovery is what started the investigation.",
+"Total dwell time from first compromise to ransom note: a little over four days. The attacker held the domain controllers for nearly all of it."],
+e:[["Action","Ransomware deployed","hot"],["Marker","Ransom note","hot"],["Dwell time","4 days","hot"],["Evidence base","12.7M pkts \u00b7 6 img \u00b7 7 mem","cool"],["Confidence","High","cool"]]}
+];
+var rail=document.getElementById('rail'),kcT=document.getElementById('kcT'),kcA=document.getElementById('kcA'),kcP=document.getElementById('kcP'),kcE=document.getElementById('kcE');
+function renderChain(i){
+  var d=CHAIN[i];kcT.textContent=d.t;kcA.textContent=d.a;
+  kcP.innerHTML=d.p.map(function(x){return '<p>'+x+'</p>'}).join('');
+  kcE.innerHTML=d.e.map(function(r){var c=r[2]?' class="'+r[2]+'"':'';return '<div><span>'+r[0]+'</span><b'+c+'>'+r[1]+'</b></div>'}).join('');
+}
+rail.querySelectorAll('.node').forEach(function(n){
+  n.addEventListener('click',function(){
+    rail.querySelectorAll('.node').forEach(function(x){x.classList.remove('on')});
+    n.classList.add('on');renderChain(parseInt(n.dataset.i,10));
+  });
+});
+renderChain(0);
+
+/* ===== MALWARE LAB ===== */
+var SAMPLES=[
+{f:"Daiker.exe",fam:"RedLine Stealer",det:"52/70",lvl:"hi",sha:"09a91a77fd2f590784e2c43067e2e5f11e7a79c600e0274f12eb7cc01a3a0411",label:"trojan.msil/redline",cat:"Trojan \u00b7 Spyware",pack:".NET, obfuscated (no packer)",
+lines:[["k","STATIC"],["v","Privilege escalation APIs (AdjustTokenPrivileges, DuplicateTokenEx) and in-memory decryption (FromBase64String, CreateDecryptor) across 17,100 strings \u2014 28 flagged."],["k","DYNAMIC"],["v","Ran silent. Surfaced in Task Manager as \"Tantalise\", not responding \u2014 no UI, no child processes, no injection. A single process keeping its footprint small."],["v","ProcMon captured zero file events. Regshot showed 175 keys added, nearly all under IdentityCRL\\NegativeCache \u2014 Windows caching failed Microsoft auth attempts. That is what credential harvesting looks like from the registry's side."],["k","C2"],["hot","\u2192 TCP 146.19.128.28:18808 \u2014 direct outbound, blocked by FakeNet"],["k","VERDICT"],["warm","Infostealer. Harvests credentials in memory, exfiltrates to C2. No destruction \u2014 that is not what it is for."]]},
+
+{f:"CredentialFlusher",fam:"AutoIt trojan",det:"52/68",lvl:"hi",sha:"e8514f76167e4a936cb10f853d7b5fc0e8c8b7cf61fc49c3b62e776b7fb09c85",label:"trojan.autoit/credentialflusher",cat:"Trojan",pack:"AutoIt3 v3.3.16.1",
+lines:[["k","STATIC"],["v","148 flagged strings across 10 categories. Clipboard APIs, keyboard hooks (GetAsyncKeyState, BlockInput), process injection (VirtualAllocEx, WriteProcessMemory). Built to watch you type."],["k","DYNAMIC"],["hot","This one showed its hand. On execution it forced the default browser into full-screen kiosk mode and displayed a fake Google sign-in page \u2014 locked, no exit."],["v","Spawned 15 Chrome processes (~400 MB). The AutoIt host drives the browser to keep the fake login on screen until you give up and type your password into it."],["v","ProcMon logged 2,064,281 events. It read browser profile data \u2014 cookies, saved credentials \u2014 during the kiosk attack."],["k","C2"],["hot","\u2192 TCP 172.168.0.98 \u2014 candidate exfil endpoint, wrapped in legitimate-looking Google TLS traffic"],["k","VERDICT"],["warm","Credential phishing with a local lock-in. The clever part is not the code \u2014 it is that the victim hands over the password voluntarily."]]},
+
+{f:"ntdll.dll",fam:"Barys / Racealer",det:"55/71",lvl:"hi",sha:"43af6cbdb4759c2ec4be6716793ea601c72e81b8914aeae414fa398cd425b7c4",label:"trojan.asprotect/barys",cat:"Trojan \u00b7 Loader",pack:"ASProtect v1.23 RC1",
+lines:[["k","STATIC"],["cm","Not a DLL. Despite the name, it is an EXE masquerading as a core Windows system file."],["v","Entropy 7.999 \u2014 near maximum. 72,081 strings, zero flagged. PeStudio called the entry point \"invalid\" and the header \"cannot be executed.\" Static analysis was a dead end, which is exactly what the packer is for."],["v","Digital signature present but invalid \u2014 dressed up as legitimate, fails on inspection."],["k","DYNAMIC"],["v","CPU spiked to 80\u2013100% on execution \u2014 the ASProtect layer unpacking in memory. It then spawned AppLaunch.exe, a legitimate .NET launcher, and used it as a proxy so the network traffic never came from its own process."],["k","C2"],["hot","\u2192 AppLaunch.exe (PID 6764) \u2192 185.233.200.90:17645 \u2014 known IOC, hosted in Russia"],["k","VERDICT"],["warm","Packed loader. Static analysis useless by design; the behavior had to be dug out at runtime."]]},
+
+{f:"WeatherApp.exe",fam:"Marsilia / Bobik",det:"55/72",lvl:"hi",sha:"a3fbfe25541744380cb53a2faca2d7c61f8e9973520e82acb379127a99db867d",label:"trojan.msil/marsilia",cat:"Trojan \u00b7 Dropper",pack:".NET, ConfuserEx",
+lines:[["k","STATIC"],["vio","Tagged CVE-2022-30190 \u2014 Follina. It carries a real exploit."],["v","ConfuserEx obfuscation, Base64 encoding, manifest requesting administrator. Downloader APIs (DownloadFile, DownloadString) plus in-memory execution (VirtualProtect, MemoryStream)."],["k","DYNAMIC"],["v","Displayed a fake \"WeatherApp\" window, then went to work in the background as mService."],["cool","The interesting part: its outbound traffic used the Microsoft-Delivery-Optimization/10.1 user agent and hit Akamai and Azure CDN endpoints. It did not hide its traffic \u2014 it dressed it up as Windows Update."],["v","Range-header GET requests pulling specific byte segments of remote files: staged payload retrieval."],["k","VERDICT"],["warm","Dropper. The payload is not the point \u2014 fetching the next one is."]]},
+
+{f:"LoaderWPF.exe",fam:"Zusy / Tinba",det:"42/73",lvl:"md",sha:"e85101062f748f61e87f91bac8abcaa11b5754fb364b8e99cc67b9e7f0283edc",label:"trojan.msil/zusy",cat:"Trojan \u00b7 Loader",pack:".NET, DeepSea-like obfuscation",
+lines:[["k","STATIC"],["v","44,312 strings, 2 flagged: DownloadFile and DownloadString. A 94.27% resource ratio means the real content is hidden in resources, not code. High entropy confirms it is encrypted in there."],["k","DYNAMIC"],["v","Launched a fake \"Evolion Launcher\" \u2014 a convincing card-game downloader with a prominent \"Download Evolion right now\" button (~220 MB). The loader sits idle waiting for the click. No click, no payload."],["k","C2"],["v","Traffic disguised as Microsoft and Google update activity. Following the TCP streams returned only binary \u2014 encrypted or custom protocol."],["vio","RawTCP listener captured a \".Swarm protocol.\" marker \u2014 non-standard C2."],["k","VERDICT"],["warm","Social-engineering loader. Patient by design."]]},
+
+{f:"builder.exe",fam:"LockBit / BlackMatter",det:"66/71",lvl:"hi",sha:"a736269f5f3a9f2e11dd776e352e1801bc28bb699e47876784b8ef761e0062db",label:"trojan.lockbit/zeroaccess",cat:"Ransomware \u00b7 Trojan",pack:"Not packed \u00b7 4 embedded EXEs",
+lines:[["k","STATIC"],["hot","Not a payload \u2014 a builder. The tool operators use to generate ransomware. Four EXE PE files embedded in .rsrc (93% resource ratio)."],["v","MD5 hashing, privilege escalation (NtOpenProcessToken, RtlAdjustPrivilege), drive enumeration (GetLogicalDriveStrings), and network share APIs (WNetAddConnection2) \u2014 the last one is how LockBit spreads across network drives."],["k","DYNAMIC"],["v","Ran quiet. Flashed on screen for 10\u201315 seconds, then gone. 821 registry changes, no file destruction \u2014 consistent with a builder rather than a live payload."],["k","C2"],["v","Heavy TCP to 199.232.210.172, 199.232.214.172, 51.11.192.48 with TLS 1.2 app data and an HTTP GET for a file download. Retransmissions and duplicate ACKs suggest it could not establish a stable channel in the lab."],["cm","None of those IPs match known LockBit C2 \u2014 likely rotating infrastructure."],["k","VERDICT"],["warm","Ransomware builder. The gun, not the bullet."]]},
+
+{f:"Petya / NotPetya",fam:"Diskcoder",det:"64/72",lvl:"hi",sha:"4c1dc737915d76b7ce579abddaba74ead6fdb5b519a1ea45308b8c49b950655c",label:"trojan.petya/petr",cat:"Ransomware \u00b7 Wiper",pack:"Not packed \u00b7 VS 2010",
+lines:[["k","STATIC"],["v","80 flagged strings. Full crypto suite, registry deletion, process termination. Tagged via-tor \u2014 C2 over the Tor network."],["k","DYNAMIC"],["hot","Detonated. Seconds later: BSOD, stop code 0xc0000350."],["hot","The VM never came back. It cycled endlessly through Windows Boot Manager, EFI NVMe, EFI Network, and EFI Shell \u2014 every boot path failed. Fully bricked."],["v","No process capture. No registry snapshot. No network traffic. It overwrote the Master Boot Record and forced a reboot before any user-mode monitoring tool could record a thing."],["cool","EFI Internal Shell was the only surviving interface. It confirmed the disk mapping and the MBR sitting at 0x37373737 \u2014 and could do nothing about it."],["k","VERDICT"],["hot","Destroyer, not extortionist. No ransom screen rendered \u2014 Petya's note appears on the second boot, and there was never going to be one."]]},
+
+{f:"RuntimeBroker.exe",fam:"Marsilia / BypassUAC",det:"50/71",lvl:"md",sha:"a28aabf82c5fdc9fa56f7e04ac35355110cdacee7332a369875d2e384b1a8772",label:"trojan.msil/bypassuac",cat:"Trojan",pack:".NET, obfuscated",
+lines:[["k","STATIC"],["v","10.5 KB \u2014 tiny. That size means loader/dropper, not payload. Named after a legitimate Windows process to blend into the task list."],["v","Only 366 strings, 4 flagged. Anti-analysis tags: detect-debug-environment, long-sleeps, checks-cpu-name. It wants to know if it is being watched."],["k","DYNAMIC"],["v","Silent execution under PID 2588. Loaded advapi32, bcrypt, sechost. Registry operations against HKLM\\SYSTEM\\CurrentControlSet and HKCR\\exefile \u2014 the exefile path is a classic UAC-bypass surface."],["k","C2"],["v","\u2192 192.0.2.123 on ports 443 and 80"],["k","VERDICT"],["warm","Privilege-escalation loader. Small, quiet, and trying very hard to look like Windows."]]},
+
+{f:"node.exe",fam:"Sonbokli (unclear)",det:"27/72",lvl:"lo",sha:"35e366b9b046cd129968306cf0ffb92f213149a12d48a2e782fd0e25dba28462",label:"trojan \u00b7 downloader",cat:"Trojan \u00b7 Downloader",pack:"Not packed \u00b7 29.65 MB",
+lines:[["k","STATIC"],["cool","27/72 \u2014 the lowest detection rate in the set, and that is the finding. It is a real Node.js runtime with malicious JavaScript bundled inside. 651,156 strings of legitimate cover."],["v","childProcess.spawn / exec / execFile \u2014 the malicious capability rides on Node's own APIs. HTTP/2 header handling for the download path."],["cm","Also distributed as Game_OF_Mind_06.exe and downloader.exe."],["k","DYNAMIC"],["v","A CMD window opened and closed in under a second. CPU spiked to 73.8% in bursts \u2014 JavaScript executing, processes spawning."],["k","C2"],["hot","\u2192 jjjjjjjj.click and mybackuplinks.com \u2014 both flagged on VirusTotal, both registered within months of analysis"],["k","VERDICT"],["warm","Trojanized runtime. Hiding malware inside 29 MB of legitimate software is why 45 vendors missed it."]]},
+
+{f:"Lazy / Leonem",fam:"Lazy / Leonem",det:"58/72",lvl:"hi",sha:"347b852f5907744c87cb80e5564d3116724a895ed856265899ae011738868295",label:"trojan.msil/lazy",cat:"Trojan \u00b7 Spyware",pack:".NET, heavily obfuscated",
+lines:[["k","STATIC"],["v","23,184 strings, zero flagged. A 91.42% resource ratio. When nothing is flagged and everything is in resources, the absence of evidence is the evidence \u2014 it is obfuscated to the point of opacity."],["cm","UI strings (get_Order_Id, textBoxId, buttonAdd) hint at a fake business-form disguise."],["k","DYNAMIC"],["v","Launched silently under its own SHA-256 filename. No child processes, no injection, no elevation. 860 registry changes, none of them clear persistence."],["k","C2"],["v","Outbound traffic routed only to Microsoft update and telemetry domains \u2014 cover, or genuine OS noise. No confirmed C2 beacon."],["cool","Anti-analysis tags (detect-debug-environment, long-sleeps) suggest it knew it was in a VM and held back."],["k","VERDICT"],["warm","Stealer that declined to perform. Sometimes the sample wins the round."]]},
+
+{f:"Lazy / Nviqu",fam:"Lazy / Nviqu",det:"47/71",lvl:"md",sha:"069739cb5a77bd4d1782bdcf1e0324d7c4d63493d4addfb0913093981f96c8c2",label:"trojan.lazy/nviqu",cat:"Trojan \u00b7 Downloader",pack:"Not packed \u00b7 64-bit",
+lines:[["k","STATIC"],["v","221,421 strings, 359 flagged across 21 categories \u2014 the broadest capability set in the batch. Service manipulation (CreateService, DeleteService), privilege escalation (AdjustTokenPrivileges, IsUserAnAdmin), and downloader APIs (InternetOpenUrl, HttpQueryInfo)."],["k","DYNAMIC"],["v","No visible signs beyond CPU spikes. PID 3448, loading user32, gdi32, ucrtbase. Massive registry deletion and modification \u2014 heavy system tampering under a quiet surface."],["k","C2"],["v","Sparse traffic. TCP retransmissions from 23.197.46.181 and 23.205.30.159, blocked by FakeNet."],["k","VERDICT"],["warm","Multi-stage dropper. Tagged executes-dropped-file \u2014 it was reaching for stage two and never got it."]]},
+
+{f:"WannaCry",fam:"WannaCryptor",det:"57/61",lvl:"hi",sha:"35dae4081b11ca804fc410c3bd160fc111b871952eb5da2d1f46028e46c4e156",label:"trojan.wannacry/wanna",cat:"Ransomware",pack:"Not packed \u00b7 SFX ZIP",
+lines:[["k","STATIC"],["v","The full Windows Crypto API suite \u2014 CryptGenKey, CryptEncrypt, CryptDecrypt \u2014 alongside file destruction (DeleteFile, MoveFileEx) and service persistence (CreateService). 9 embedded ZIPs and 1 EXE in the resources: it drops its own components."],["k","DYNAMIC"],["cool","It never ran. Double-click returned a side-by-side configuration error and died on the spot."],["v","No encryption. No ransom note. No .WCRY extensions. No SMB scanning on 445. Nothing."],["cm","Regshot showed 86,068 keys deleted under COMPONENTS\\CanonicalData\\Catalogs \u2014 not the malware. That is Windows itself failing to resolve the missing SxS runtime the sample needed."],["k","VERDICT"],["warm","Static analysis told the whole story here; dynamic told none of it. Worth writing down anyway \u2014 a failed detonation is a result, and the 86k deletions could easily have been misread as attacker activity."]]}
+];
+var list=document.getElementById('smpList'),out=document.getElementById('smpOut');
+function esc(x){return String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+SAMPLES.forEach(function(s,i){
+  var b=document.createElement('button');b.className='smp'+(i===0?' on':'');
+  b.innerHTML='<span class="det '+s.lvl+'">'+esc(s.det)+'</span><span class="fn">'+esc(s.f)+'</span><span class="fam">'+esc(s.fam.toUpperCase())+'</span>';
+  b.addEventListener('click',function(){list.querySelectorAll('.smp').forEach(function(x){x.classList.remove('on')});b.classList.add('on');renderSample(i);});
+  list.appendChild(b);
+});
+function renderSample(i){
+  var s=SAMPLES[i],h='';
+  h+='<span class="ln"><span class="p">$</span> <span class="v">triage '+esc(s.f)+'</span></span><span class="blank"></span>';
+  h+='<span class="ln"><span class="k">sha256    </span><span class="cool">'+esc(s.sha)+'</span></span>';
+  h+='<span class="ln"><span class="k">label     </span><span class="v">'+esc(s.label)+'</span></span>';
+  h+='<span class="ln"><span class="k">category  </span><span class="v">'+esc(s.cat)+'</span></span>';
+  h+='<span class="ln"><span class="k">packer    </span><span class="v">'+esc(s.pack)+'</span></span>';
+  h+='<span class="ln"><span class="k">detection </span><span class="'+(s.lvl==='hi'?'hot':s.lvl==='md'?'warm':'cool')+'">'+esc(s.det)+' vendors</span></span>';
+  s.lines.forEach(function(l){
+    if(l[0]==='k'){h+='<span class="blank"></span><span class="ln"><span class="k">\u2500\u2500 '+esc(l[1])+' \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500</span></span>';}
+    else{h+='<span class="ln"><span class="'+l[0]+'">'+esc(l[1])+'</span></span>';}
+  });
+  h+='<span class="blank"></span><span class="ln"><span class="p">$</span> <span class="cursor"></span></span>';
+  out.innerHTML=h;
+}
+renderSample(0);
+</script>
+<script src="main.js"></script>
+</body>
+</html>

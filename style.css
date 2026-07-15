@@ -415,3 +415,131 @@ button.cert:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
   .rec-head .rc-cat,.rec-head .rc-src,.rec-btn .rc-cat,.rec-btn .rc-src{display:none}
   .rec-pad{padding-left:18px}
 }
+
+/* ---------- INTERACTIVE LABS (lab page, try-it-yourself exercises) ----------
+   Three playable exercises below the real lab feed, all themed around the
+   fictional Flexin Watches. Each is self-contained. Shared severity tokens
+   (coral/amber/cyan/lime) drive the color coding, same as the rest of the site. */
+
+/* Shared wrapper so the three exercises read as a set. */
+.lab-ex{border:1px solid var(--line);background:var(--panel);font-family:'IBM Plex Mono',monospace;margin-bottom:0}
+.lab-ex-top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 18px;border-bottom:1px solid var(--line);background:var(--panel-2)}
+.lab-ex-top .t{font-size:11.5px;font-weight:600;letter-spacing:.06em}
+.lab-ex-top .score{font-size:10.5px;color:var(--cyan);letter-spacing:.08em}
+
+/* ----- Exercise 1: SIEM triage ----- */
+.siem-grid{display:grid;grid-template-columns:300px 1fr}
+.siem-queue{border-right:1px solid var(--line);max-height:460px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--line-2) transparent}
+.siem-row{width:100%;display:grid;grid-template-columns:auto 1fr;gap:3px 10px;text-align:left;background:none;border:0;border-bottom:1px solid var(--line);border-left:3px solid transparent;padding:11px 14px;cursor:pointer;color:inherit;font:inherit;transition:background .15s}
+.siem-row:hover{background:var(--panel-2)}
+.siem-row:focus-visible{outline:2px solid var(--cyan);outline-offset:-2px}
+.siem-row.on{background:var(--panel-2)}
+.siem-row.done{opacity:.55}
+.siem-sev{grid-row:span 2;align-self:center;font-size:9px;font-weight:600;letter-spacing:.08em;padding:3px 6px;border:1px solid currentColor;border-radius:2px;height:fit-content}
+.siem-rule{font-size:12.5px;font-weight:500;color:var(--txt)}
+.siem-host{font-size:10px;color:var(--dimmer);letter-spacing:.04em}
+.siem-tick{grid-row:span 2;align-self:center;color:var(--lime)}
+.sev-crit{color:var(--coral)}   .siem-row.sev-crit{border-left-color:var(--coral)}
+.sev-high{color:var(--amber)}   .siem-row.sev-high{border-left-color:var(--amber)}
+.sev-med{color:var(--cyan)}     .siem-row.sev-med{border-left-color:var(--cyan)}
+.sev-low{color:var(--dim)}      .siem-row.sev-low{border-left-color:var(--line-2)}
+.siem-detail{padding:20px 22px}
+.siem-dh{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.siem-src{font-size:10px;color:var(--dimmer);letter-spacing:.08em;text-transform:uppercase}
+.siem-detail h4{font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:600;letter-spacing:-.01em;margin-bottom:16px}
+.siem-meta{display:grid;gap:8px;margin-bottom:22px}
+.siem-meta div{display:flex;justify-content:space-between;gap:12px;font-size:12px}
+.siem-meta span{color:var(--dimmer)}
+.siem-meta b{color:var(--txt);font-weight:500;text-align:right}
+.siem-acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.siem-act{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em;background:none;border:1px solid var(--line-2);color:var(--dim);padding:10px 16px;cursor:pointer;transition:.15s}
+.siem-act:hover:not(:disabled){border-color:var(--cyan);color:var(--cyan)}
+.siem-act:disabled{cursor:default}
+.siem-act.picked-good{border-color:var(--lime);color:var(--lime)}
+.siem-act.picked-bad{border-color:var(--coral);color:var(--coral)}
+.siem-act.is-correct{border-color:var(--lime);color:var(--lime)}
+.siem-verdict{margin-top:18px;padding:14px 16px;border-left:2px solid var(--line-2);display:none}
+.siem-verdict.show{display:block}
+.siem-verdict.good{border-color:var(--lime)}
+.siem-verdict.bad{border-color:var(--coral)}
+.siem-verdict .v{font-size:10px;letter-spacing:.16em;text-transform:uppercase;display:block;margin-bottom:7px}
+.siem-verdict.good .v{color:var(--lime)}
+.siem-verdict.bad .v{color:var(--coral)}
+.siem-verdict p{font-family:'Space Grotesk',sans-serif;color:var(--dim);font-size:14px;line-height:1.6;max-width:60ch}
+
+/* ----- Exercise 2: PCAP analysis ----- */
+.pcap-filter{display:flex;align-items:center;gap:10px;padding:9px 16px;border-bottom:1px solid var(--line);background:rgba(0,0,0,.16)}
+.pcap-filter .pf-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--dimmer)}
+.pcap-filter code{font-size:11.5px;color:var(--lime)}
+.pcap-head,.pcap-row{display:grid;grid-template-columns:52px 68px 150px 170px 60px 1fr;gap:10px;align-items:center}
+.pcap-head{padding:9px 16px;border-bottom:1px solid var(--line);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--dimmer)}
+.pcap-list{max-height:320px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--line-2) transparent}
+.pcap-row{width:100%;text-align:left;background:none;border:0;border-bottom:1px solid var(--line);border-left:3px solid transparent;padding:9px 16px;cursor:pointer;color:var(--dim);font:inherit;font-size:11.5px;transition:background .15s}
+.pcap-row:hover{background:var(--panel-2)}
+.pcap-row:focus-visible{outline:2px solid var(--cyan);outline-offset:-2px}
+.pcap-row.on{background:var(--panel-2)}
+.pcap-row .c-info{color:var(--txt)}
+.pcap-row .c-no,.pcap-row .c-time{color:var(--dimmer)}
+.pcap-row.t-cool{border-left-color:var(--cyan)}
+.pcap-row.t-warm{border-left-color:var(--amber)}
+.pcap-row.t-hot{border-left-color:var(--coral)}
+.pcap-row.t-hot .c-info{color:var(--coral)}
+.pcap-row.t-warm .c-info{color:var(--amber)}
+.pcap-detail{display:none;border-top:1px solid var(--line-2);background:rgba(0,0,0,.16)}
+.pcap-detail.show{display:grid;grid-template-columns:1fr 1fr}
+.pcap-detail.t-hot{border-top-color:var(--coral)}
+.pcap-detail.t-warm{border-top-color:var(--amber)}
+.pcap-detail.t-cool{border-top-color:var(--cyan)}
+.pkt-tree{padding:18px 20px;border-right:1px solid var(--line)}
+.pkt-tree .tag{display:block;margin-bottom:12px}
+.pkt-line{display:flex;justify-content:space-between;gap:12px;font-size:11.5px;padding:5px 0;border-bottom:1px dotted var(--line)}
+.pkt-line:last-child{border-bottom:0}
+.pkt-line span{color:var(--dimmer)}
+.pkt-line b{color:var(--txt);font-weight:500;text-align:right}
+.pkt-note{padding:18px 20px}
+.pkt-note .tag{display:block;margin-bottom:12px;color:var(--amber)}
+.pkt-note p{font-family:'Space Grotesk',sans-serif;color:var(--dim);font-size:14px;line-height:1.65}
+
+/* ----- Exercise 3: Phishing red-flag hunt ----- */
+.phish{display:grid;grid-template-columns:1fr 300px}
+.phish-mail{border-right:1px solid var(--line);padding:0;font-family:'Space Grotesk',sans-serif}
+.phish-hd{padding:16px 20px;border-bottom:1px solid var(--line);background:var(--panel-2);display:grid;gap:6px}
+.phish-hd .row{display:grid;grid-template-columns:70px 1fr;gap:10px;font-size:13px;align-items:baseline}
+.phish-hd .row .lbl{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--dimmer)}
+.phish-body{padding:22px 20px;font-size:14.5px;line-height:1.7;color:var(--txt)}
+.phish-body p{margin-bottom:14px}
+/* A clickable red flag: subtle until found, colored once identified. */
+.flag{cursor:pointer;border-bottom:1px dashed var(--dimmer);transition:.15s;border-radius:2px;padding:0 2px}
+.flag:hover{background:rgba(242,180,65,.08);border-bottom-color:var(--amber)}
+.flag.found{background:rgba(255,107,94,.14);border-bottom:1px solid var(--coral);color:var(--txt)}
+.flag:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+/* Right rail: progress + the list of flags as they're found. */
+.phish-side{padding:18px 18px;font-family:'IBM Plex Mono',monospace}
+.phish-side .tag{display:block;margin-bottom:12px}
+.phish-prog{font-size:22px;font-weight:600;color:var(--coral);letter-spacing:-.01em;margin-bottom:4px;font-family:'Space Grotesk',sans-serif}
+.phish-prog-lbl{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--dimmer);margin-bottom:18px}
+.phish-found{display:grid;gap:10px}
+.phish-found .fnd{font-size:12px;line-height:1.5;padding-left:16px;position:relative;color:var(--dim)}
+.phish-found .fnd::before{content:"\2713";position:absolute;left:0;color:var(--coral)}
+.phish-hint{margin-top:18px;font-size:11.5px;color:var(--dimmer);line-height:1.5}
+.phish-done{margin-top:16px;padding:12px 14px;border-left:2px solid var(--lime);display:none}
+.phish-done.show{display:block}
+.phish-done .v{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--lime);display:block;margin-bottom:6px}
+.phish-done p{font-family:'Space Grotesk',sans-serif;font-size:13px;color:var(--dim);line-height:1.55}
+
+/* Responsive: stack the two-column exercises on narrow screens. */
+@media(max-width:900px){
+  .siem-grid{grid-template-columns:1fr}
+  .siem-queue{border-right:0;border-bottom:1px solid var(--line);max-height:280px}
+  .pcap-detail.show{grid-template-columns:1fr}
+  .pkt-tree{border-right:0;border-bottom:1px solid var(--line)}
+  .pcap-head .c-src,.pcap-head .c-dst,.pcap-row .c-src,.pcap-row .c-dst{display:none}
+  .pcap-head,.pcap-row{grid-template-columns:44px 60px 54px 1fr}
+  .phish{grid-template-columns:1fr}
+  .phish-mail{border-right:0;border-bottom:1px solid var(--line)}
+}
+
+/* Exercise sub-headings within the "Try it yourself" section. */
+.ex-h{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--cyan);margin:34px 0 6px}
+.ex-h:first-of-type{margin-top:8px}
+.ex-sub{color:var(--dim);font-size:14.5px;line-height:1.6;max-width:70ch;margin-bottom:16px}

@@ -4,12 +4,6 @@ Personal cybersecurity portfolio for **Felix Naroditskiy**. Digital forensics, m
 
 **Live at:** [derptg.github.io](https://derptg.github.io)
 
-## What this is
-
-A static portfolio site built with semantic HTML, a single CSS stylesheet driven by custom properties, and small vanilla-JavaScript widgets, with no framework or build step behind it.
-
-This portfolio site was built with Claude, in the same fashion I work and learn every day: moving fast, staying accurate, and picking up new things along the way. I drove every decision that mattered, from the design and structure to the content and voice, and reviewed it all before it shipped. The whole point was to build something you can dig into and explore, not just another page of bullet points describing work you'll never get to see.
-
 ## Pages
 
 | Page | What's on it |
@@ -35,6 +29,7 @@ Each widget is a data array plus a render function, kept simple so the code stay
 - HTML, CSS, and vanilla JavaScript, with no libraries or frameworks
 - CSS custom properties, so the whole palette is defined once in `:root` in `style.css`
 - GitHub Pages for static hosting, with automatic deploy on every push
+- Claude, my partner in crime for building it
 
 ## Structure
 

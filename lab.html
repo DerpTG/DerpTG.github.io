@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-  lab.html — Lab page
+  lab.html - Lab page
 
   A running feed of self-directed work, presented as a SOC alert queue. The
   lab log entries are real; the SIEM styling is the skin. Page structure:
@@ -71,6 +71,81 @@
       </div>
       <!-- Rows are built here by the script. -->
       <div class="feed-list" id="feedList"></div>
+    </div>
+  </div>
+</section>
+
+<!-- Interactive labs.
+     Three try-it-yourself exercises, all set at the fictional Flexin Watches.
+     They're separate from the real lab feed above: this is a playground, not
+     casework. Each exercise has its own script block near the bottom. -->
+<section>
+  <div class="wrap">
+    <div class="shead"><h2>Try it yourself</h2><span class="fill"></span></div>
+    <p class="sdesc">Three short exercises set at Flexin Watches, a made-up watch company. Work an alert queue, read a packet capture, and hunt the red flags in a phishing email. No sign-up, nothing to install. Just click in.</p>
+
+    <!-- Exercise 1: SIEM triage.
+         An alert queue. Pick a disposition for each alert, get scored. Data
+         and logic live in the SIEM script block below. -->
+    <h3 class="ex-h">1 &middot; SIEM triage</h3>
+    <p class="ex-sub">You&rsquo;re the Tier-1 analyst on shift. Each alert needs a call: escalate, investigate, or close. Some look scarier than they are, and one quiet one isn&rsquo;t quiet at all.</p>
+    <div class="lab-ex siem-wrap">
+      <div class="lab-ex-top">
+        <span class="t">FLEXIN WATCHES SOC &middot; ALERT QUEUE</span>
+        <span class="score" id="siemScore">TRIAGED 0 / 5</span>
+      </div>
+      <div class="siem-grid">
+        <div class="siem-queue" id="siemQueue"></div>
+        <div class="siem-detail" id="siemDetail"></div>
+      </div>
+    </div>
+
+    <!-- Exercise 2: PCAP analysis.
+         A packet list from a Flexin capture. Click a packet to expand its
+         detail and the note on why it matters. Data and logic in the PCAP
+         script block below. -->
+    <h3 class="ex-h">2 &middot; Packet capture</h3>
+    <p class="ex-sub">A slice of traffic from a Flexin workstation during a suspected data theft. Read it the way you would in Wireshark: click a packet to open its detail and see what made it evidence.</p>
+    <div class="lab-ex">
+      <div class="lab-ex-top">
+        <span class="t">flexin-workstation-capture.pcapng</span>
+        <span class="score">6 packets shown</span>
+      </div>
+      <div class="pcap-filter">
+        <span class="pf-label">filter</span>
+        <code>tcp.stream eq 4 || ftp-data || tcp.flags.reset == 1</code>
+      </div>
+      <div class="pcap-head">
+        <span class="c-no">No.</span><span class="c-time">Time</span>
+        <span class="c-src">Source</span><span class="c-dst">Destination</span>
+        <span class="c-proto">Proto</span><span class="c-info">Info</span>
+      </div>
+      <div class="pcap-list" id="pcapList"></div>
+      <div class="pcap-detail" id="pcapDetail"></div>
+    </div>
+
+    <!-- Exercise 3: Phishing red-flag hunt.
+         A rendered suspicious email. Click the phrases that are red flags;
+         the side panel tracks how many of them you've found. Data and logic
+         in the phishing script block below. -->
+    <h3 class="ex-h">3 &middot; Spot the phish</h3>
+    <p class="ex-sub">This email landed in a Flexin employee&rsquo;s inbox. Click every part you think is a red flag. The panel keeps score, and each flag explains itself once you find it.</p>
+    <div class="lab-ex phish">
+      <div class="phish-mail">
+        <div class="phish-hd" id="phishHd"></div>
+        <div class="phish-body" id="phishBody"></div>
+      </div>
+      <div class="phish-side">
+        <span class="tag">Red flags found</span>
+        <div class="phish-prog" id="phishProg">0 / 6</div>
+        <div class="phish-prog-lbl">click the suspicious parts</div>
+        <div class="phish-found" id="phishFound"></div>
+        <div class="phish-hint" id="phishHint">Look at the sender, the links, the tone, and anything it&rsquo;s rushing you to do.</div>
+        <div class="phish-done" id="phishDone">
+          <span class="v">All flags found</span>
+          <p>That&rsquo;s the full set. Real phishing rarely trips all of these at once, but any one of them is enough to slow down and verify before clicking.</p>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -170,6 +245,383 @@ LOG.forEach(function (entry, i) {
   });
 
   feedList.appendChild(row);
+});
+</script>
+
+<!--
+     Exercise 1: SIEM triage script.
+
+     ALERTS holds the alert queue for Flexin Watches. Each alert has:
+       sev     severity band: 'crit', 'high', 'med', or 'low' (sets color)
+       rule    the detection rule name
+       host    the affected asset
+       time    a relative timestamp
+       src     the data source
+       detail  an array of [label, value] rows for the detail pane
+       correct the right disposition id: 'escalate', 'investigate', 'close'
+       why     feedback text per disposition, so every choice gets a response
+
+     Clicking an alert loads its detail; picking a disposition scores it.
+     Everything runs in the browser.
+-->
+<script>
+/* The three calls an analyst can make. */
+var DISPOS = [
+  { id: 'escalate',    label: 'Escalate' },
+  { id: 'investigate', label: 'Investigate' },
+  { id: 'close',       label: 'Close as benign' }
+];
+
+/* The Flexin Watches alert queue. */
+var ALERTS = [
+  {
+    sev: 'crit', rule: 'Mass file rename on design share', host: 'FLX-FS02 (file server)',
+    time: 'T+00:01', src: 'EDR',
+    detail: [
+      ['Rule', 'Rapid rename + new extension'],
+      ['Host', 'FLX-FS02 \u00b7 Movement designs'],
+      ['Process', 'wscript.exe \u2192 unknown child'],
+      ['Files touched', '3,400 in two minutes'],
+      ['Extension', '.sketch \u2192 .flxlock']
+    ],
+    correct: 'escalate',
+    why: {
+      escalate: 'Correct. Thousands of the company\u2019s watch-design files renamed to a new extension in two minutes is active encryption, not a maybe. This is the one you page someone for right away. Every minute of hesitation is more of Flexin\u2019s IP gone.',
+      investigate: 'Too slow. Investigating suits an ambiguous alert, but mass rename to a ransomware-style extension is already confirmed impact. While you gather detail, the encryption keeps running.',
+      close: 'The worst call here. Nothing benign renames 3,400 design files in two minutes. This is a live ransomware event on Flexin\u2019s crown-jewel data.'
+    }
+  },
+  {
+    sev: 'high', rule: 'Impossible-travel sign-in', host: 'r.okafor@flexinwatches.com',
+    time: 'T+00:06', src: 'Identity provider',
+    detail: [
+      ['Rule', 'Two logins, geographically impossible'],
+      ['User', 'r.okafor (Finance)'],
+      ['Login 1', 'Geneva, CH \u00b7 14:02'],
+      ['Login 2', 'Manila, PH \u00b7 14:14'],
+      ['MFA', 'Satisfied on both']
+    ],
+    correct: 'escalate',
+    why: {
+      escalate: 'Correct. Twelve minutes between Geneva and Manila is impossible, and MFA passing on both makes it worse, not better. It points to a stolen session token. Escalate for a credential reset and session revocation.',
+      investigate: 'A defensible first move, but don\u2019t sit on it. MFA satisfied on both logins is the tell that a token was likely stolen. Treat it as compromise and escalate rather than just watching.',
+      close: 'Wrong. A VPN explains one odd location, not two valid MFA logins on two continents twelve minutes apart. This account is compromised.'
+    }
+  },
+  {
+    sev: 'med', rule: 'Beacon to newly-registered domain', host: 'FLX-MKT07',
+    time: 'T+00:14', src: 'DNS / proxy',
+    detail: [
+      ['Rule', 'DNS to domain registered < 48h ago'],
+      ['Host', 'FLX-MKT07 (Marketing laptop)'],
+      ['Domain', 'flexin-cdn-assets[.]shop'],
+      ['Frequency', 'Every 60s, exactly'],
+      ['Payload', 'Small, uniform']
+    ],
+    correct: 'investigate',
+    why: {
+      investigate: 'Correct. A brand-new domain that spoofs the Flexin name, contacted on an exact 60-second heartbeat with small uniform payloads, is classic C2 beaconing. It\u2019s not confirmed yet, though. Dig in: pull the process, check other hosts, then decide if it escalates.',
+      escalate: 'Understandable, but early. Beacon-like patterns are suspicious, not confirmed. Investigate first so you escalate with evidence rather than a hunch.',
+      close: 'Too hasty. The exact, regular heartbeat is what separates this from normal browsing noise. It may be benign, but you don\u2019t know that yet.'
+    }
+  },
+  {
+    sev: 'low', rule: 'Failed logins then success', host: 'FLX-RECEPTION',
+    time: 'T+00:21', src: 'Windows security log',
+    detail: [
+      ['Rule', '4625 \u00d7 5 then 4624 success'],
+      ['Host', 'FLX-RECEPTION (lobby kiosk)'],
+      ['Account', 'frontdesk (shared)'],
+      ['Interval', 'Over 3 minutes'],
+      ['Source', 'Local console, not remote']
+    ],
+    correct: 'close',
+    why: {
+      close: 'Correct, in context. Five failures over three minutes at the local console of a shared lobby kiosk, ending in success, is a human mistyping a shared password. No remote source, no lockout, slow human pace. Note it and move on.',
+      investigate: 'Not wrong, just low-value. The signals (local console, human pace, shared account) all point to a fat-fingered password. Time spent here is time the real alerts sit waiting.',
+      escalate: 'Over-escalation. Paging someone for five slow failed logins at a reception kiosk teaches responders to tune out your pages. Save escalation for the impossible-travel alert, which earned it.'
+    }
+  },
+  {
+    sev: 'high', rule: 'Office spawned encoded PowerShell', host: 'FLX-HR03',
+    time: 'T+00:29', src: 'EDR',
+    detail: [
+      ['Rule', 'powershell.exe -enc (base64)'],
+      ['Host', 'FLX-HR03 (HR workstation)'],
+      ['Parent', 'WINWORD.EXE'],
+      ['Decoded', 'DownloadString \u2192 http://\u2026'],
+      ['Attachment', '"Q3_Payroll_Update.docm"']
+    ],
+    correct: 'escalate',
+    why: {
+      escalate: 'Correct. A macro-enabled Word doc spawning encoded PowerShell that pulls a remote payload is the textbook loader chain. WINWORD.EXE as the parent is the smoking gun. Escalate and isolate the host.',
+      investigate: 'Half-right, but don\u2019t linger. You can confirm the decode, but Office spawning encoded PowerShell with a DownloadString is malicious on its face. Isolate now, scope it after.',
+      close: 'Wrong. Encoded PowerShell exists to hide intent, and legitimate documents don\u2019t launch it. Office spawning PowerShell is one of the most reliable malicious signals there is.'
+    }
+  }
+];
+
+var siemQueue  = document.getElementById('siemQueue');
+var siemDetail = document.getElementById('siemDetail');
+var siemScore  = document.getElementById('siemScore');
+var sAnswered = [];   // disposition chosen per alert, once answered
+var sCorrect  = 0;    // running count of correct calls
+
+function sEsc(x){return String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+/* Build the left-rail queue. */
+function siemRenderQueue(){
+  siemQueue.innerHTML = '';
+  ALERTS.forEach(function(a, i){
+    var row = document.createElement('button');
+    row.className = 'siem-row sev-' + a.sev + (sAnswered[i] ? ' done' : '');
+    row.innerHTML =
+      '<span class="siem-sev">' + a.sev.toUpperCase() + '</span>' +
+      '<span class="siem-rule">' + sEsc(a.rule) + '</span>' +
+      '<span class="siem-host">' + sEsc(a.host) + ' \u00b7 ' + sEsc(a.time) + '</span>' +
+      (sAnswered[i] ? '<span class="siem-tick">\u2713</span>' : '');
+    row.addEventListener('click', function(){ siemSelect(i, row); });
+    siemQueue.appendChild(row);
+  });
+}
+
+/* Render the detail pane for alert i and wire its disposition buttons. */
+function siemSelect(i, row){
+  siemQueue.querySelectorAll('.siem-row').forEach(function(r){ r.classList.remove('on'); });
+  if (row) row.classList.add('on');
+  var a = ALERTS[i];
+
+  var rows = a.detail.map(function(d){
+    return '<div><span>' + sEsc(d[0]) + '</span><b>' + sEsc(d[1]) + '</b></div>';
+  }).join('');
+  var btns = DISPOS.map(function(d){
+    return '<button class="siem-act" data-do="' + d.id + '">' + d.label + '</button>';
+  }).join('');
+
+  siemDetail.innerHTML =
+    '<div class="siem-dh"><span class="siem-sev sev-' + a.sev + '">' + a.sev.toUpperCase() + '</span>' +
+      '<span class="siem-src">' + sEsc(a.src) + '</span></div>' +
+    '<h4>' + sEsc(a.rule) + '</h4>' +
+    '<div class="siem-meta">' + rows + '</div>' +
+    '<span class="tag">Your call</span>' +
+    '<div class="siem-acts">' + btns + '</div>' +
+    '<div class="siem-verdict" id="siemVerdict"></div>';
+
+  if (sAnswered[i]) {
+    siemLock(i, sAnswered[i]);
+  } else {
+    siemDetail.querySelectorAll('.siem-act').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var choice = btn.getAttribute('data-do');
+        if (!sAnswered[i]) {
+          sAnswered[i] = choice;
+          if (choice === a.correct) sCorrect++;
+          siemUpdateScore();
+          siemRenderQueue();
+        }
+        siemLock(i, choice);
+      });
+    });
+  }
+}
+
+/* Show the graded result and lock the buttons. */
+function siemLock(i, choice){
+  var a = ALERTS[i];
+  var right = (choice === a.correct);
+  siemDetail.querySelectorAll('.siem-act').forEach(function(btn){
+    btn.disabled = true;
+    var id = btn.getAttribute('data-do');
+    if (id === choice) btn.classList.add(right ? 'picked-good' : 'picked-bad');
+    if (id === a.correct) btn.classList.add('is-correct');
+  });
+  var verdict = document.getElementById('siemVerdict');
+  verdict.className = 'siem-verdict show ' + (right ? 'good' : 'bad');
+  verdict.innerHTML =
+    '<span class="v">' + (right ? 'Correct call' : 'Not the call') + '</span>' +
+    '<p>' + sEsc(a.why[choice]) + '</p>';
+}
+
+function siemUpdateScore(){
+  var done = sAnswered.filter(function(x){ return x; }).length;
+  siemScore.textContent = 'TRIAGED ' + done + ' / ' + ALERTS.length +
+    (done === ALERTS.length ? '  \u00b7  ' + sCorrect + ' correct' : '');
+}
+
+siemRenderQueue();
+siemSelect(0, siemQueue.querySelector('.siem-row'));
+</script>
+
+<!--
+     Exercise 2: Packet capture script.
+
+     PACKETS holds the capture rows. Each has:
+       no, time, src, dst, proto, info  the columns shown in the list
+       tone   row emphasis: '', 'cool', 'warm', or 'hot'
+       tree   an array of [label, value] dissection rows
+       note   the plain-language "why this is evidence" annotation
+
+     Clicking a row expands its detail; clicking it again collapses it.
+-->
+<script>
+var PACKETS = [
+  {no:2041,time:'12.004',src:'10.10.4.55',dst:'10.10.4.9:21',proto:'FTP',tone:'',
+   info:'Response: 230 Login successful',
+   tree:[['Frame','2041 \u00b7 66 bytes'],['TCP','495\u2192021 [PSH,ACK]'],['FTP','USER svc-backup / 230 OK'],['Host','Internal backup server'],['Note','Normal so far']],
+   note:'A normal login to an internal FTP server. It only matters as the start of a session whose later behavior isn\u2019t normal. This is your baseline.'},
+  {no:2044,time:'12.219',src:'10.10.4.55',dst:'10.10.4.9:21',proto:'FTP',tone:'cool',
+   info:'Request: STOR movement-cad-2026.zip',
+   tree:[['FTP','STOR movement-cad-2026.zip'],['Size','payload follows on data channel'],['Content','Watch movement CAD archive'],['Direction','Upload from workstation'],['Odd?','Backup account pushing design files']],
+   note:'The backup service account is uploading a design archive. Backup accounts pull data on a schedule; they don\u2019t push crown-jewel CAD files ad hoc. The account is being misused.'},
+  {no:2050,time:'12.377',src:'10.10.4.55',dst:'45.148.10.32:443',proto:'TLS',tone:'hot',
+   info:'Client Hello \u2192 external host, SNI absent',
+   tree:[['TCP','49610\u2192443 [SYN]'],['TLS','Client Hello, no SNI'],['Dest','45.148.10.32 (hosting provider)'],['GeoIP','Outside any Flexin region'],['Timing','Opens right after the STOR']],
+   note:'A second channel to an external hosting IP with no server name in the handshake, opened right after the internal file grab. This is where the stolen designs actually leave the building.'},
+  {no:2061,time:'12.902',src:'10.10.4.55',dst:'45.148.10.32:443',proto:'TLS',tone:'warm',
+   info:'Application Data \u00b7 4.2 MB and climbing',
+   tree:[['Stream','tcp.stream eq 7'],['Bytes','4.2 MB this flow'],['Direction','Almost entirely outbound'],['Rate','Sustained, no pauses'],['Shape','Bulk upload, not browsing']],
+   note:'Large, sustained, outbound-only volume on a fresh external connection is the shape of exfiltration. Volume alone isn\u2019t proof; volume plus direction plus that destination is.'},
+  {no:2074,time:'13.560',src:'45.148.10.32',dst:'10.10.4.55',proto:'TCP',tone:'warm',
+   info:'[RST, ACK] \u2014 abrupt teardown',
+   tree:[['TCP','443\u2192049610 [RST,ACK]'],['Meaning','Connection cut abruptly'],['Count','part of a repeating pattern'],['Normal?','Occasional resets are fine'],['Here','Scripted open/dump/teardown loop']],
+   note:'One reset is nothing. This one is part of a repeating open-dump-teardown rhythm, which is a tool working in a loop rather than a person using a browser.'},
+  {no:2088,time:'14.113',src:'10.10.4.55',dst:'45.148.10.32:443',proto:'TLS',tone:'hot',
+   info:'Session total: 41 MB out in 90 seconds',
+   tree:[['Baseline','This host: ~2 MB/hr outbound'],['This window','41 MB in 90 seconds'],['Multiplier','far above normal'],['Content','Matches the design archive size'],['Verdict','Exfiltration confirmed']],
+   note:'The summary that closes it. This workstation normally sends a couple of megabytes an hour. It just pushed 41 MB to an external host in a minute and a half, right after grabbing Flexin\u2019s design files. That\u2019s theft, not traffic.'}
+];
+
+var pcapList=document.getElementById('pcapList'),pcapDetail=document.getElementById('pcapDetail');
+var pOpen=null;
+function pEsc(x){return String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function pcapRender(){
+  pcapList.innerHTML='';
+  PACKETS.forEach(function(p,i){
+    var row=document.createElement('button');
+    row.className='pcap-row'+(p.tone?' t-'+p.tone:'');
+    row.innerHTML=
+      '<span class="c-no">'+p.no+'</span>'+
+      '<span class="c-time">'+pEsc(p.time)+'</span>'+
+      '<span class="c-src">'+pEsc(p.src)+'</span>'+
+      '<span class="c-dst">'+pEsc(p.dst)+'</span>'+
+      '<span class="c-proto">'+pEsc(p.proto)+'</span>'+
+      '<span class="c-info">'+pEsc(p.info)+'</span>';
+    row.addEventListener('click',function(){ pcapToggle(i,row); });
+    pcapList.appendChild(row);
+  });
+}
+function pcapToggle(i,row){
+  if(pOpen===i){
+    pOpen=null;pcapDetail.className='pcap-detail';pcapDetail.innerHTML='';
+    pcapList.querySelectorAll('.pcap-row').forEach(function(r){r.classList.remove('on');});
+    return;
+  }
+  pOpen=i;
+  pcapList.querySelectorAll('.pcap-row').forEach(function(r){r.classList.remove('on');});
+  if(row) row.classList.add('on');
+  var p=PACKETS[i];
+  var tree=p.tree.map(function(t){
+    return '<div class="pkt-line"><span>'+pEsc(t[0])+'</span><b>'+pEsc(t[1])+'</b></div>';
+  }).join('');
+  pcapDetail.className='pcap-detail show'+(p.tone?' t-'+p.tone:'');
+  pcapDetail.innerHTML=
+    '<div class="pkt-tree"><span class="tag">Frame '+p.no+' \u00b7 dissection</span>'+tree+'</div>'+
+    '<div class="pkt-note"><span class="tag">Why it\u2019s evidence</span><p>'+pEsc(p.note)+'</p></div>';
+}
+pcapRender();
+</script>
+
+<!--
+     Exercise 3: Phishing red-flag hunt script.
+
+     The email is defined in MAIL (headers + body segments). Body segments
+     that are red flags carry a flag id; clicking one marks it found and adds
+     its explanation to the side panel. FLAGS holds the explanation per id.
+     When all flags are found, the "all flags found" note appears.
+-->
+<script>
+/* The flags and their explanations, keyed by id. */
+var FLAGS = {
+  sender:  'The display name says Flexin IT, but the actual address is a lookalike domain (flexin-watches-support.com, not flexinwatches.com). Spoofed sender is the number-one tell.',
+  urgency: 'Manufactured urgency. A hard 24-hour deadline with a threat of losing access is designed to make you act before you think.',
+  greeting:'A generic greeting. A real internal IT note to one person usually uses your name, not "Dear Employee."',
+  link:    'The link text says the internal portal, but the real URL points somewhere else entirely. Always check where a link actually goes before clicking.',
+  attach:  'An unexpected attachment you didn\u2019t ask for, with a name built to look routine. Payroll and reset files are common lures.',
+  signoff: 'A vague sign-off with no real name, no direct line, no ticket number. Legitimate IT gives you a way to verify them.'
+};
+
+/* The email. Segments with a "flag" become clickable red flags. */
+var MAIL = {
+  headers: [
+    ['From', [{t:'Flexin IT Support '},{t:'<security@flexin-watches-support.com>', flag:'sender'}]],
+    ['To', [{t:'j.moreau@flexinwatches.com'}]],
+    ['Subject', [{t:'ACTION REQUIRED: '},{t:'Your account will be disabled in 24 hours', flag:'urgency'}]]
+  ],
+  body: [
+    [{t:'', flag:'greeting', label:'Dear Employee,'}],
+    [{t:'We detected unusual sign-in activity on your Flexin Watches account. For your protection, access will be suspended '},{t:'within 24 hours unless you verify immediately', flag:'urgency'},{t:'.'}],
+    [{t:'Please confirm your credentials through the '},{t:'Flexin employee portal', flag:'link', label:'Flexin employee portal'},{t:' to keep your account active.'}],
+    [{t:'We have also attached a copy of the security notice '},{t:'(Account_Reset_Instructions.html)', flag:'attach'},{t:' for your records.'}],
+    [{t:'Regards,'}],
+    [{t:'', flag:'signoff', label:'The IT Team'}]
+  ]
+};
+
+var phishHd=document.getElementById('phishHd');
+var phishBody=document.getElementById('phishBody');
+var phishProg=document.getElementById('phishProg');
+var phishFound=document.getElementById('phishFound');
+var phishDone=document.getElementById('phishDone');
+var foundSet={};                       // ids the player has clicked
+var totalFlags=Object.keys(FLAGS).length;
+
+function phEsc(x){return String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+/* Turn a segment into HTML: a clickable span if it's a flag, else plain text. */
+function segHtml(seg){
+  var text = seg.label ? seg.label : seg.t;
+  if (seg.flag) {
+    return '<span class="flag" data-flag="' + seg.flag + '" tabindex="0" role="button">' + phEsc(text) + '</span>';
+  }
+  return phEsc(text);
+}
+
+/* Render the headers. */
+var hdHtml = MAIL.headers.map(function(h){
+  var val = h[1].map(segHtml).join('');
+  return '<div class="row"><span class="lbl">' + h[0] + '</span><span>' + val + '</span></div>';
+}).join('');
+phishHd.innerHTML = hdHtml;
+
+/* Render the body paragraphs. */
+var bodyHtml = MAIL.body.map(function(p){
+  return '<p>' + p.map(segHtml).join('') + '</p>';
+}).join('');
+phishBody.innerHTML = bodyHtml;
+
+/* Wire every flag: clicking (or Enter) marks it found. */
+function markFound(el){
+  var id = el.getAttribute('data-flag');
+  if (foundSet[id]) return;            // already found
+  foundSet[id] = true;
+  el.classList.add('found');
+
+  // Add the explanation to the side panel.
+  var item = document.createElement('div');
+  item.className = 'fnd';
+  item.textContent = FLAGS[id];
+  phishFound.appendChild(item);
+
+  // Update the counter and, if complete, show the closing note.
+  var n = Object.keys(foundSet).length;
+  phishProg.textContent = n + ' / ' + totalFlags;
+  if (n === totalFlags) phishDone.classList.add('show');
+}
+
+document.querySelectorAll('.flag').forEach(function(el){
+  el.addEventListener('click', function(){ markFound(el); });
+  el.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); markFound(el); } });
 });
 </script>
 <script src="main.js"></script>

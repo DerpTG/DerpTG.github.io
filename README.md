@@ -1,6 +1,6 @@
 # DerpTG.github.io
 
-Personal cybersecurity portfolio for **Felix Naroditskiy**. Digital forensics, malware analysis, and incident response, with the governance and compliance work alongside it.
+My personal cybersecurity portfolio. Digital forensics, malware analysis, and incident response, with the governance and compliance work alongside it.
 
 **Live at:** [derptg.github.io](https://derptg.github.io)
 

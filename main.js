@@ -126,6 +126,18 @@ document.querySelectorAll('.e-btn').forEach(function (b) {
         'Analytics workloads on Azure'
       ],
       verify: 'https://learn.microsoft.com/en-us/users/felixnaroditskiy-9470/credentials/2bbee80af57303dd'
+    },
+    cysa: {
+      name: 'CompTIA CySA+',
+      issuer: 'CompTIA \u00b7 In progress',
+      blurb: 'The next step up from Security+, focused squarely on the analyst role: using data and tools to detect, triage, and respond to threats. This is the one I\u2019m studying for now.',
+      covers: [
+        'Security operations and monitoring',
+        'Vulnerability management',
+        'Incident response and management',
+        'Reporting and communication'
+      ],
+      verify: 'https://www.comptia.org/certifications/cybersecurity-analyst'
     }
   };
 
@@ -153,11 +165,17 @@ document.querySelectorAll('.e-btn').forEach(function (b) {
       '<ul class="cert-covers">' + coversList + '</ul>';
 
     verifyEl.href = c.verify;                    // point the Verify button at the badge
+    // In-progress certs have nothing to verify yet, so relabel the button.
+    if (id === 'cysa') {
+      verifyEl.textContent = 'Learn more';
+    } else {
+      verifyEl.textContent = 'Verify';
+    }
     modal.classList.add('show');
   }
 
-  // Wire every badge that has a data-cert id to open its entry.
-  document.querySelectorAll('.cert[data-cert]').forEach(function (badge) {
+  // Wire every element that carries a data-cert id (badges and the hero link).
+  document.querySelectorAll('[data-cert]').forEach(function (badge) {
     badge.addEventListener('click', function () {
       openCert(badge.getAttribute('data-cert'));
     });

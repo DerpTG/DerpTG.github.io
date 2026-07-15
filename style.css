@@ -308,7 +308,12 @@ footer a:hover{color:var(--cyan)}
 .cert{font-family:'IBM Plex Mono',monospace;cursor:pointer;transition:.15s}
 button.cert:hover{border-color:var(--cyan);color:var(--cyan)}
 button.cert:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
-.cert.prog{cursor:default}
+.cert.prog{cursor:pointer}
+button.cert.prog:hover{border-color:var(--amber);color:var(--amber)}
+/* The clickable "studying" cert in the hero facts bar. */
+.wip-link{font:inherit;background:none;border:0;padding:0;cursor:pointer;color:var(--amber);border-bottom:1px dashed var(--amber);transition:.15s}
+.wip-link:hover{border-bottom-style:solid}
+.wip-link:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
 
 /* ---------- ABOUT BIO ----------
    Two-column bio: prose on the left, a facts panel on the right. The

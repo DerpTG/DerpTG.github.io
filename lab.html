@@ -47,7 +47,7 @@
   <div class="wrap">
     <a class="back" href="index.html">&larr; Back</a>
     <h1>The lab</h1>
-    <p class="sub">The part that keeps growing. A running log of self-directed work while I study for CySA+ and sharpen toward SOC analysis. It's laid out the way I'd read it on the job: newest at the top, severity on the left, click a line to open it.</p>
+    <p class="sub">A record of the hands-on labs I've worked through: forensic investigations, detection and monitoring, and network defense. It's laid out the way I'd read it on the job, newest at the top, severity on the left. Click a line to open it.</p>
   </div>
 </div>
 
@@ -56,8 +56,8 @@
      the script below: a header strip, then one expandable row per entry. -->
 <section class="first">
   <div class="wrap">
-    <div class="shead"><h2>Lab feed</h2><span class="fill"></span></div>
-    <p class="sdesc">Each line is a piece of work I did in my home lab. Open one to read what I built, what broke, and what it taught me.</p>
+    <div class="shead"><h2>Hands-on labs</h2><span class="fill"></span></div>
+    <p class="sdesc">Completed lab work from my coursework and independent study. Open any entry to read the setup, what I did, and what I found. Framed as hands-on lab experience, not production tooling.</p>
 
     <div class="feed">
       <div class="feed-top">
@@ -179,29 +179,57 @@
 /* The lab entries, newest first. */
 var LOG = [
   {
-    sev: 'active', status: 'In progress',
-    title: 'Building an Active Directory attack range',
-    tools: ['VMware', 'Windows Server', 'BloodHound'],
+    sev: 'done', status: 'Complete',
+    title: 'Windows Security Log analysis with a custom Python parser',
+    tools: ['Python', 'ElementTree', 'Windows Event Logs'],
     body: [
-      'Standing up a small AD domain to practice attack paths and then detect them. The goal is to map the same lateral-movement chain I reconstructed forensically in my capstone, but from the defender\u2019s console this time, watching the telemetry as it happens instead of reading it after the fact.'
+      'Investigated a compromised Windows Server from its Security Log. I wrote a Python script using ElementTree to parse the XML and the csv module to generate structured output, then analyzed logon, logoff, and failed-logon patterns for indicators of compromise.',
+      'The parser worked through 78,320 events across roughly 24 hours. It surfaced a standout account (grant.larson) with 85 logins, only two failed logons (both administrator, from the loopback address on the domain controller), a large number of off-hours logins, and audit-log clearing (Event ID 1102), which pointed to deliberate evidence removal. I closed with recommendations covering account lockout, MFA, behavioral baselining, and follow-on forensics.'
     ]
   },
   {
     sev: 'done', status: 'Complete',
-    title: 'Detection engineering: writing IDS rules on live PCAP',
-    tools: ['Suricata', 'Wireshark'],
+    title: 'Memory analysis of an infected workstation',
+    tools: ['Volatility', 'Windows 7 memory dump'],
     body: [
-      'Wrote custom IDS rules against a malware traffic capture, then tuned them down from a wall of alerts to a handful of real ones.',
-      'The lesson wasn\u2019t writing the rule. It was learning how much of detection engineering is noise reduction, and how a rule that fires on everything is as useless as a rule that fires on nothing.'
+      'Analyzed a 6.4 GB memory dump from a Windows 7 workstation using Volatility. Working from imageinfo through pslist and pstree, I established a normal process baseline and then looked for anything that did not belong.',
+      'The dump contained a process named evilgeth.exe masquerading as the legitimate geth.exe (Go Ethereum), consistent with unauthorized crypto-mining and possible wallet or key theft. I compared it against the legitimate Windows shell process to confirm the finding and recommended reverse engineering, network isolation, and follow-on disk and log analysis.'
     ]
   },
   {
     sev: 'done', status: 'Complete',
-    title: 'Building a detection from raw Windows logs',
-    tools: ['Splunk', 'SPL', 'Sysmon'],
+    title: 'Network traffic analysis of an enterprise compromise',
+    tools: ['Wireshark', 'PCAP'],
     body: [
-      'Ingested Sysmon data into Splunk and wrote SPL to surface parent/child process anomalies. Caught a simulated PowerShell spawn from a Word document, the classic macro chain, and turned it into a repeatable saved search.',
-      'This is the day-to-day muscle a SOC runs on, so it\u2019s where I\u2019m spending the most reps.'
+      'Examined a packet capture from a compromised enterprise network in Wireshark, using display filters and conversation and endpoint analysis to map the environment and isolate anomalies.',
+      'The capture showed 164 active hosts across external, DMZ, core, and workstation segments. The key anomaly was a server cluster running an unusual set of services, including unsecured FTP, Telnet, remote exec and login, and obsolete Gopher, consistent with enumeration, backdoors, C2, and likely exfiltration. NetBIOS was also leaking to the open internet. I assessed it as a multi-stage, APT-style compromise and recommended segmentation and deeper packet, log, and memory analysis.'
+    ]
+  },
+  {
+    sev: 'done', status: 'Complete',
+    title: 'Disk image analysis and attack-timeline reconstruction',
+    tools: ['FTK Imager', 'Autopsy', 'HxD', 'SQLite'],
+    body: [
+      'Reconstructed an intrusion on a shared small-business workstation from its disk image, verifying image integrity with MD5 hashing before analysis and working through FTK Imager, Autopsy, HxD, and a SQLite browser.',
+      'I separated normal use by the primary user from the malicious activity of a second account, which downloaded an IRC client and Tor as the likely initial vector. From there I traced the timeline: portable archiving and secure-deletion tools installed, a malware payload staged on the desktop, and batch scripts for reconnaissance and deletion hidden in the Recycle Bin and a public samples folder, ending with the user discovering their documents gone. I recommended isolation, quarantine, wipe-and-clean-backup recovery, and analysis of the other workstations.'
+    ]
+  },
+  {
+    sev: 'done', status: 'Complete',
+    title: 'Intrusion detection with Snort',
+    tools: ['Snort', 'nmap'],
+    body: [
+      'Set up Snort as a network IDS on a target host and generated attack traffic from a separate machine to test detection. I ran the sensor in console mode with logging enabled and drove traffic with nmap.',
+      'Each test produced the expected alert: a ping sweep triggered an ICMP detection, a SYN scan and a version scan both raised SYN-scan alerts, and a manual HTTP request flagged a suspicious request on port 80. For each, I captured the source and destination addresses, ports, and timestamps, which is the raw material a Tier-1 analyst works from.'
+    ]
+  },
+  {
+    sev: 'done', status: 'Complete',
+    title: 'Network defense lab series',
+    tools: ['tcpdump', 'hping3', 'nmap', 'VyOS', 'OSSEC', 'ELK'],
+    body: [
+      'A series of blue-team fundamentals labs across Linux, traffic analysis, and defensive tooling. Highlights: capturing and analyzing HTTP and SSH traffic with tcpdump, running a SYN flood with hping3 and watching the server\u2019s connection queue degrade, host and service discovery with nmap, blocking forged and invalid addresses on a VyOS firewall, and configuring OSSEC as a host-based IDS.',
+      'The series also covered split-horizon DNS, centralized logging with Rsyslog and NXLog across Linux, FreeBSD, and Windows, a buffer-overflow exploit written in C and Python to gain escalated privileges, and standing up the Elastic Stack (Elasticsearch, Logstash, Kibana) to collect and visualize log data. Additional web-assessment work used OWASP ZAP, Nikto, PKI and a local certificate authority, and Splunk with the Universal Forwarder.'
     ]
   }
 ];

@@ -46,7 +46,7 @@
   <div class="wrap">
     <a class="back" href="index.html">&larr; Back</a>
     <h1>Projects</h1>
-    <p class="sub">Incident-response playbooks, risk analysis, networking labs, and code. Each row opens to the full story and the skills it drew on. Three ship with source on GitHub.</p>
+    <p class="sub">Incident-response playbooks, risk analysis, and code. Each row opens to the full story and the skills it drew on.</p>
   </div>
 </div>
 
@@ -62,12 +62,12 @@
     <div class="rec">
       <div class="rec-top">
         <span class="lt"><i></i><i></i><i></i></span>
-        <span class="path">projects.log &middot; 7 records</span>
+        <span class="path">projects.log projects.log &middot; 7 recordsmiddot; 5 records</span>
       </div>
       <!-- Column labels, mirrored by each record's grid. -->
       <div class="rec-head">
         <span class="rc-no">No.</span><span class="rc-cat">Category</span>
-        <span class="rc-name">Project</span><span class="rc-src">Source</span>
+        <span class="rc-name">Project</span><span class="rc-src">Team</span>
       </div>
       <!-- Records are built here by the script. -->
       <div class="rec-list" id="recList"></div>
@@ -94,8 +94,9 @@
        sum    a one-line summary, shown in the expanded detail
        more   an array of paragraphs shown in the expanded detail
        skills an array of skills and tools used, shown as a labeled block
+       team   team size or 'Solo', shown in the Team column
        gh     optional GitHub URL; when present, a "View code" link appears
-              and the Source column shows a marker
+              inside the expanded detail
 
      Clicking a record toggles its detail pane open. The record layout borrows
      from a packet list; the content is real.
@@ -104,7 +105,7 @@
 /* The project records. */
 var PROJ = [
   {
-    cat: 'This site', t: 'This Portfolio Site',
+    cat: 'This site', t: 'This Portfolio Site', team: 'Solo',
     sum: 'The site you\u2019re on. Static HTML, CSS, and vanilla JavaScript, hosted free on GitHub Pages with a custom domain.',
     more: [
       'No framework, no build step, no dependencies. Just semantic HTML, one stylesheet driven by CSS custom properties, and small self-contained JavaScript widgets. Each interactive piece is a data array plus a render function, kept simple so the whole codebase stays readable.',
@@ -114,7 +115,7 @@ var PROJ = [
     gh: 'https://github.com/DerpTG/DerpTG.github.io'
   },
   {
-    cat: 'Incident response', t: 'Turbo Ransomware IR Playbook',
+    cat: 'Incident response', t: 'Turbo Ransomware IR Playbook', team: 'Team of 6',
     sum: 'Led development of a full ransomware playbook for a scooter-share company, preparation through recovery, with NCISS-scored escalation tiers.',
     more: [
       'The escalation model ran from Baseline (SOC-only) up to Emergency (full C-suite in 10 minutes), each tier defined by a concrete NCISS score band and a fixed responder timeline. The playbook covered preventative controls, detection indicators, triage, containment, eradication, and staged recovery.',
@@ -123,7 +124,7 @@ var PROJ = [
     skills: ['NIST RMF', 'MITRE ATT&CK', 'COBIT 2019', 'NCISS', 'CISA tabletops']
   },
   {
-    cat: 'Risk analysis', t: 'Elder Tech-Support Fraud Risk Analysis',
+    cat: 'Risk analysis', t: 'Elder Tech-Support Fraud Risk Analysis', team: 'Team of 4',
     sum: 'Semester-long risk assessment of a $1M+ retirement fund against a Microsoft-refund scam, modeling the victim\u2019s situation as a system with a single point of failure.',
     more: [
       'The system was a series chain: answer call, trust caller, grant remote access, log into bank, authorize transfer. Trust was the single point of failure, with no safeguards behind it. I built a scenario matrix mapping four compliance events to three loss outcomes and rated each risk by probability and impact.',
@@ -132,16 +133,7 @@ var PROJ = [
     skills: ['MECE', 'Scenario matrix', 'Benefit-cost', 'Defense in depth']
   },
   {
-    cat: 'Networking', t: 'Networking & Systems Labs',
-    sum: 'Built and hardened simulated enterprise topologies: VLAN segmentation, VTP, port security, telnet, password encryption, and VoIP.',
-    more: [
-      'Configured enterprise topologies end to end in Packet Tracer, then hardened them by segmenting broadcast domains with VLANs, locking down access ports, and encrypting device passwords.',
-      'Most of the value was in the troubleshooting: tracing why traffic wasn\u2019t landing where it should. That\u2019s the same muscle you use when a segmentation control is silently not doing its job in production.'
-    ],
-    skills: ['Packet Tracer', 'VLAN / VTP', 'Port security', 'VoIP']
-  },
-  {
-    cat: 'Secure engineering', t: 'Secure Patient Data Pipeline',
+    cat: 'Secure engineering', t: 'Secure Patient Data Pipeline', team: 'Team of 5',
     sum: 'A Java message-queuing pipeline that keeps patient records encrypted end to end across an input-to-display workflow.',
     more: [
       'Patient data is AES-encrypted before serialization, moves through RabbitMQ as JSON, and is decrypted only at the consumer. Sensitive data never sits in the queue in the clear, and that single constraint drove the whole architecture.',
@@ -151,7 +143,7 @@ var PROJ = [
     gh: 'https://github.com/DerpTG/team6SystemIntegration'
   },
   {
-    cat: 'Full stack', t: 'Alpha Web Storefront',
+    cat: 'Full stack', t: 'Alpha Web Storefront', team: 'Team of 2',
     sum: 'Project manager and UI lead on a full-stack e-commerce storefront built across eight milestones on a MEAN stack.',
     more: [
       'Shopper management, product management, cart, shipping selection, billing, and returns, delivered milestone by milestone with CRUD functionality and a written test plan. Front end in Angular, Bootstrap, and jQuery; back end on Node.js and MongoDB.',
@@ -159,15 +151,6 @@ var PROJ = [
     ],
     skills: ['Angular', 'Node.js', 'MongoDB', 'Bootstrap', 'jQuery'],
     gh: 'https://github.com/DerpTG/StoryTellersSite'
-  },
-  {
-    cat: 'Forensics', t: 'Forensic Analysis Labs',
-    sum: 'Individual investigations across every evidence type: packet captures, memory dumps, Windows Event Logs, and disk images.',
-    more: [
-      'Each lab started from a different evidence class and asked the same question: what happened here. I identified compromised hosts from network traffic, pulled malicious processes out of memory, and reconstructed activity from event logs and disk artifacts.',
-      'Where the logs were too large to read by hand, I wrote custom Python parsers to surface indicators of compromise. That habit made the capstone reconstruction possible.'
-    ],
-    skills: ['Wireshark', 'Volatility', 'Autopsy', 'Python']
   }
 ];
 
@@ -189,11 +172,10 @@ PROJ.forEach(function (p, i) {
     return '<span class="chip">' + resc(s) + '</span>';
   }).join('');
 
-  // Optional GitHub link and the Source-column marker.
+  // Optional GitHub link, shown inside the expanded detail if present.
   var ghLink = p.gh
     ? '<a class="gh" href="' + p.gh + '" target="_blank" rel="noopener">View code \u2192</a>'
     : '';
-  var srcMark = p.gh ? 'github' : '\u2014';
 
   // The number shown in the No. column, zero-padded for a log-file look.
   var no = ('0' + (i + 1)).slice(-2);
@@ -203,7 +185,7 @@ PROJ.forEach(function (p, i) {
       '<span class="rc-no">' + no + '</span>' +
       '<span class="rc-cat">' + resc(p.cat) + '</span>' +
       '<span class="rc-name">' + resc(p.t) + '</span>' +
-      '<span class="rc-src">' + srcMark + '</span>' +
+      '<span class="rc-src">' + resc(p.team) + '</span>' +
       '<span class="rec-caret">+</span>' +
     '</button>' +
     '<div class="rec-body"><div class="rec-in"><div class="rec-pad">' +

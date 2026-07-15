@@ -2,7 +2,7 @@
 
 My personal cybersecurity portfolio. Digital forensics, malware analysis, and incident response, with the governance and compliance work alongside it.
 
-**Live at:** [derptg.github.io](https://derptg.github.io)
+**Live at:** [felixnaroditskiy.com](https://felixnaroditskiy.com)
 
 ## Pages
 

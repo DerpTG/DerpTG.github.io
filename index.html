@@ -1,30 +1,28 @@
 <!DOCTYPE html>
 <!--
-  ============================================================================
-  index.html — Home / landing page
-  ----------------------------------------------------------------------------
-  Felix Naroditskiy — cybersecurity portfolio.
-  This is the site's front door. Structure, top to bottom:
-    1. <head>      metadata, fonts, stylesheet link
-    2. .nav        sticky top navigation (shared across every page)
-    3. .hero       name + one-line thesis + a facts bar
-    4. "The work"  three cards linking to Casework / Lab / Projects
-    5. Experience   collapsible work-history entries (Stemuli grouped)
-    6. Capabilities skills grid + clickable certification badges
-    7. Contact      email / LinkedIn / GitHub / resume
-    8. #resumeModal hidden overlay that shows the resume PDF (opened via JS)
-    9. #certModal   hidden overlay with certification detail (opened via JS)
-   10. footer
-  Behavior for every interactive piece lives in main.js.
-  Styling for every class lives in style.css.
-  ============================================================================
+  index.html - Home page
+
+  The site's front door. Structure, top to bottom:
+    1. Head          metadata, fonts, stylesheet
+    2. Nav           sticky navigation, shared across every page
+    3. Hero          name, one-line summary, and a facts bar
+    4. The work      three cards linking to Casework, Lab, and Projects
+    5. Experience    collapsible work history, with the Stemuli roles grouped
+    6. Capabilities  a skills grid and clickable certification badges
+    7. Contact       email, LinkedIn, GitHub, resume
+    8. Resume modal  hidden overlay showing the resume PDF
+    9. Cert modal    hidden overlay with certification detail
+   10. Footer
+
+  Behavior for the interactive pieces lives in main.js. Styling lives in
+  style.css.
 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Felix Naroditskiy — Cybersecurity</title>
-<meta name="description" content="Felix Naroditskiy — cybersecurity. Digital forensics, malware analysis, incident response.">
+<title>Felix Naroditskiy - Cybersecurity</title>
+<meta name="description" content="Felix Naroditskiy. Cybersecurity. Digital forensics, malware analysis, incident response.">
 <!-- Preconnect warms up the connection to Google Fonts so text renders faster. -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -34,7 +32,7 @@
 </head>
 <body>
 
-<!-- ========================= NAV (shared on all pages) =========================
+<!-- Nav, shared on every page.
      Sticky bar. The .here class marks the current page so it looks "active".
      If you add or rename a page, update this same block on every HTML file. -->
 <header class="nav">
@@ -52,15 +50,15 @@
 
 <main>
 
-<!-- ============================= HERO =============================
-     The first thing a visitor reads. The <em> line is the "thesis" —
+<!-- Hero.
+     The first thing a visitor reads. The <em> line is the one-line summary of what I do.
      one plain sentence that says what I do. The .hbar below is a
      four-cell facts strip (Focus / Location / Degree / In progress). -->
 <div class="hero">
   <div class="wrap">
     <span class="tag">Cybersecurity &middot; Forensics &middot; Incident response</span>
     <h1>Felix Naroditskiy<br><em>Reconstructing what happened, and why.</em></h1>
-    <p class="lede">Recent cybersecurity graduate aiming at <b>SOC, security analyst, and incident-response roles</b> &mdash; with real depth in digital forensics and malware analysis, plus the governance and compliance work that keeps a live platform out of trouble.</p>
+    <p class="lede">Recent cybersecurity graduate aiming at <b>SOC, security analyst, and incident-response roles</b>, with real depth in digital forensics and malware analysis, plus the governance and compliance work that keeps a live platform out of trouble.</p>
     <!-- .hbar = definition list styled as a row of labelled facts.
          Each <div> is one cell: <dt> is the label, <dd> is the value. -->
     <dl class="hbar">
@@ -72,40 +70,40 @@
   </div>
 </div>
 
-<!-- ============================= "THE WORK" =============================
+<!-- The work.
      Three navigation cards. Each .ncard is a full-card link to a section
      of the site. .tag = eyebrow label, .go = the bottom row (label + stat). -->
 <section>
   <div class="wrap">
     <div class="shead"><h2>The work</h2><span class="fill"></span></div>
-    <p class="sdesc">Three ways in. All of it is real casework &mdash; click through and poke at it.</p>
+    <p class="sdesc">Three ways in. All of it is real casework, so click through and poke at it.</p>
 
     <div class="navgrid">
       <a class="ncard" href="casework.html">
         <span class="tag">Forensics</span>
         <h3>Casework</h3>
-        <p>A ransomware kill chain reconstructed from disk, memory, network, and log evidence &mdash; plus twelve malware samples taken apart in an isolated lab.</p>
+        <p>A ransomware kill chain reconstructed from disk, memory, network, and log evidence, plus twelve malware samples taken apart in an isolated lab.</p>
         <span class="go"><span>Open casework</span><span class="stat">2 investigations</span></span>
       </a>
 
       <a class="ncard" href="lab.html">
         <span class="tag">Ongoing</span>
         <h3>Lab</h3>
-        <p>Self-directed labs, logged as I go, an interactive SIEM triage console, and an incident-response tabletop you can run yourself.</p>
-        <span class="go"><span>Enter the lab</span><span class="stat">Updated weekly</span></span>
+        <p>A running log of self-directed work, laid out as a live alert feed. Home lab builds, detection engineering, and Splunk detections, logged as I go.</p>
+        <span class="go"><span>Enter the lab</span><span class="stat">Updated regularly</span></span>
       </a>
 
       <a class="ncard" href="projects.html">
         <span class="tag">Archive</span>
         <h3>Projects</h3>
-        <p>Incident-response playbooks, risk analysis, networking labs, and code &mdash; including two repos on GitHub.</p>
+        <p>Incident-response playbooks, risk analysis, networking labs, and code, including three repos on GitHub.</p>
         <span class="go"><span>Browse projects</span><span class="stat">7 projects</span></span>
       </a>
     </div>
   </div>
 </section>
 
-<!-- ============================= EXPERIENCE =============================
+<!-- Experience.
      Collapsible work history. Each .entry is one row; clicking its .e-btn
      toggles the .on class (handled in main.js), which expands .e-body.
 
@@ -139,7 +137,7 @@
             <span class="e-badge done">Current</span>
           </button>
           <div class="e-body"><div class="e-in"><div class="e-pad">
-            &bull; Drive COPPA/FERPA compliance for a K-12 platform &mdash; translating regulatory changes into platform policy, consent workflows, and remediation tracking.<br>
+            &bull; Drive COPPA/FERPA compliance for a K-12 platform, translating regulatory changes into platform policy, consent workflows, and remediation tracking.<br>
             &bull; Run recurring security control and tool assessments across 15+ cloud and SaaS platforms, and write the hardening recommendations that come out of them.<br>
             &bull; Deliver weekly security-awareness briefings and new-hire security orientations.<br>
             &bull; Built and manage a paid cohort of 55+ student research testers from zero, holding a ~77% monthly active rate.<br>
@@ -155,8 +153,8 @@
             <span class="e-badge">Prior</span>
           </button>
           <div class="e-body"><div class="e-in"><div class="e-pad">
-            &bull; Led data compliance initiatives &mdash; researching and proposing governance procedures aligned with CIS, NIST, COPPA, and FERPA under Zero Trust principles.<br>
-            &bull; Analyzed vendor and partner security questionnaires and audited tooling across AWS RDS, GCP, Azure, and SaaS platforms &mdash; assessing encryption, IAM, and policy compliance.<br>
+            &bull; Led data compliance initiatives, researching and proposing governance procedures aligned with CIS, NIST, COPPA, and FERPA under Zero Trust principles.<br>
+            &bull; Analyzed vendor and partner security questionnaires and audited tooling across AWS RDS, GCP, Azure, and SaaS platforms, assessing encryption, IAM, and policy compliance.<br>
             &bull; Wrote 4 team-specific onboarding handbooks and a 9-domain employee security training handbook.
           </div></div></div>
         </article>
@@ -179,7 +177,7 @@
             <span class="e-badge">Prior</span>
           </button>
           <div class="e-body"><div class="e-in"><div class="e-pad">
-            &bull; Direct end-user technical support in a small-business environment &mdash; diagnosing and resolving hardware and software issues to minimize downtime.<br>
+            &bull; Direct end-user technical support in a small-business environment, diagnosing and resolving hardware and software issues to minimize downtime.<br>
             &bull; Supported and configured Windows systems and VoIP phone services; installed, updated, and troubleshot software.<br>
             &bull; Hardware troubleshooting, repair, and component replacement, plus printer and peripheral setup.
           </div></div></div>
@@ -190,7 +188,7 @@
   </div>
 </section>
 
-<!-- ============================= CAPABILITIES =============================
+<!-- Capabilities.
      Static skills grid (.sgrid) split into four labelled columns, followed
      by the certification badges (.certs).
 
@@ -198,7 +196,7 @@
      and main.js looks that id up in a CERTS object to fill and open the
      #certModal overlay with the cert's details + verification link.
      The last badge (CySA+) is in progress, so it has no data-cert and
-     doesn't open anything — it's just a status marker. -->
+     doesn't open anything; it's just a status marker. -->
 <section>
   <div class="wrap">
     <div class="shead"><h2>Capabilities</h2><span class="fill"></span></div>
@@ -229,7 +227,7 @@
   </div>
 </section>
 
-<!-- ============================= CONTACT =============================
+<!-- Contact.
      .links holds the four contact actions. The first (.pri) is the
      primary/filled button. The resume link carries data-resume, which
      main.js uses to open the #resumeModal instead of navigating away. -->
@@ -248,7 +246,7 @@
 
 </main>
 
-<!-- ============================= RESUME MODAL =============================
+<!-- Resume modal.
      Hidden by default (CSS .modal has display:none). main.js adds the
      .show class when a [data-resume] link is clicked, and points the
      iframe at the PDF. Clicking the backdrop, the Close button, or Esc
@@ -267,7 +265,7 @@
   </div>
 </div>
 
-<!-- ============================= CERT MODAL =============================
+<!-- Cert modal.
      Hidden overlay reused for every certification. main.js fills these
      empty slots (#certName, #certBody, #certVerify) from the CERTS data
      for whichever badge was clicked, then adds .show. Structure mirrors
@@ -285,7 +283,7 @@
   </div>
 </div>
 
-<!-- ============================= FOOTER ============================= -->
+<!-- Footer -->
 <footer>
   <div class="wrap">
     <span>© 2026 F. NARODITSKIY</span>

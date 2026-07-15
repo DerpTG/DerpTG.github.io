@@ -1,21 +1,23 @@
-/* ============================================================================
-   style.css — single stylesheet for the whole site
-   ----------------------------------------------------------------------------
-   Organized in labelled sections (search for "----------" to jump between
-   them). The :root block below defines every color and the max content width
-   as CSS custom properties ("design tokens"), so the palette is changed in
-   ONE place and everything downstream updates.
+/*
+   style.css — one stylesheet for the whole site.
 
-   Color token cheatsheet:
+   Organized in labelled sections. Search for "----------" to jump between
+   them. The :root block below defines every color and the max content width
+   as CSS custom properties, so the palette lives in one place and everything
+   downstream follows.
+
+   Color tokens:
      --bg / --panel / --panel-2   backgrounds, darkest to slightly lighter
-     --line / --line-2            border colors (subtle, then more visible)
-     --txt / --dim / --dimmer     text, from primary to faint
-     --cyan                        primary accent (links, highlights)
-     --lime / --amber / --coral    severity colors: good / caution / critical
-     --violet                      secondary accent (eyebrow tags on cards)
-   The severity trio is reused everywhere threat level is shown (kill chain
-   beads, malware detection ratios, SIEM rows, PCAP packet rows).
-   ============================================================================ */
+     --line / --line-2            border colors, subtle then more visible
+     --txt / --dim / --dimmer     text, primary to faint
+     --cyan                       primary accent for links and highlights
+     --lime / --amber / --coral   severity colors: good, caution, critical
+     --violet                     secondary accent for the eyebrow labels
+
+   The severity trio is reused wherever status or threat level appears: the
+   kill-chain beads, the malware detection ratios, the lab feed rows, and the
+   project record markers.
+*/
 :root{
   --bg:#0B1116;--panel:#111A21;--panel-2:#16222B;--line:#22333F;--line-2:#2E4453;
   --txt:#DCE6EC;--dim:#7E95A3;--dimmer:#546A78;
@@ -186,36 +188,6 @@ section.first{border-top:0}
 .e-pad{padding:0 18px 18px 138px;color:var(--dim);font-size:14.5px;max-width:78ch}
 .entry.on .e-btn{background:var(--panel-2)}
 
-/* ---------- TABLETOP ---------- */
-.tt{border:1px solid var(--line);background:var(--panel)}
-.tt-hd{padding:12px 18px;border-bottom:1px solid var(--line);background:var(--panel-2);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
-.tt-hd .t{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:600;letter-spacing:.06em}
-.tt-hd .clock{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--amber)}
-.tt-body{padding:24px 22px}
-.tt-scene{color:var(--dim);font-size:15.5px;max-width:68ch;margin-bottom:6px}
-.tt-scene b{color:var(--txt);font-weight:500}
-.tt-q{font-size:18px;font-weight:600;margin:18px 0 14px;letter-spacing:-.01em}
-.opts{display:grid;gap:8px;max-width:660px}
-.opt{text-align:left;background:none;border:1px solid var(--line);color:var(--txt);padding:13px 16px;cursor:pointer;font:inherit;font-size:14.5px;transition:.15s}
-.opt:hover{border-color:var(--cyan);background:var(--panel-2)}
-.opt:disabled{cursor:default;opacity:.4}
-.opt.picked{border-color:var(--cyan);background:var(--panel-2);opacity:1}
-.result{margin-top:20px;padding:16px 18px;border-left:2px solid var(--line-2);display:none}
-.result.show{display:block}
-.result.good{border-color:var(--lime)}
-.result.mid{border-color:var(--amber)}
-.result.bad{border-color:var(--coral)}
-.result .verdict{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;margin-bottom:8px;display:block}
-.result.good .verdict{color:var(--lime)}
-.result.mid .verdict{color:var(--amber)}
-.result.bad .verdict{color:var(--coral)}
-.result p{color:var(--dim);font-size:14.5px;max-width:66ch}
-.result .nciss{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--dimmer);margin-top:10px}
-.btn{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;background:none;border:1px solid var(--line-2);color:var(--dim);padding:9px 15px;cursor:pointer;transition:.15s}
-.btn:hover{border-color:var(--cyan);color:var(--cyan)}
-.tt-next{margin-top:18px;display:none}
-.tt-next.show{display:inline-block}
-
 /* ---------- PROJECT CARDS ---------- */
 .pgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px}
 .card{border:1px solid var(--line);background:var(--panel);display:flex;flex-direction:column;transition:border-color .18s}
@@ -306,16 +278,10 @@ footer a:hover{color:var(--cyan)}
 }
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}html{scroll-behavior:auto}}
 
-/* ============================================================================
-   NEW COMPONENTS (added in the July 2026 build)
-   Everything below extends the system above using the same tokens. Grouped by
-   feature so each block is easy to find and edit.
-   ============================================================================ */
-
 /* ---------- EMPLOYER GROUPS (home Experience section) ----------
-   Wraps one or more .entry rows under a single employer header so two roles
-   at the same company read as one employer. .org-logo is a CSS-drawn square
-   monogram (no image file needed). */
+   Wraps one or more entry rows under a single employer header so two roles at
+   the same company read as one employer. The logo mark is a CSS-drawn
+   monogram, so there is no image file to load. */
 .org{border:1px solid var(--line);background:var(--panel);margin-bottom:14px}
 .org:last-child{margin-bottom:0}
 .org-hd{display:flex;align-items:center;gap:13px;padding:14px 18px;border-bottom:1px solid var(--line);background:var(--panel-2)}
@@ -325,162 +291,127 @@ footer a:hover{color:var(--cyan)}
 .org-meta{display:flex;flex-direction:column;gap:2px}
 .org-name{font-size:15px;font-weight:600;letter-spacing:-.01em}
 .org-loc{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.08em;color:var(--dimmer);text-transform:uppercase}
-/* Inside a group the entries are already bordered by the .org box, so drop
-   their own outer border and let them sit flush. */
 .org .entry{border-bottom:1px solid var(--line)}
 .org .entry:last-child{border-bottom:0}
 
 /* ---------- CERT MODAL (home Capabilities section) ----------
-   Reuses the .modal / .modal-box shell from the resume modal. These rules
-   style just the cert-specific body content. */
+   Reuses the .modal / .modal-box shell from the resume modal, styling only
+   the cert-specific body content. The badges are buttons so they can open
+   the modal; these rules keep them looking like the original static badges. */
 .cert-box{height:auto;max-height:88vh}
 .cert-body{padding:24px 26px;overflow-y:auto}
 .cert-issuer{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--violet);display:block;margin-bottom:12px}
 .cert-blurb{color:var(--txt);font-size:16px;line-height:1.55;margin-bottom:22px;max-width:56ch}
 .cert-covers{list-style:none;display:grid;gap:8px;margin-top:12px}
 .cert-covers li{position:relative;padding-left:18px;color:var(--dim);font-size:14.5px}
-/* Small cyan tick before each covered topic. */
 .cert-covers li::before{content:"\2713";position:absolute;left:0;color:var(--cyan);font-size:12px}
-/* The cert badges are now <button>s; reset button chrome so they still look
-   like the original static badges, just clickable. */
 .cert{font-family:'IBM Plex Mono',monospace;cursor:pointer;transition:.15s}
 button.cert:hover{border-color:var(--cyan);color:var(--cyan)}
 button.cert:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
 .cert.prog{cursor:default}
 
-/* ---------- ABOUT PAGE ----------
-   Two-column bio (prose + facts panel) and the interest card grid. */
+/* ---------- ABOUT BIO ----------
+   Two-column bio: prose on the left, a facts panel on the right. The
+   interests console below the bio reuses the shared .term terminal styles. */
 .bio{display:grid;grid-template-columns:1.6fr 1fr;gap:28px;align-items:start}
 .bio-main p{color:var(--dim);font-size:16px;line-height:1.7;max-width:60ch}
 .bio-main p+p{margin-top:15px}
 .bio-main i{color:var(--txt);font-style:italic}
-/* Facts panel: a bordered box of label/value rows. */
 .bio-facts{border:1px solid var(--line);background:var(--panel)}
 .fact{display:flex;flex-direction:column;gap:3px;padding:13px 18px;border-bottom:1px solid var(--line)}
 .fact:last-child{border-bottom:0}
 .fact .k{font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--dimmer)}
 .fact .v{font-size:14px;color:var(--txt)}
 .fact .v.wip{color:var(--amber)}
-/* Interest cards. */
-.about-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px}
-.about-card{border:1px solid var(--line);background:var(--panel);padding:22px;transition:border-color .18s}
-.about-card:hover{border-color:var(--line-2)}
-.about-card .tag{display:block;margin-bottom:12px;color:var(--violet)}
-.about-card h3{font-size:18px;font-weight:600;letter-spacing:-.015em;margin-bottom:9px}
-.about-card p{color:var(--dim);font-size:14.5px;line-height:1.6}
 
-/* ---------- SIEM TRIAGE CONSOLE (lab page) ----------
-   Left rail of alert rows + a right detail pane with disposition buttons.
-   Severity colors reuse the shared token trio via the sev-* classes. */
-.siem{border:1px solid var(--line);background:var(--panel);font-family:'IBM Plex Mono',monospace}
-.siem-top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 18px;border-bottom:1px solid var(--line);background:var(--panel-2)}
-.siem-top .t{font-size:11.5px;font-weight:600;letter-spacing:.06em}
-.siem-score{font-size:10.5px;color:var(--cyan);letter-spacing:.08em}
-.siem-grid{display:grid;grid-template-columns:300px 1fr}
-/* Left rail: scrollable list of alert rows. */
-.siem-queue{border-right:1px solid var(--line);max-height:520px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--line-2) transparent}
-.siem-row{width:100%;display:grid;grid-template-columns:auto 1fr;gap:3px 10px;text-align:left;background:none;border:0;border-bottom:1px solid var(--line);border-left:3px solid transparent;padding:11px 14px;cursor:pointer;color:inherit;font:inherit;transition:background .15s}
-.siem-row:hover{background:var(--panel-2)}
-.siem-row:focus-visible{outline:2px solid var(--cyan);outline-offset:-2px}
-.siem-row.on{background:var(--panel-2)}
-.siem-row.done{opacity:.55}
-/* The colored severity chip + left border, driven by sev-* class. */
-.siem-sev{grid-row:span 2;align-self:center;font-size:9px;font-weight:600;letter-spacing:.08em;padding:3px 6px;border:1px solid currentColor;border-radius:2px;height:fit-content}
-.siem-rule{font-size:12.5px;font-weight:500;color:var(--txt)}
-.siem-host{font-size:10px;color:var(--dimmer);letter-spacing:.04em}
-.siem-tick{grid-row:span 2;align-self:center;color:var(--lime)}
-/* Severity → color mapping (chip text + row left border). */
-.sev-crit{color:var(--coral)}      .siem-row.sev-crit{border-left-color:var(--coral)}
-.sev-high{color:var(--amber)}      .siem-row.sev-high{border-left-color:var(--amber)}
-.sev-med{color:var(--cyan)}        .siem-row.sev-med{border-left-color:var(--cyan)}
-.sev-low{color:var(--dim)}         .siem-row.sev-low{border-left-color:var(--line-2)}
-/* Right pane: the selected alert's detail + your call. */
-.siem-detail{padding:20px 22px}
-.siem-dh{display:flex;align-items:center;gap:10px;margin-bottom:14px}
-.siem-src{font-size:10px;color:var(--dimmer);letter-spacing:.08em;text-transform:uppercase}
-.siem-detail h4{font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:600;letter-spacing:-.01em;margin-bottom:16px}
-.siem-meta{display:grid;gap:8px;margin-bottom:22px}
-.siem-meta div{display:flex;justify-content:space-between;gap:12px;font-size:12px}
-.siem-meta span{color:var(--dimmer)}
-.siem-meta b{color:var(--txt);font-weight:500;text-align:right}
-/* Disposition buttons. */
-.siem-acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
-.siem-act{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em;background:none;border:1px solid var(--line-2);color:var(--dim);padding:10px 16px;cursor:pointer;transition:.15s}
-.siem-act:hover:not(:disabled){border-color:var(--cyan);color:var(--cyan)}
-.siem-act:disabled{cursor:default}
-/* After answering: green on the picked-correct, coral on picked-wrong, and a
-   green outline on the correct answer so a wrong pick still teaches it. */
-.siem-act.picked-good{border-color:var(--lime);color:var(--lime)}
-.siem-act.picked-bad{border-color:var(--coral);color:var(--coral)}
-.siem-act.is-correct{border-color:var(--lime);color:var(--lime)}
-/* Verdict block below the buttons. */
-.siem-verdict{margin-top:18px;padding:14px 16px;border-left:2px solid var(--line-2);display:none}
-.siem-verdict.show{display:block}
-.siem-verdict.good{border-color:var(--lime)}
-.siem-verdict.bad{border-color:var(--coral)}
-.siem-verdict .v{font-size:10px;letter-spacing:.16em;text-transform:uppercase;display:block;margin-bottom:7px}
-.siem-verdict.good .v{color:var(--lime)}
-.siem-verdict.bad .v{color:var(--coral)}
-.siem-verdict p{font-family:'Space Grotesk',sans-serif;color:var(--dim);font-size:14px;line-height:1.6;max-width:60ch}
+/* ---------- LAB FEED (lab page) ----------
+   The lab log, styled as a SOC alert queue. A header strip, column labels,
+   then one expandable row per entry. The sev-* class on each row sets its
+   left border and status color: active (in progress), done (complete),
+   note (a smaller writeup). */
+.feed{border:1px solid var(--line);background:var(--panel);font-family:'IBM Plex Mono',monospace}
+.feed-top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 18px;border-bottom:1px solid var(--line);background:var(--panel-2)}
+.feed-top .t{font-size:11.5px;font-weight:600;letter-spacing:.06em}
+.feed-live{font-size:10.5px;color:var(--lime);display:flex;align-items:center;gap:7px;letter-spacing:.06em}
+.feed-live i{width:6px;height:6px;border-radius:50%;background:var(--lime);box-shadow:0 0 7px var(--lime)}
+/* Shared column template for the header row and every feed row. */
+.feed-head,.feed-btn{display:grid;grid-template-columns:70px 96px 1fr 220px auto;gap:14px;align-items:center}
+.feed-head{padding:9px 18px;border-bottom:1px solid var(--line);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--dimmer)}
+.feed-row{border-bottom:1px solid var(--line);border-left:3px solid transparent}
+.feed-row:last-child{border-bottom:0}
+.feed-btn{width:100%;text-align:left;background:none;border:0;color:inherit;font:inherit;padding:14px 18px;cursor:pointer;transition:background .15s}
+.feed-btn:hover{background:var(--panel-2)}
+.feed-btn:focus-visible{outline:2px solid var(--cyan);outline-offset:-2px}
+.feed-sev{font-size:9px;font-weight:600;letter-spacing:.08em;padding:3px 6px;border:1px solid currentColor;border-radius:2px;justify-self:start}
+.feed-status{font-size:10.5px;letter-spacing:.05em;color:var(--dim)}
+.feed-title{font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:500;color:var(--txt);letter-spacing:-.01em}
+.feed-tools{display:flex;flex-wrap:wrap;gap:4px}
+.feed-caret{font-size:15px;color:var(--dimmer);justify-self:end}
+/* Severity coloring: the left border and the chip/status text. */
+.feed-row.sev-active{border-left-color:var(--amber)} .feed-row.sev-active .feed-sev{color:var(--amber)}
+.feed-row.sev-done{border-left-color:var(--lime)}    .feed-row.sev-done .feed-sev{color:var(--lime)}
+.feed-row.sev-note{border-left-color:var(--cyan)}    .feed-row.sev-note .feed-sev{color:var(--cyan)}
+.feed-row.on .feed-btn{background:var(--panel-2)}
+.feed-row.on .feed-caret{color:var(--cyan)}
+/* Expanding body: animated open via a grid-rows trick, same as the entries. */
+.feed-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .3s}
+.feed-row.on .feed-body{grid-template-rows:1fr}
+.feed-in{overflow:hidden}
+.feed-pad{padding:0 18px 18px 87px;font-family:'Space Grotesk',sans-serif;color:var(--dim);font-size:14.5px;line-height:1.65;max-width:78ch}
+.feed-pad p+p{margin-top:10px}
 
-/* ---------- PCAP EVIDENCE VIEWER (casework page) ----------
-   Wireshark-style packet list with an expanding detail pane. Fixed column
-   grid keeps the list aligned like a real analyzer. */
-.pcap{border:1px solid var(--line);background:var(--panel);font-family:'IBM Plex Mono',monospace}
-/* Window chrome (traffic-light dots + capture filename) reuses the terminal look. */
-.pcap-top{display:flex;align-items:center;gap:9px;padding:11px 16px;border-bottom:1px solid var(--line);background:var(--panel-2)}
-.pcap-top .lt{display:flex;gap:6px}
-.pcap-top .lt i{width:9px;height:9px;border-radius:50%;display:block}
-.pcap-top .lt i:nth-child(1){background:var(--coral)}
-.pcap-top .lt i:nth-child(2){background:var(--amber)}
-.pcap-top .lt i:nth-child(3){background:var(--lime)}
-.pcap-top .path{font-size:11px;color:var(--dimmer);letter-spacing:.04em;margin-left:6px}
-/* Fake display-filter bar. */
-.pcap-filter{display:flex;align-items:center;gap:10px;padding:9px 16px;border-bottom:1px solid var(--line);background:rgba(0,0,0,.16)}
-.pcap-filter .pf-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--dimmer)}
-.pcap-filter code{font-size:11.5px;color:var(--lime)}
-/* Shared column template for header + every row. */
-.pcap-head,.pcap-row{display:grid;grid-template-columns:52px 68px 150px 170px 60px 1fr;gap:10px;align-items:center}
-.pcap-head{padding:9px 16px;border-bottom:1px solid var(--line);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--dimmer)}
-.pcap-list{max-height:340px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--line-2) transparent}
-.pcap-row{width:100%;text-align:left;background:none;border:0;border-bottom:1px solid var(--line);border-left:3px solid transparent;padding:9px 16px;cursor:pointer;color:var(--dim);font:inherit;font-size:11.5px;transition:background .15s}
-.pcap-row:hover{background:var(--panel-2)}
-.pcap-row:focus-visible{outline:2px solid var(--cyan);outline-offset:-2px}
-.pcap-row.on{background:var(--panel-2)}
-.pcap-row .c-info{color:var(--txt)}
-.pcap-row .c-no,.pcap-row .c-time{color:var(--dimmer)}
-/* Packet-row emphasis by tone (same severity idea as everywhere else). */
-.pcap-row.t-cool{border-left-color:var(--cyan)}
-.pcap-row.t-warm{border-left-color:var(--amber)}
-.pcap-row.t-hot{border-left-color:var(--coral)}
-.pcap-row.t-hot .c-info{color:var(--coral)}
-.pcap-row.t-warm .c-info{color:var(--amber)}
-/* Expanding detail pane: dissection tree on the left, the "why" note right. */
-.pcap-detail{display:none;border-top:1px solid var(--line-2);background:rgba(0,0,0,.16)}
-.pcap-detail.show{display:grid;grid-template-columns:1fr 1fr}
-.pcap-detail.t-hot{border-top-color:var(--coral)}
-.pcap-detail.t-warm{border-top-color:var(--amber)}
-.pcap-detail.t-cool{border-top-color:var(--cyan)}
-.pkt-tree{padding:18px 20px;border-right:1px solid var(--line)}
-.pkt-tree .tag{display:block;margin-bottom:12px}
-.pkt-line{display:flex;justify-content:space-between;gap:12px;font-size:11.5px;padding:5px 0;border-bottom:1px dotted var(--line)}
-.pkt-line:last-child{border-bottom:0}
-.pkt-line span{color:var(--dimmer)}
-.pkt-line b{color:var(--txt);font-weight:500;text-align:right}
-.pkt-note{padding:18px 20px}
-.pkt-note .tag{display:block;margin-bottom:12px;color:var(--amber)}
-.pkt-note p{font-family:'Space Grotesk',sans-serif;color:var(--dim);font-size:14px;line-height:1.65}
+/* ---------- PROJECT RECORDS (projects page) ----------
+   The project archive, styled after a packet-capture record list. Window
+   chrome, column labels, then one expandable record per project. The skills
+   for each project live inside the expanded detail as a labeled chip block. */
+.rec{border:1px solid var(--line);background:var(--panel);font-family:'IBM Plex Mono',monospace}
+.rec-top{display:flex;align-items:center;gap:9px;padding:11px 16px;border-bottom:1px solid var(--line);background:var(--panel-2)}
+.rec-top .lt{display:flex;gap:6px}
+.rec-top .lt i{width:9px;height:9px;border-radius:50%;display:block}
+.rec-top .lt i:nth-child(1){background:var(--coral)}
+.rec-top .lt i:nth-child(2){background:var(--amber)}
+.rec-top .lt i:nth-child(3){background:var(--lime)}
+.rec-top .path{font-size:11px;color:var(--dimmer);letter-spacing:.04em;margin-left:6px}
+/* Shared column template for the header and every record button. */
+.rec-head,.rec-btn{display:grid;grid-template-columns:52px 170px 1fr 90px auto;gap:14px;align-items:center}
+.rec-head{padding:9px 16px;border-bottom:1px solid var(--line);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--dimmer)}
+.rec-item{border-bottom:1px solid var(--line)}
+.rec-item:last-child{border-bottom:0}
+.rec-btn{width:100%;text-align:left;background:none;border:0;color:inherit;font:inherit;padding:13px 16px;cursor:pointer;transition:background .15s}
+.rec-btn:hover{background:var(--panel-2)}
+.rec-btn:focus-visible{outline:2px solid var(--cyan);outline-offset:-2px}
+.rec-btn .rc-no{color:var(--dimmer);font-size:11.5px}
+.rec-btn .rc-cat{color:var(--violet);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase}
+.rec-btn .rc-name{font-family:'Space Grotesk',sans-serif;font-size:15.5px;font-weight:500;color:var(--txt);letter-spacing:-.01em}
+.rec-btn .rc-src{font-size:10px;color:var(--dimmer);letter-spacing:.05em}
+.rec-caret{font-size:15px;color:var(--dimmer);justify-self:end}
+.rec-item.on .rec-btn{background:var(--panel-2)}
+.rec-item.on .rec-caret{color:var(--cyan)}
+.rec-item.on .rc-src{color:var(--cyan)}
+/* Expanding detail pane. */
+.rec-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .3s}
+.rec-item.on .rec-body{grid-template-rows:1fr}
+.rec-in{overflow:hidden}
+.rec-pad{padding:4px 16px 20px 68px;font-family:'Space Grotesk',sans-serif}
+.rec-sum{color:var(--txt);font-size:15px;line-height:1.6;margin-bottom:12px;max-width:70ch}
+.rec-pad p{color:var(--dim);font-size:14px;line-height:1.65;max-width:70ch}
+.rec-pad p+p{margin-top:9px}
+.rec-pad .tag{display:block;margin:18px 0 10px;color:var(--lime)}
+/* The labeled per-project skills block. */
+.rec-skills{display:flex;flex-wrap:wrap;gap:6px}
+.rec-foot{margin-top:18px}
+.rec-foot .gh{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;color:var(--cyan);border-bottom:1px solid var(--line-2);padding-bottom:2px;transition:.15s}
+.rec-foot .gh:hover{border-color:var(--cyan)}
 
-/* ---------- RESPONSIVE for new components ----------
-   Collapse the two-column layouts to single column on narrow screens. */
+/* ---------- RESPONSIVE for the new sections ---------- */
 @media(max-width:900px){
   .bio{grid-template-columns:1fr}
-  .siem-grid{grid-template-columns:1fr}
-  .siem-queue{border-right:0;border-bottom:1px solid var(--line);max-height:300px}
-  .pcap-detail.show{grid-template-columns:1fr}
-  .pkt-tree{border-right:0;border-bottom:1px solid var(--line)}
-  /* On phones the packet list has too many columns; hide the two IP columns
-     and let time + info carry the story. */
-  .pcap-head .c-src,.pcap-head .c-dst,.pcap-row .c-src,.pcap-row .c-dst{display:none}
-  .pcap-head,.pcap-row{grid-template-columns:44px 60px 54px 1fr}
+  /* Collapse the feed columns: keep severity, title, caret; drop status+tools. */
+  .feed-head,.feed-btn{grid-template-columns:60px 1fr auto}
+  .feed-head .fh-when,.feed-head .fh-tools,.feed-btn .feed-status,.feed-btn .feed-tools{display:none}
+  .feed-pad{padding-left:18px}
+  /* Collapse the record columns: keep number, name, caret; drop cat+source. */
+  .rec-head,.rec-btn{grid-template-columns:44px 1fr auto}
+  .rec-head .rc-cat,.rec-head .rc-src,.rec-btn .rc-cat,.rec-btn .rc-src{display:none}
+  .rec-pad{padding-left:18px}
 }

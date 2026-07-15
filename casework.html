@@ -1,30 +1,25 @@
 <!DOCTYPE html>
 <!--
-  ============================================================================
-  casework.html — Casework page (the two headline investigations)
-  ----------------------------------------------------------------------------
-  Structure, top to bottom:
-    1. .nav            shared navigation (Casework marked .here)
-    2. .phead          page header
-    3. "Kill chain"    INTERACTIVE — a 7-stage attack timeline. Clicking a
-                       stage node loads its narrative + evidence. Data/logic
-                       in the KILL CHAIN <script> block.
-    4. "PCAP evidence" INTERACTIVE — a stylized packet list. Clicking a packet
-                       expands its detail, Wireshark-style. Data/logic in the
-                       PCAP <script> block.
-    5. "Malware lab"   INTERACTIVE — a terminal-style triage viewer for 12
-                       samples. Data/logic in the MALWARE LAB <script> block.
-    6. footer
-  Three page-specific <script> blocks live at the bottom (kill chain, PCAP,
-  malware), followed by the shared main.js.
-  ============================================================================
+  casework.html — Casework page
+
+  The two headline investigations. Page structure, top to bottom:
+    1. Nav          shared site navigation (Casework is the active link)
+    2. Page header  title and intro
+    3. Kill chain   interactive attack timeline. Clicking a stage loads its
+                    narrative and evidence. Data and logic live in the kill
+                    chain script block near the bottom.
+    4. Malware lab  terminal-style triage viewer for 12 samples. Data and
+                    logic live in the malware lab script block.
+
+  Two page-specific script blocks sit at the bottom (kill chain, then malware
+  lab), followed by the shared main.js.
 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Casework — Felix Naroditskiy</title>
-<meta name="description" content="Ransomware kill chain reconstruction, packet-level evidence, and malware analysis casework.">
+<meta name="description" content="Ransomware kill chain reconstruction and malware analysis casework.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -51,14 +46,14 @@
   <div class="wrap">
     <a class="back" href="index.html">&larr; Back</a>
     <h1>Casework</h1>
-    <p class="sub">Two investigations. One reconstructs an intrusion from the evidence it left behind; the other takes malware apart to find out what it does before it does it.</p>
+    <p class="sub">Two investigations. One reconstructs an intrusion from the evidence it left behind. The other takes malware apart to find out what it does before it does it.</p>
   </div>
 </div>
 
 <section class="first">
   <div class="wrap">
     <div class="shead"><h2>Kill chain reconstruction</h2><span class="fill"></span></div>
-    <p class="sdesc">Capstone forensic investigation of a simulated ransomware attack on a municipal network. Six disk images, seven memory captures, 12.7M packets, 90,000+ log entries. Walk the attacker's path &mdash; each stage shows the class of evidence that proved it.</p>
+    <p class="sdesc">Capstone forensic investigation of a simulated ransomware attack on a municipal network. Six disk images, seven memory captures, 12.7M packets, 90,000+ log entries. Walk the attacker's path. Each stage shows the class of evidence that proved it.</p>
 
     <div class="kc">
       <div class="kc-top">
@@ -89,45 +84,10 @@
   </div>
 </section>
 
-<!-- ===== PCAP EVIDENCE VIEWER (interactive) =====
-     A stylized packet list from the exfiltration window of the same case,
-     built to echo Wireshark's layout: a scrollable list of packets up top,
-     and an expanding detail tree when you click one. It is not a live
-     capture \u2014 it's a curated set of the packets that actually mattered,
-     annotated so a non-analyst can see what made each one evidence.
-     Data + logic live in the PCAP <script> block near the bottom. -->
-<section>
-  <div class="wrap">
-    <div class="shead"><h2>PCAP evidence</h2><span class="fill"></span></div>
-    <p class="sdesc">The exfiltration didn't announce itself in one packet &mdash; it showed up as a pattern across many. Here are the ones that mattered from the capture, laid out the way you'd read them in Wireshark. Click any packet to expand its detail and the note on why it was evidence.</p>
-
-    <div class="pcap">
-      <!-- Capture-tool chrome + a display filter, like a real analyzer. -->
-      <div class="pcap-top">
-        <span class="lt"><i></i><i></i><i></i></span>
-        <span class="path">capture-muni-exfil.pcapng &middot; 2,318 packets shown of 12.7M</span>
-      </div>
-      <!-- Fake display-filter bar (non-functional, sets the scene). -->
-      <div class="pcap-filter">
-        <span class="pf-label">filter</span>
-        <code>ip.addr == 185.199.0.0/16 &amp;&amp; (imap || tcp.flags.reset == 1)</code>
-      </div>
-      <!-- Column headers, then the JS-built packet rows, then the detail pane. -->
-      <div class="pcap-head">
-        <span class="c-no">No.</span><span class="c-time">Time</span>
-        <span class="c-src">Source</span><span class="c-dst">Destination</span>
-        <span class="c-proto">Proto</span><span class="c-info">Info</span>
-      </div>
-      <div class="pcap-list" id="pcapList"></div>
-      <div class="pcap-detail" id="pcapDetail"></div>
-    </div>
-  </div>
-</section>
-
 <section>
   <div class="wrap">
     <div class="shead"><h2>Malware lab</h2><span class="fill"></span></div>
-    <p class="sdesc">Twelve public samples, detonated in an isolated FlareVM. Static triage, then dynamic detonation &mdash; families, indicators, and C2 behavior, including the one that bricked the VM. Select a sample to pull its triage record.</p>
+    <p class="sdesc">Twelve public samples, detonated in an isolated FlareVM. Static triage, then dynamic detonation, then families, indicators, and C2 behavior, including the one that bricked the VM. Select a sample to pull its triage record.</p>
 
     <div class="term">
       <div class="term-top">
@@ -151,20 +111,21 @@
   </div>
 </footer>
 
-<!-- ============================================================================
-     KILL CHAIN — script
-     ----------------------------------------------------------------------------
-     CHAIN: array of attack stages, in order. Each stage has:
-       t → stage title (e.g. "Initial access")
-       a → the MITRE ATT&CK technique id + name
-       p → array of narrative paragraphs
-       e → array of evidence rows [label, value, tone] where tone is
-           '', 'cool', 'warm', or 'hot' to color the value by severity
-     Clicking a node in the .rail calls renderChain(i) to swap in that
-     stage's narrative (#kcP) and evidence table (#kcE).
-============================================================================ -->
+<!--
+     Kill chain script.
+
+     CHAIN holds the attack stages in order. Each stage has:
+       t  the stage title, like "Initial access"
+       a  the MITRE ATT&CK technique id and name
+       p  an array of narrative paragraphs
+       e  an array of evidence rows shaped [label, value, tone], where tone
+          is '', 'cool', 'warm', or 'hot' and sets the value's color
+
+     Clicking a node in the rail calls renderChain(i), which swaps in that
+     stage's narrative (into #kcP) and its evidence table (into #kcE).
+-->
 <script>
-/* ===== KILL CHAIN ===== */
+/* Kill chain */
 var CHAIN=[
 {t:"Initial access",a:"T1566.001 \u2014 Spearphishing Attachment",
 p:["An employee in the target organization received an email from someone posing as an outside contractor. Attached was a malicious PDF.",
@@ -221,160 +182,24 @@ rail.querySelectorAll('.node').forEach(function(n){
 renderChain(0);  // open on the first stage
 </script>
 
-<!-- ============================================================================
-     PCAP EVIDENCE VIEWER — script
-     ----------------------------------------------------------------------------
-     PACKETS: array of packet objects rendered as a Wireshark-style list.
-     Each packet has:
-       no    → packet number (as shown in the No. column)
-       time  → capture-relative time
-       src   → source IP (+ optional port)
-       dst   → destination IP (+ optional port)
-       proto → protocol label
-       info  → the summary line shown in the Info column
-       tone  → row emphasis: '' | 'cool' | 'warm' | 'hot' (colors the row)
-       tree  → array of [label, value] detail rows shown when expanded
-       note  → the plain-language "why this is evidence" annotation
 
-     Clicking a row toggles the detail pane below the list, filling it with
-     that packet's tree + note. Clicking the open row again collapses it.
-============================================================================ -->
-<script>
-var PACKETS=[
-  {no:1041,time:'88.412',src:'10.4.12.38',dst:'185.199.108.153:993',proto:'IMAPS',tone:'',
-   info:'Client login \u2192 mailbox SELECT "INBOX"',
-   tree:[
-     ['Frame','1041 \u00b7 574 bytes on wire'],
-     ['Ethernet II','src workstation NIC \u2192 gateway'],
-     ['TCP','52194 \u2192 993 [PSH,ACK] Seq=1'],
-     ['TLS','Application Data (encrypted)'],
-     ['Note','Session opens normally \u2014 nothing wrong yet']
-   ],
-   note:'On its own this is a normal encrypted mail login. It matters only as the first packet of a session whose later behavior is not normal at all \u2014 the baseline you compare everything else against.'},
 
-  {no:1043,time:'88.930',src:'10.4.12.38',dst:'185.199.108.153:993',proto:'IMAPS',tone:'cool',
-   info:'FETCH 1:* (BODY[]) \u2014 full-mailbox pull begins',
-   tree:[
-     ['TCP','52194 \u2192 993 [ACK] Seq=118'],
-     ['TLS','Application Data \u00b7 large record'],
-     ['Pattern','FETCH range 1:* = every message'],
-     ['Rate','Requests back-to-back, no read gaps'],
-     ['Human?','No \u2014 no dwell time between messages']
-   ],
-   note:'A person reads a few messages. A FETCH 1:* that walks the entire mailbox with zero pause between messages is automation dumping the account. This is the packet where "login" becomes "collection."'},
+<!--
+     Malware lab script.
 
-  {no:1122,time:'91.007',src:'10.4.12.38',dst:'185.199.108.153:993',proto:'IMAPS',tone:'warm',
-   info:'Sustained transfer \u2014 96.5% of session traffic is IMAP',
-   tree:[
-     ['Stream','tcp.stream eq 7'],
-     ['Bytes so far','~44 MB this session'],
-     ['Direction','Overwhelmingly outbound (upload)'],
-     ['Ratio','IMAP = 96.5% of all mail events'],
-     ['Ports','Clustering on non-standard high ports']
-   ],
-   note:'Outbound-heavy volume on a protocol that\u2019s normally request/response, dominating the traffic mix, is the shape of exfiltration. Volume alone isn\u2019t proof; volume plus this direction and ratio is.'},
+     SAMPLES holds the analyzed malware samples. Each carries metadata
+     (filename, family, detection ratio, sha256, label, category, packer)
+     plus two display fields:
+       lvl    threat level 'hi', 'md', or 'lo', which colors the ratio
+       lines  the terminal output, an array of [tone, text] rows. A tone of
+              'k' renders a section divider (STATIC, DYNAMIC, C2, VERDICT);
+              other tones color the text.
 
-  {no:1188,time:'93.559',src:'10.4.12.38',dst:'91.219.236.14:8443',proto:'TLS',tone:'hot',
-   info:'Client Hello \u2192 second channel, non-standard port 8443',
-   tree:[
-     ['TCP','52210 \u2192 8443 [SYN]'],
-     ['TLS','Client Hello \u00b7 SNI absent'],
-     ['Dest ASN','Hosting provider, not a mail service'],
-     ['GeoIP','Outside any business region we use'],
-     ['Correlation','Opens mid mailbox-pull']
-   ],
-   note:'A second encrypted channel to a hosting IP on 8443, opened in the middle of the mailbox pull with no server name in the handshake, is the exfil endpoint. This is the destination the stolen data actually leaves to.'},
-
-  {no:1206,time:'94.881',src:'185.199.108.153',dst:'10.4.12.38',proto:'TCP',tone:'warm',
-   info:'[RST, ACK] \u2014 one of 107 aborted connections',
-   tree:[
-     ['TCP','993 \u2192 52194 [RST,ACK]'],
-     ['Meaning','Connection torn down abruptly'],
-     ['Count','107 resets across the window'],
-     ['Normal?','Occasional resets are fine'],
-     ['This many','Points to scripted retry behavior']
-   ],
-   note:'A burst of connection resets isn\u2019t itself an attack, but 107 of them clustered in the exfil window matches a tool opening, dumping, and tearing down sessions in a loop \u2014 not a human mail client.'},
-
-  {no:1497,time:'103.204',src:'10.4.12.38',dst:'185.199.108.153:993',proto:'IMAPS',tone:'hot',
-   info:'Peak: ~22,500 mail events this hour (235\u00d7 baseline)',
-   tree:[
-     ['Baseline','80\u201395 events/hour'],
-     ['This hour','~22,500 events'],
-     ['Multiplier','\u2248 235\u00d7 normal'],
-     ['Spikes','3 more bracket the intrusion'],
-     ['Verdict','Automated bulk access confirmed']
-   ],
-   note:'This is the packet-count summary that closed it. Baseline mail activity ran under 100 events an hour; the exfil hour hit ~22,500. At 235 times normal, with the direction and endpoint above, the conclusion isn\u2019t "suspicious" \u2014 it\u2019s "data left the building."'}
-];
-
-var pcapList=document.getElementById('pcapList'),pcapDetail=document.getElementById('pcapDetail');
-var openPkt=null;  // index of the currently expanded packet, or null
-
-// Reuse a tiny escaper so stray characters can't break the row markup.
-function pesc(x){return String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-
-// Build the packet rows once.
-function renderPackets(){
-  pcapList.innerHTML='';
-  PACKETS.forEach(function(p,i){
-    var row=document.createElement('button');
-    row.className='pcap-row'+(p.tone?' t-'+p.tone:'');
-    row.innerHTML=
-      '<span class="c-no">'+p.no+'</span>'+
-      '<span class="c-time">'+pesc(p.time)+'</span>'+
-      '<span class="c-src">'+pesc(p.src)+'</span>'+
-      '<span class="c-dst">'+pesc(p.dst)+'</span>'+
-      '<span class="c-proto">'+pesc(p.proto)+'</span>'+
-      '<span class="c-info">'+pesc(p.info)+'</span>';
-    row.addEventListener('click',function(){ togglePacket(i,row); });
-    pcapList.appendChild(row);
-  });
-}
-
-// Expand packet i (or collapse it if it's already open).
-function togglePacket(i,row){
-  // Clicking the open packet again closes the detail pane.
-  if(openPkt===i){
-    openPkt=null;
-    pcapDetail.className='pcap-detail';
-    pcapDetail.innerHTML='';
-    pcapList.querySelectorAll('.pcap-row').forEach(function(r){r.classList.remove('on');});
-    return;
-  }
-  openPkt=i;
-  pcapList.querySelectorAll('.pcap-row').forEach(function(r){r.classList.remove('on');});
-  if(row) row.classList.add('on');
-
-  var p=PACKETS[i];
-  // Build the dissection tree (label/value rows), then the evidence note.
-  var tree=p.tree.map(function(t){
-    return '<div class="pkt-line"><span>'+pesc(t[0])+'</span><b>'+pesc(t[1])+'</b></div>';
-  }).join('');
-
-  pcapDetail.className='pcap-detail show'+(p.tone?' t-'+p.tone:'');
-  pcapDetail.innerHTML=
-    '<div class="pkt-tree"><span class="tag">Frame '+p.no+' \u00b7 dissection</span>'+tree+'</div>'+
-    '<div class="pkt-note"><span class="tag">Why it\u2019s evidence</span><p>'+pesc(p.note)+'</p></div>';
-}
-
-renderPackets();  // paint the list; detail stays closed until a click
-</script>
-
-<!-- ============================================================================
-     MALWARE LAB — script
-     ----------------------------------------------------------------------------
-     SAMPLES: array of analyzed malware samples. Each has metadata (filename,
-     family, detection ratio, sha256, label, category, packer) plus:
-       lvl   → threat level 'hi'|'md'|'lo' (colors the detection ratio)
-       lines → array of [tone, text] rows for the terminal output, where a
-               tone of 'k' renders a section divider ("STATIC", "DYNAMIC",
-               "C2", "VERDICT") and other tones color the text.
      Clicking a sample in the left list calls renderSample(i), which prints
-     its triage record into the terminal pane like a command's output.
-============================================================================ -->
+     that sample's triage record into the terminal pane.
+-->
 <script>
-/* ===== MALWARE LAB ===== */
+/* Malware lab */
 var SAMPLES=[
 {f:"Daiker.exe",fam:"RedLine Stealer",det:"52/70",lvl:"hi",sha:"09a91a77fd2f590784e2c43067e2e5f11e7a79c600e0274f12eb7cc01a3a0411",label:"trojan.msil/redline",cat:"Trojan \u00b7 Spyware",pack:".NET, obfuscated (no packer)",
 lines:[["k","STATIC"],["v","Privilege escalation APIs (AdjustTokenPrivileges, DuplicateTokenEx) and in-memory decryption (FromBase64String, CreateDecryptor) across 17,100 strings \u2014 28 flagged."],["k","DYNAMIC"],["v","Ran silent. Surfaced in Task Manager as \"Tantalise\", not responding \u2014 no UI, no child processes, no injection. A single process keeping its footprint small."],["v","ProcMon captured zero file events. Regshot showed 175 keys added, nearly all under IdentityCRL\\NegativeCache \u2014 Windows caching failed Microsoft auth attempts. That is what credential harvesting looks like from the registry's side."],["k","C2"],["hot","\u2192 TCP 146.19.128.28:18808 \u2014 direct outbound, blocked by FakeNet"],["k","VERDICT"],["warm","Infostealer. Harvests credentials in memory, exfiltrates to C2. No destruction \u2014 that is not what it is for."]]},

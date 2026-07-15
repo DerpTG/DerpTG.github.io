@@ -1,25 +1,24 @@
 <!DOCTYPE html>
 <!--
-  ============================================================================
-  about.html — About / bio page
-  ----------------------------------------------------------------------------
-  Personal page: who I am beyond the casework. Structure:
-    1. .nav        shared navigation (About marked .here)
-    2. .phead      page header (title + one-line intro) — same pattern as
-                   the Casework / Lab / Projects sub-pages
-    3. "Bio"       two-column layout: prose on the left, quick-facts on right
-    4. "Beyond work"  interest cards (PC building, watchmaking, etc.)
-    5. footer
-  This page has no page-specific JavaScript. The only script is main.js,
-  included so the shared nav behaves consistently.
-  ============================================================================
+  about.html — About page
+
+  Who I am beyond the casework. Page structure:
+    1. Nav          shared site navigation (About is the active link)
+    2. Page header
+    3. Bio          two columns: prose on the left, quick facts on the right
+    4. Interests    a terminal-style console. A left list of interests; click
+                    one to print its detail into the output pane. Data and
+                    logic live in the interests script block at the bottom.
+
+  One page-specific script builds the interests console, followed by the
+  shared main.js.
 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>About — Felix Naroditskiy</title>
-<meta name="description" content="About Felix Naroditskiy — background, approach, and the things I do when I'm not taking malware apart.">
+<meta name="description" content="About Felix Naroditskiy: background, approach, and what I do off the clock.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -27,7 +26,7 @@
 </head>
 <body>
 
-<!-- ===== NAV (shared) — About is the current page ===== -->
+<!-- Nav. About is the active page. Keep in sync across all pages. -->
 <header class="nav">
   <div class="wrap">
     <a class="brand" href="index.html"><i class="dot"></i>F. NARODITSKIY</a>
@@ -43,34 +42,31 @@
 
 <main>
 
-<!-- ===== PAGE HEADER ===== -->
+<!-- Page header -->
 <div class="phead">
   <div class="wrap">
     <a class="back" href="index.html">&larr; Back</a>
     <h1>About</h1>
-    <p class="sub">The short version of who I am, how I got here, and what I do when I'm not reconstructing someone else's bad day.</p>
+    <p class="sub">The short version of who I am, how I got here, and what I do when I&rsquo;m not reconstructing someone else&rsquo;s bad day.</p>
   </div>
 </div>
 
-<!-- ===== BIO =====
-     Two-column layout (.bio): narrative prose on the left, a compact
-     quick-facts panel on the right. On narrow screens the CSS stacks
-     them into a single column. -->
+<!-- Bio.
+     Two columns: the narrative on the left, a quick-facts panel on the right.
+     On narrow screens the CSS stacks them into one column. -->
 <section class="first">
   <div class="wrap">
     <div class="shead"><h2>Who I am</h2><span class="fill"></span></div>
 
     <div class="bio">
-      <!-- Left column: the story. -->
       <div class="bio-main">
-        <p>I'm a recent Penn State graduate (B.S. Cybersecurity Analytics and Operations, <i>summa cum laude</i>) who got into security through the part most people skip: the aftermath. My academic work centered on digital forensics and incident response &mdash; reconstructing a ransomware attack packet by packet, taking malware apart to see what it does before it does it, and writing the playbooks that decide who gets called and when.</p>
+        <p>I&rsquo;m a recent Penn State graduate (B.S. Cybersecurity Analytics and Operations, <i>summa cum laude</i>) who got into security through the part most people skip: the aftermath. My academic work centered on digital forensics and incident response. Reconstructing a ransomware attack packet by packet, taking malware apart to see what it does before it does it, and writing the playbooks that decide who gets called and when.</p>
 
-        <p>Alongside that, my day-to-day work at Stemuli has been the governance side of the house: privacy compliance, control assessments, and the documentation that keeps a live K-12 platform inside the lines of COPPA, FERPA, NIST, and CIS. It's taught me that security is a systems problem, not just a technical one &mdash; the best control in the world fails if nobody owns it or the policy behind it is unclear.</p>
+        <p>Alongside that, my day-to-day work at Stemuli has been the governance side of the house: privacy compliance, control assessments, and the documentation that keeps a live K-12 platform inside the lines of COPPA, FERPA, NIST, and CIS. It taught me that security is a systems problem, not just a technical one. The best control in the world fails if nobody owns it or the policy behind it is unclear.</p>
 
-        <p>What I'm after now is a hands-on analyst seat &mdash; SOC, security analyst, or incident response &mdash; somewhere with mentorship and room to grow. I'm a coachable new grad, not a finished expert: I ask questions early, chase down the root cause instead of the symptom, and write things down so the next person doesn't have to relearn them. This site is part of that habit &mdash; everything on it is real work, documented so you can actually poke at it.</p>
+        <p>What I&rsquo;m after now is a hands-on analyst seat in SOC, security analysis, or incident response, somewhere with mentorship and room to grow. I&rsquo;m a coachable new grad, not a finished expert. I ask questions early, chase the root cause instead of the symptom, and write things down so the next person doesn&rsquo;t have to relearn them. This site is part of that habit. Everything on it is real work, documented so you can poke at it.</p>
       </div>
 
-      <!-- Right column: scannable facts. Each .fact is one label/value pair. -->
       <aside class="bio-facts">
         <div class="fact"><span class="k">Based in</span><span class="v">Warminster, PA</span></div>
         <div class="fact"><span class="k">Open to</span><span class="v">Remote &middot; Hybrid (Philly metro)</span></div>
@@ -84,44 +80,30 @@
   </div>
 </section>
 
-<!-- ===== BEYOND WORK =====
-     Interest cards. Each .about-card is a static tile: an eyebrow label,
-     a title, and a short paragraph. Nothing interactive — they exist to
-     add a human dimension to the page. -->
+<!-- Interests console.
+     A terminal-style pane: pick an interest on the left, its detail prints on
+     the right. Built from the INTERESTS array in the script below. -->
 <section>
   <div class="wrap">
-    <div class="shead"><h2>Beyond work</h2><span class="fill"></span></div>
-    <p class="sdesc">The things that keep me curious when I'm off the clock.</p>
+    <div class="shead"><h2>Off the clock</h2><span class="fill"></span></div>
+    <p class="sdesc">Select an interest to read more. The things that keep me curious when I&rsquo;m not working.</p>
 
-    <div class="about-grid">
-      <div class="about-card">
-        <span class="tag">Hands-on</span>
-        <h3>Building computers</h3>
-        <p>I build my own machines from parts, and that first successful boot never gets old. It's the same loop as the rest of my work &mdash; plan it, assemble it, and troubleshoot calmly when it doesn't post the first time.</p>
+    <div class="term">
+      <div class="term-top">
+        <span class="lt"><i></i><i></i><i></i></span>
+        <span class="path">felix@home:~/interests</span>
       </div>
-
-      <div class="about-card">
-        <span class="tag">Obsession</span>
-        <h3>Haute horologie</h3>
-        <p>I'm fascinated by mechanical watchmaking &mdash; hundreds of tiny parts engineered to keep time with nothing but a wound spring. It's precision and constraint as a craft, which is probably why it appeals to the same part of my brain that likes forensics.</p>
-      </div>
-
-      <div class="about-card">
-        <span class="tag">Active</span>
-        <h3>Fitness &amp; biking</h3>
-        <p>Lifting and cycling are how I clear my head. Biking especially &mdash; long rides are good thinking time, and they're the counterweight to a job that's mostly done sitting in front of a screen.</p>
-      </div>
-
-      <div class="about-card">
-        <span class="tag">Reading</span>
-        <h3>Dystopian fiction</h3>
-        <p>I get completely absorbed in dystopian novels. There's an obvious throughline with security work &mdash; both are, at heart, about how systems fail and what people do when the rules stop holding.</p>
+      <div class="term-grid">
+        <div class="samples" id="intList"></div>
+        <div class="out" id="intOut"></div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ===== FOOTER ===== -->
+</main>
+
+<!-- Footer -->
 <footer>
   <div class="wrap">
     <span>© 2026 F. NARODITSKIY</span>
@@ -129,6 +111,91 @@
   </div>
 </footer>
 
+<!--
+     Interests script.
+
+     INTERESTS holds the off-the-clock entries. Each has:
+       key    the short label shown in the left list and after the prompt
+       name   the display heading
+       tag    a one-word category
+       lines  an array of paragraphs printed into the terminal output
+
+     Clicking an entry calls renderInterest(i), which prints that entry into
+     the output pane like the result of a command. Same terminal styling as
+     the malware viewer on the casework page.
+-->
+<script>
+/* The interests, in the order they appear in the list. */
+var INTERESTS = [
+  {
+    key: 'pc-building', name: 'Building computers', tag: 'Hands-on',
+    lines: [
+      'I build my own machines from parts, and that first successful boot never gets old.',
+      'It\u2019s the same loop as the rest of my work: plan it, assemble it, and troubleshoot calmly when it doesn\u2019t post the first time. Half the fun is the diagnosis when something\u2019s wrong.'
+    ]
+  },
+  {
+    key: 'horology', name: 'Haute horologie', tag: 'Obsession',
+    lines: [
+      'I\u2019m fascinated by mechanical watchmaking. Hundreds of tiny parts engineered to keep time with nothing but a wound spring.',
+      'It\u2019s precision and constraint as a craft, which is probably why it appeals to the same part of my brain that likes forensics.'
+    ]
+  },
+  {
+    key: 'fitness', name: 'Fitness & biking', tag: 'Active',
+    lines: [
+      'Lifting and cycling are how I clear my head.',
+      'Biking especially. Long rides are good thinking time, and they\u2019re the counterweight to a job that\u2019s mostly done sitting in front of a screen.'
+    ]
+  },
+  {
+    key: 'dystopian', name: 'Dystopian fiction', tag: 'Reading',
+    lines: [
+      'I get completely absorbed in dystopian novels.',
+      'There\u2019s an obvious throughline with security work. Both are about how systems fail and what people do when the rules stop holding.'
+    ]
+  }
+];
+
+var intList = document.getElementById('intList');
+var intOut = document.getElementById('intOut');
+
+/* Escape characters that could break the terminal markup. */
+function iesc(x){return String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+/* Build the clickable list on the left. First entry starts selected. */
+INTERESTS.forEach(function (it, i) {
+  var b = document.createElement('button');
+  b.className = 'smp' + (i === 0 ? ' on' : '');
+  b.innerHTML =
+    '<span class="fn">' + iesc(it.name) + '</span>' +
+    '<span class="fam">' + iesc(it.tag.toUpperCase()) + '</span>';
+  b.addEventListener('click', function () {
+    intList.querySelectorAll('.smp').forEach(function (x) { x.classList.remove('on'); });
+    b.classList.add('on');
+    renderInterest(i);
+  });
+  intList.appendChild(b);
+});
+
+/* Print interest i into the output pane as fake command output. */
+function renderInterest(i) {
+  var it = INTERESTS[i], h = '';
+  // The typed command line.
+  h += '<span class="ln"><span class="p">$</span> <span class="v">cat ' + iesc(it.key) + '.txt</span></span><span class="blank"></span>';
+  // A small header line.
+  h += '<span class="ln"><span class="cool">' + iesc(it.name) + '</span> <span class="k">[' + iesc(it.tag) + ']</span></span><span class="blank"></span>';
+  // The body paragraphs.
+  it.lines.forEach(function (line) {
+    h += '<span class="ln"><span class="v">' + iesc(line) + '</span></span>';
+  });
+  // A fresh prompt with a blinking cursor.
+  h += '<span class="blank"></span><span class="ln"><span class="p">$</span> <span class="cursor"></span></span>';
+  intOut.innerHTML = h;
+}
+
+renderInterest(0);  // open on the first interest
+</script>
 <script src="main.js"></script>
 </body>
 </html>

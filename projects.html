@@ -62,7 +62,7 @@
     <div class="rec">
       <div class="rec-top">
         <span class="lt"><i></i><i></i><i></i></span>
-        <span class="path">projects.log projects.log &middot; 7 recordsmiddot; 5 records</span>
+        <span class="path">projects.log &middot; 5 records</span>
       </div>
       <!-- Column labels, mirrored by each record's grid. -->
       <div class="rec-head">
@@ -81,7 +81,7 @@
 <footer>
   <div class="wrap">
     <span>© 2026 F. NARODITSKIY</span>
-    <a href="index.html">&larr; BACK TO HOME</a>
+    <a href="about.html">NEXT: ABOUT &rarr;</a>
   </div>
 </footer>
 
@@ -188,11 +188,13 @@ PROJ.forEach(function (p, i) {
       '<span class="rc-src">' + resc(p.team) + '</span>' +
       '<span class="rec-caret">+</span>' +
     '</button>' +
+    // Always-visible skills strip, shown whether or not the record is open.
+    '<div class="rec-skills-row"><span class="rsk-lbl">Skills</span>' +
+      '<div class="rec-skills">' + skills + '</div></div>' +
+    // Collapsible detail: the summary, the full story, and any code link.
     '<div class="rec-body"><div class="rec-in"><div class="rec-pad">' +
       '<p class="rec-sum">' + resc(p.sum) + '</p>' +
       more +
-      '<span class="tag">Skills</span>' +
-      '<div class="rec-skills">' + skills + '</div>' +
       (ghLink ? '<div class="rec-foot">' + ghLink + '</div>' : '') +
     '</div></div></div>';
 

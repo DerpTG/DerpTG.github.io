@@ -221,7 +221,7 @@ section.first{border-top:0}
 .scol ul{list-style:none;display:grid;gap:6px}
 .scol li{font-size:14.5px;color:var(--dim)}
 .certs{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
-.cert{border:1px solid var(--line-2);padding:9px 15px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.06em;display:flex;align-items:center;gap:9px;background:var(--panel)}
+.cert{border:1px solid var(--line-2);padding:9px 15px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.06em;display:flex;align-items:center;gap:9px;background:var(--panel);color:var(--txt)}
 .cert::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--lime);box-shadow:0 0 7px var(--lime)}
 .cert.prog{color:var(--amber);border-color:var(--amber)}
 .cert.prog::before{background:var(--amber);box-shadow:0 0 7px var(--amber)}
@@ -404,6 +404,9 @@ button.cert.prog:hover{border-color:var(--amber);color:var(--amber)}
 .rec-pad .tag{display:block;margin:18px 0 10px;color:var(--lime)}
 /* The labeled per-project skills block. */
 .rec-skills{display:flex;flex-wrap:wrap;gap:6px}
+/* Always-visible skills strip beneath the record header (not collapsible). */
+.rec-skills-row{display:flex;align-items:center;gap:12px;padding:0 16px 14px 68px;flex-wrap:wrap}
+.rsk-lbl{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--dimmer);flex-shrink:0}
 .rec-foot{margin-top:18px}
 .rec-foot .gh{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;color:var(--cyan);border-bottom:1px solid var(--line-2);padding-bottom:2px;transition:.15s}
 .rec-foot .gh:hover{border-color:var(--cyan)}
@@ -419,6 +422,7 @@ button.cert.prog:hover{border-color:var(--amber);color:var(--amber)}
   .rec-head,.rec-btn{grid-template-columns:44px 1fr auto}
   .rec-head .rc-cat,.rec-head .rc-src,.rec-btn .rc-cat,.rec-btn .rc-src{display:none}
   .rec-pad{padding-left:18px}
+  .rec-skills-row{padding-left:18px}
 }
 
 /* ---------- INTERACTIVE LABS (lab page, try-it-yourself exercises) ----------

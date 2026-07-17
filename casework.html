@@ -74,6 +74,7 @@
           <span class="ttl" id="kcT"></span>
           <span class="att" id="kcA"></span>
           <div id="kcP"></div>
+          <div class="kc-method" id="kcM"></div>
         </div>
         <div class="kc-ioc">
           <span class="tag">Evidence</span>
@@ -87,7 +88,7 @@
 <section>
   <div class="wrap">
     <div class="shead"><h2>Malware lab</h2><span class="fill"></span></div>
-    <p class="sdesc">Twelve public malware samples analyzed in an isolated FlareVM environment. Each sample went through static triage followed by dynamic detonation to determine its family, indicators of compromise, and command-and-control behavior. Select a sample to view its full triage record.</p>
+    <p class="sdesc">Twelve public malware samples analyzed in an isolated FlareVM environment. Each sample followed the same workflow: verify the PE header, hash it, check against VirusTotal, identify the family, test for packing and obfuscation, pull strings, then detonate and observe behavior. Static triage used HxD, HashMyFiles, Exe Info PE, and PeStudio; dynamic analysis used Process Monitor, Regshot, System Informer, Wireshark, and FakeNet-NG to simulate the network for C2. Select a sample to view its full triage record.</p>
 
     <div class="term">
       <div class="term-top">
@@ -128,47 +129,57 @@
 /* Kill chain */
 var CHAIN=[
 {t:"Initial access",a:"T1566.001 \u2014 Spearphishing Attachment",
-p:["An employee in the target organization received an email from someone posing as an outside contractor. Attached was a malicious PDF.",
-"Browser history confirmed the PDF was downloaded immediately before the first malicious binary appeared on disk. The mail server logged a traffic spike of roughly 143\u00d7 the normal baseline that same hour."],
-e:[["Vector","Phishing PDF","warm"],["Entry point","User workstation",""],["Mail client","Thunderbird",""],["First signal","Mail spike 143\u00d7","warm"],["Confirmed by","Browser + disk artifacts",""]]},
+p:["An employee received an email from someone posing as an outside contractor. Attached was a malicious PDF, which dropped a first-stage trojan (NED32.exe) onto the workstation when opened.",
+"Browser history and disk artifacts confirmed the PDF was downloaded immediately before the first malicious binary appeared. The mail server logged a traffic spike of roughly 143\u00d7 the normal baseline that same hour."],
+m:["Wireshark","hMailServer logs","Disk artifacts"],
+e:[["Vector","Phishing PDF","warm"],["Entry point","User workstation",""],["Dropped","NED32.exe","hot"],["First signal","Mail spike 143\u00d7","warm"],["Confirmed by","Browser + disk artifacts",""]]},
 
 {t:"Execution",a:"T1204.002 \u2014 Malicious File",
-p:["Opening the PDF dropped a first-stage binary onto the user's Desktop. The attacker then introduced a second tool that would carry the rest of the intrusion.",
-"Memory analysis found that tool running from the Desktop under a Wow64 environment \u2014 a path and a binary that don't belong to Windows."],
-e:[["Stage 1","Dropper on Desktop","warm"],["Stage 2","Attacker toolkit","hot"],["Environment","Wow64 (32-on-64)",""],["Found by","Volatility psscan",""],["Clean hosts","4 of 7 captures","cool"]]},
+p:["Opening the PDF executed the first-stage dropper. The attacker then introduced a second tool (MRCv120.exe) that would carry the rest of the intrusion.",
+"Memory analysis located that tool running from the Desktop under a Wow64 (32-bit-on-64-bit) environment, a path and binary that don\u2019t belong to Windows. Across seven memory captures, four hosts came back clean, which helped scope the compromise."],
+m:["Volatility 2.6","pslist / psscan","imageinfo"],
+e:[["Stage 1","NED32.exe (dropper)","warm"],["Stage 2","MRCv120.exe","hot"],["Environment","Wow64 (32-on-64)",""],["Found by","Volatility psscan",""],["Clean hosts","4 of 7 captures","cool"]]},
 
 {t:"Defense evasion",a:"T1055 \u2014 Process Injection \u00b7 T1562.001 \u2014 Impair Defenses",
-p:["The malware didn't stay in its own process. Volatility's malfind returned Read-Write-Execute memory segments inside trusted system processes \u2014 the signature of injected code or unpacked shellcode.",
-"On one server, RWX memory turned up inside the endpoint-protection engine itself. When the attacker is living inside the antivirus process, the antivirus is no longer a control you can trust."],
-e:[["Technique","RWX injection","hot"],["Hidden in","System processes",""],["AV compromise","Yes","hot"],["Tool","Volatility malfind",""],["Systems affected","3+",""],["Disk footprint","Minimal \u2014 in-memory","warm"]]},
+p:["The malware didn\u2019t stay in its own process. Volatility\u2019s malfind returned Read-Write-Execute memory segments inside trusted system processes (explorer.exe and svchost.exe), the signature of injected code or unpacked shellcode.",
+"On one server the RWX memory appeared inside Windows Defender\u2019s own engine (MsMpEng.exe). When the attacker is executing inside the antivirus process, the antivirus is no longer a control you can trust."],
+m:["Volatility malfind","dlllist","Defender log review"],
+e:[["Technique","RWX injection","hot"],["Hidden in","explorer / svchost",""],["AV tampered","MsMpEng.exe","hot"],["Tool","Volatility malfind",""],["Systems affected","3+",""],["Footprint","In-memory","warm"]]},
 
 {t:"Lateral movement",a:"T1021 \u2014 Remote Services \u00b7 T1078 \u2014 Valid Accounts",
-p:["The same tool appeared on the Administrator Desktop of both domain controllers. That placement means the attacker was executing with elevated domain privileges, not scraping around as a standard user.",
-"The gap between the initial compromise and the domain controllers was one hour and forty-four minutes. Once you own the DCs of a network, you own authentication for everything on it."],
+p:["MRCv120.exe appeared on the Administrator Desktop of both Windows Server 2016 domain controllers (WinServer_1 and WinServer_3). That placement means the attacker was executing with elevated domain privileges, not a standard user account.",
+"The gap between the initial compromise and reaching the domain controllers was one hour and forty-four minutes. Once you own the DCs, you own authentication for the whole network. No segmentation stood in the way."],
+m:["Volatility","ELK / Kibana DC logs","Timeline correlation"],
 e:[["Targets","2 domain controllers","hot"],["Time to DC","1h 44m","hot"],["Privilege","Administrator","warm"],["Enabler","No segmentation","warm"],["Scope","Full domain","hot"]]},
 
 {t:"Persistence",a:"T1543 \u2014 Create or Modify System Process",
-p:["A second payload was planted on a domain controller alongside the primary tool. A secondary payload on a DC is the tell that the attacker was not planning to leave \u2014 it's a foothold built to survive incident response.",
+p:["A secondary payload (spaceman.exe) was planted on WinServer_3 alongside the primary tool. A second implant on a domain controller is the tell that the attacker was building a foothold designed to survive incident response.",
 "System services on that host carried multiple persistent injected memory regions. Even a clean-looking reboot would not have removed them."],
-e:[["Payload","Secondary implant","hot"],["Location","Domain controller",""],["Method","Service injection",""],["Intent","Long-term access","hot"],["Found in","Memory + disk",""],["Weak point","Dormant accounts","warm"]]},
+m:["Volatility","svcscan","Memory + disk correlation"],
+e:[["Payload","spaceman.exe","hot"],["Location","WinServer_3",""],["Method","Service injection",""],["Intent","Long-term access","hot"],["Found in","Memory + disk",""],["Weak point","Dormant accounts","warm"]]},
 
 {t:"Exfiltration",a:"T1041 \u2014 Exfiltration Over C2 Channel",
-p:["The mail server told the story. Baseline traffic ran 80\u201395 events per hour. The peak hour hit roughly 22,500 \u2014 about 235 times normal \u2014 with three more large spikes bracketing the intrusion.",
-"Volume alone isn't proof. What confirmed it: traffic clustered on non-standard ports, and IMAP made up 96.5% of all mail events \u2014 a ratio that means automated bulk access, not people reading email. Shared-drive files across multiple departments had been modified during the window."],
-e:[["Peak","~22,500 events/hr","hot"],["vs baseline","235\u00d7","hot"],["Ports","Non-standard","warm"],["IMAP share","96.5%","warm"],["Aborted conns","107",""],["At risk","Creds + sensitive data","hot"]]},
+p:["The mail server told the story. Baseline traffic ran 80\u201395 events per hour. The peak hour hit roughly 22,500, about 235\u00d7 normal, with three more large spikes bracketing the intrusion, clustered on non-standard ports (5400\u20135700).",
+"Volume alone isn\u2019t proof. What confirmed it: IMAP made up 96.5% of all mail events, a ratio consistent with automated bulk access rather than people reading email. Shared-drive files across multiple departments had been modified during the window."],
+m:["hMailServer logs","ELK / Kibana","Wireshark filters"],
+e:[["Peak","~22,500 events/hr","hot"],["vs baseline","235\u00d7","hot"],["Ports","5400\u20135700","warm"],["IMAP share","96.5%","warm"],["Aborted conns","107",""],["At risk","Creds + sensitive data","hot"]]},
 
 {t:"Impact",a:"T1486 \u2014 Data Encrypted for Impact",
-p:["On the final day, ransomware was written to the original victim workstation. A ransom note appeared beside it minutes later. An employee found it, and that discovery is what started the investigation.",
-"Total dwell time from first compromise to ransom note: a little over four days. The attacker held the domain controllers for nearly all of it."],
+p:["On the final day, ransomware was written to the original victim workstation, and a ransom note appeared beside it minutes later. An employee found the note, and that discovery is what triggered the investigation.",
+"Total dwell time from first compromise to ransom note was a little over four days. The attacker held the domain controllers for nearly all of it."],
+m:["Autopsy","FTK Imager","Disk timeline"],
 e:[["Action","Ransomware deployed","hot"],["Marker","Ransom note","hot"],["Dwell time","4 days","hot"],["Evidence base","12.7M pkts \u00b7 6 img \u00b7 7 mem","cool"],["Confidence","High","cool"]]}
 ];
 // Cache the rail + the detail slots we rewrite on each stage change.
-var rail=document.getElementById('rail'),kcT=document.getElementById('kcT'),kcA=document.getElementById('kcA'),kcP=document.getElementById('kcP'),kcE=document.getElementById('kcE');
+var rail=document.getElementById('rail'),kcT=document.getElementById('kcT'),kcA=document.getElementById('kcA'),kcP=document.getElementById('kcP'),kcM=document.getElementById('kcM'),kcE=document.getElementById('kcE');
 
-// Fill the narrative + evidence panels from stage i.
+// Fill the narrative + method + evidence panels from stage i.
 function renderChain(i){
   var d=CHAIN[i];kcT.textContent=d.t;kcA.textContent=d.a;
   kcP.innerHTML=d.p.map(function(x){return '<p>'+x+'</p>'}).join('');
+  // Tools/method line: a labeled row of the tools used at this stage.
+  kcM.innerHTML='<span class="kc-method-lbl">Tools &amp; method</span>'+
+    d.m.map(function(t){return '<span class="chip">'+t+'</span>'}).join('');
   // Each evidence row: [label, value, tone]; tone becomes a CSS class on <b>.
   kcE.innerHTML=d.e.map(function(r){var c=r[2]?' class="'+r[2]+'"':'';return '<div><span>'+r[0]+'</span><b'+c+'>'+r[1]+'</b></div>'}).join('');
 }

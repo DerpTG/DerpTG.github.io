@@ -119,7 +119,7 @@ var PROJ = [
     sum: 'Led development of a full ransomware playbook for a scooter-share company, preparation through recovery, with NCISS-scored escalation tiers.',
     more: [
       'The escalation model ran from Baseline (SOC-only) up to Emergency (full C-suite in 10 minutes), each tier defined by a concrete NCISS score band and a fixed responder timeline. The playbook covered preventative controls, detection indicators, triage, containment, eradication, and staged recovery.',
-      'Then we ran it. I facilitated CISA-format tabletop exercises against the playbook to find out which steps held under pressure and which only read well on paper.'
+      'The playbook mapped to NIST RMF, ISACA COBIT 2019, and MITRE ATT&CK. I co-owned the Introduction, Detection and Initial Triage, and Containment sections, wrote the Conclusion, and ran the weekly scrums. We then facilitated CISA-format tabletop exercises against it to find out which steps held under pressure and which only read well on paper.'
     ],
     skills: ['NIST RMF', 'MITRE ATT&CK', 'COBIT 2019', 'NCISS', 'CISA tabletops']
   },
@@ -127,7 +127,7 @@ var PROJ = [
     cat: 'Risk analysis', t: 'Elder Tech-Support Fraud Risk Analysis', team: 'Team of 4',
     sum: 'Semester-long risk assessment of a $1M+ retirement fund against a Microsoft-refund scam, modeling the victim\u2019s situation as a system with a single point of failure.',
     more: [
-      'The system was a series chain: answer call, trust caller, grant remote access, log into bank, authorize transfer. Trust was the single point of failure, with no safeguards behind it. I built a scenario matrix mapping four compliance events to three loss outcomes and rated each risk by probability and impact.',
+      'The scenario: an isolated 85-year-old at risk of losing a $1M+ retirement fund to a call-center scammer posing as a Microsoft refund specialist. I modeled it as a serial-dependency chain, where each stage (answer the call, trust the caller, grant remote access, log into the bank, authorize the transfer) is a point where the attack could be interrupted. I scored six risks on likelihood and impact, from total financial loss down to emotional harm and failure to report.',
       'The recommendation was a defense-in-depth strategy layering education, family check-ins, and technical safeguards, with a residual-risk assessment acknowledging that no single control holds under live social-engineering pressure.'
     ],
     skills: ['MECE', 'Scenario matrix', 'Benefit-cost', 'Defense in depth']

@@ -129,6 +129,9 @@ section.first{border-top:0}
 .kc-nar .att{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.1em;color:var(--violet);margin-bottom:16px;display:block}
 .kc-nar p{color:var(--dim);font-size:15.5px;max-width:52ch}
 .kc-nar p+p{margin-top:11px}
+/* Tools & method line beneath the stage narrative. */
+.kc-method{margin-top:20px;display:flex;flex-wrap:wrap;align-items:center;gap:7px}
+.kc-method-lbl{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--dimmer);width:100%;margin-bottom:2px}
 .kc-ioc{padding:26px 24px;background:rgba(0,0,0,.16)}
 .kc-ioc .tag{display:block;margin-bottom:14px}
 .ioc{font-family:'IBM Plex Mono',monospace;font-size:12px;display:grid;gap:9px}

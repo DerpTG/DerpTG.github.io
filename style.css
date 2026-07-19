@@ -628,3 +628,8 @@ button.cert.prog:hover{border-color:var(--amber);color:var(--amber)}
 /* Reduced motion: the global kill switch above stops the animations; this
    guarantees revealed content is never left hidden. */
 @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none}}
+
+/* Smooth resize: the interactive panes animate height changes instead of
+   snapping (driven by the smooth-resize block in main.js). Overflow is
+   hidden so content is clipped cleanly mid-transition. */
+.hsmooth{transition:height .38s cubic-bezier(.22,.65,.3,1);overflow-y:hidden}

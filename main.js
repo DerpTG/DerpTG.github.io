@@ -279,3 +279,56 @@ document.querySelectorAll('.e-btn').forEach(function (b) {
       });
   }
 })();
+
+
+/* Smooth resize.
+   The interactive viewers (kill chain, malware terminal, interests console)
+   swap content of different lengths. Instead of snapping to the new size,
+   each pane's height animates between the old and new value: the pane is
+   held at a fixed pixel height, and on every content change we measure the
+   new natural height and let a CSS transition carry it there. Heights are
+   re-fixed (without animating) when the webfonts land and on resize, so the
+   pane never ends up clipping its content. Under reduced motion the global
+   kill switch turns the transition off and the resize is instant. */
+(function () {
+  var panes = [
+    document.querySelector('.kc-body'),   // kill chain (casework)
+    document.getElementById('smpOut'),    // malware terminal (casework)
+    document.getElementById('intOut')     // interests console (about)
+  ].filter(Boolean);
+  if (!panes.length) return;
+
+  var refreshers = panes.map(function (pane) {
+    pane.classList.add('hsmooth');
+
+    // Measure the natural height, then either animate to it or jump to it.
+    function settle(animate) {
+      var from = pane.style.height;       // current fixed height, e.g. "412px"
+      pane.style.height = 'auto';
+      var to = pane.offsetHeight;
+      if (animate && from) {
+        pane.style.height = from;         // back to the old height...
+        void pane.offsetWidth;            // ...commit it...
+        pane.style.height = to + 'px';    // ...then transition to the new one
+      } else {
+        pane.style.height = to + 'px';    // no animation: just re-fix
+      }
+    }
+
+    settle(false);                        // fix the initial height
+    new MutationObserver(function () { settle(true); })
+      .observe(pane, { childList: true, subtree: true });
+    return function () { settle(false); };
+  });
+
+  // Re-fix heights when text metrics change: font load and window resize.
+  function refreshAll() { refreshers.forEach(function (r) { r(); }); }
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(refreshAll);
+  }
+  var t;
+  window.addEventListener('resize', function () {
+    clearTimeout(t);
+    t = setTimeout(refreshAll, 150);
+  });
+})();

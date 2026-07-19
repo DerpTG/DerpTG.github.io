@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<!--
+  404.html — Not found
+
+  GitHub Pages serves this automatically for any path that doesn't exist.
+  Same nav and footer as the rest of the site, with a terminal that reports
+  the missing file and lists the pages that do exist. No page-specific
+  script; main.js provides the shared nav behavior and motion.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>404 — Felix Naroditskiy</title>
+<meta name="description" content="Page not found.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="alternate icon" href="favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Nav. No page is active here. Keep in sync across all pages. -->
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="index.html"><i class="dot"></i>F. NARODITSKIY</a>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="casework.html">Casework</a>
+      <a href="lab.html">Lab</a>
+      <a href="projects.html">Projects</a>
+      <a href="about.html">About</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<!-- Page header -->
+<div class="phead">
+  <div class="wrap">
+    <a class="back" href="index.html">&larr; Back home</a>
+    <h1>404</h1>
+    <p class="sub">That path doesn&rsquo;t exist here. The terminal below has everything that does.</p>
+  </div>
+</div>
+
+<!-- The report, in terminal form. -->
+<section class="first">
+  <div class="wrap">
+    <div class="term">
+      <div class="term-top">
+        <span class="lt"><i></i><i></i><i></i></span>
+        <span class="path">felix@site:~</span>
+      </div>
+      <div class="out">
+        <span class="ln"><span class="p">$</span> <span class="v">cat requested-page.html</span></span>
+        <span class="ln"><span class="hot">cat: requested-page.html: No such file or directory</span></span>
+        <span class="blank"></span>
+        <span class="ln"><span class="p">$</span> <span class="v">ls</span></span>
+        <span class="ln"><span class="v"><a href="index.html">index.html</a>&nbsp;&nbsp;<a href="casework.html">casework.html</a>&nbsp;&nbsp;<a href="lab.html">lab.html</a>&nbsp;&nbsp;<a href="projects.html">projects.html</a>&nbsp;&nbsp;<a href="about.html">about.html</a></span></span>
+        <span class="blank"></span>
+        <span class="ln"><span class="p">$</span> <span class="cursor"></span></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- Footer -->
+<footer>
+  <div class="wrap">
+    <span>© 2026 F. NARODITSKIY</span>
+    <a href="index.html">BACK TO SAFETY →</a>
+  </div>
+</footer>
+
+<script src="main.js"></script>
+</body>
+</html>

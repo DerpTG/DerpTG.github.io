@@ -41,8 +41,14 @@ Each widget is a data array plus a render function, kept simple so the code stay
 ├── lab.html          Lab feed
 ├── projects.html     Project records
 ├── about.html        Bio and interests
+├── 404.html          Terminal-styled not-found page (served by GitHub Pages)
 ├── style.css         One stylesheet, tokens defined in :root
-├── main.js           Shared behavior: accordions and the resume/cert modals
+├── main.js           Shared behavior, modals, and the motion layer
+├── favicon.svg       Brand mark favicon (+ PNG fallbacks, apple-touch-icon)
+├── og.png            Social share image for link previews
+├── sitemap.xml       + robots.txt, for search indexing
+├── .well-known/
+│   └── security.txt  Standard vulnerability-disclosure contact
 └── NaroditskiyFelixResume.pdf
 ```
 

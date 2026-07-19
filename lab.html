@@ -57,7 +57,7 @@
 <section class="first">
   <div class="wrap">
     <div class="shead"><h2>Hands-on labs</h2><span class="fill"></span></div>
-    <p class="sdesc">Completed lab work from my coursework and independent study. Open any entry to read the setup, what I did, and what I found. Framed as hands-on lab experience, not production tooling.</p>
+    <p class="sdesc">Lab work from my coursework and independent study. Open any entry to read the setup, what I did, and what I found. Framed as hands-on lab experience, not production tooling. New entries land here as I finish rooms on TryHackMe.</p>
 
     <div class="feed">
       <div class="feed-top">
@@ -230,6 +230,24 @@ var LOG = [
     body: [
       'A series of blue-team fundamentals labs across Linux, traffic analysis, and defensive tooling. Highlights: capturing and analyzing HTTP and SSH traffic with tcpdump, running a SYN flood with hping3 and watching the server\u2019s connection queue degrade, host and service discovery with nmap, blocking forged and invalid addresses on a VyOS firewall, and configuring OSSEC as a host-based IDS.',
       'The series also covered split-horizon DNS, centralized logging with Rsyslog and NXLog across Linux, FreeBSD, and Windows, a buffer-overflow exploit written in C and Python to gain escalated privileges, and standing up the Elastic Stack (Elasticsearch, Logstash, Kibana) to collect and visualize log data. Additional web-assessment work used OWASP ZAP, Nikto, PKI and a local certificate authority, and Splunk with the Universal Forwarder.'
+    ]
+  },
+  {
+    sev: 'done', status: 'Complete',
+    title: 'ARP-poisoning man-in-the-middle investigation',
+    tools: ['Wireshark', 'ARP'],
+    body: [
+      'Analyzed a capture of a workstation and its gateway and identified a man-in-the-middle: a third machine sending gratuitous ARP replies to remap the gateway\u2019s IP address to its own MAC, visible as a destination-MAC swap partway through the capture, along with modified HTTP traffic passing through it.',
+      'I built an endpoint table to establish who was actually talking to whom, then closed with the standard countermeasures: dynamic ARP inspection, static ARP entries for critical hosts, and IDS/IPS monitoring for gratuitous ARP.'
+    ]
+  },
+  {
+    sev: 'done', status: 'Complete',
+    title: 'Active Directory administration across two lab builds',
+    tools: ['Windows Server 2016', 'Active Directory', 'Group Policy', 'PowerShell'],
+    body: [
+      'Hands-on AD administration from two separate courses. In the first build I stood up a domain controller, deployed a new forest as the root, enabled DNS delegation, authorized DHCP, joined Windows clients to the domain, and added users both through the Administrative Center and with PowerShell (New-ADUser).',
+      'The second build focused on administration: creating user accounts, organizing them into Organizational Units, applying Group Policy Objects that restricted Task Manager and the command prompt, and delegating scoped password-reset permissions to a department head \u2014 role-based access control and least privilege in practice, at lab scale.'
     ]
   }
 ];
@@ -516,7 +534,7 @@ var PACKETS = [
   {no:2088,time:'14.113',src:'10.10.4.55',dst:'45.148.10.32:443',proto:'TLS',tone:'hot',
    info:'Session total: 41 MB out in 90 seconds',
    tree:[['Baseline','This host: ~2 MB/hr outbound'],['This window','41 MB in 90 seconds'],['Multiplier','far above normal'],['Content','Matches the design archive size'],['Verdict','Exfiltration confirmed']],
-   note:'The summary that closes it. This workstation normally sends a couple of megabytes an hour. It just pushed 41 MB to an external host in a minute and a half, right after grabbing Flexin\u2019s design files. That\u2019s theft, not traffic.'}
+   note:'The summary that closes it. This workstation normally sends a couple of megabytes an hour, and it just pushed 41 MB to an external host in a minute and a half, right after grabbing Flexin\u2019s design files. Put together, that\u2019s exfiltration.'}
 ];
 
 var pcapList=document.getElementById('pcapList'),pcapDetail=document.getElementById('pcapDetail');

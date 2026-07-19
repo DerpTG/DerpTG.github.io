@@ -109,7 +109,7 @@ var PROJ = [
     sum: 'The site you\u2019re on. Static HTML, CSS, and vanilla JavaScript, hosted free on GitHub Pages with a custom domain.',
     more: [
       'No framework, no build step, no dependencies. Just semantic HTML, one stylesheet driven by CSS custom properties, and small self-contained JavaScript widgets. Each interactive piece is a data array plus a render function, kept simple so the whole codebase stays readable.',
-      'I built it to be the opposite of a resume bullet. Instead of claiming I can do forensics and detection work, the site lets you click through real casework. It\u2019s version-controlled on GitHub and redeploys on every push.'
+      'Instead of a page of claims, the site lets you click through the actual casework. It\u2019s version-controlled on GitHub and redeploys on every push.'
     ],
     skills: ['HTML', 'CSS', 'Vanilla JS', 'Git', 'GitHub Pages'],
     gh: 'https://github.com/DerpTG/DerpTG.github.io'
@@ -119,7 +119,7 @@ var PROJ = [
     sum: 'Led development of a full ransomware playbook for a scooter-share company, preparation through recovery, with NCISS-scored escalation tiers.',
     more: [
       'The escalation model ran from Baseline (SOC-only) up to Emergency (full C-suite in 10 minutes), each tier defined by a concrete NCISS score band and a fixed responder timeline. The playbook covered preventative controls, detection indicators, triage, containment, eradication, and staged recovery.',
-      'The playbook mapped to NIST RMF, ISACA COBIT 2019, and MITRE ATT&CK. I co-owned the Introduction, Detection and Initial Triage, and Containment sections, wrote the Conclusion, and ran the weekly scrums. We then facilitated CISA-format tabletop exercises against it to find out which steps held under pressure and which only read well on paper.'
+      'The playbook mapped to NIST RMF, ISACA COBIT 2019, and MITRE ATT&CK. I co-owned the Introduction, Detection and Initial Triage, and Containment sections, wrote the Conclusion, and ran the weekly scrums. We then ran CISA-format tabletop exercises against it to see which steps actually held up under pressure.'
     ],
     skills: ['NIST RMF', 'MITRE ATT&CK', 'COBIT 2019', 'NCISS', 'CISA tabletops']
   },
@@ -136,7 +136,7 @@ var PROJ = [
     cat: 'Secure engineering', t: 'Secure Patient Data Pipeline', team: 'Team of 5',
     sum: 'A Java message-queuing pipeline that keeps patient records encrypted end to end across an input-to-display workflow.',
     more: [
-      'Patient data is AES-encrypted before serialization, moves through RabbitMQ as JSON, and is decrypted only at the consumer. Sensitive data never sits in the queue in the clear, and that single constraint drove the whole architecture.',
+      'Patient data is AES-encrypted before serialization, moves through RabbitMQ as JSON, and is decrypted only at the consumer. Patient data never sits in the queue unencrypted, and that requirement shaped the rest of the design.',
       'Built for IST 242 with a five-person team. I worked on the encryption and decryption stages and the queuing flow.'
     ],
     skills: ['Java', 'RabbitMQ', 'AES', 'Maven', 'Gson'],

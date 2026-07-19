@@ -27,6 +27,7 @@ Each widget is a data array plus a render function, kept simple so the code stay
 ## Tech
 
 - HTML, CSS, and vanilla JavaScript, with no libraries or frameworks
+- Motion layer: a page-load intro (the hero name decodes from glyphs), scroll-triggered reveals via IntersectionObserver, and animated content swaps in every widget, all disabled under `prefers-reduced-motion`
 - CSS custom properties, so the whole palette is defined once in `:root` in `style.css`
 - GitHub Pages for static hosting, with automatic deploy on every push
 - Claude, my partner in crime for building it

@@ -555,3 +555,76 @@ button.cert.prog:hover{border-color:var(--amber);color:var(--amber)}
 .ex-h{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--cyan);margin:34px 0 6px}
 .ex-h:first-of-type{margin-top:8px}
 .ex-sub{color:var(--dim);font-size:14.5px;line-height:1.6;max-width:70ch;margin-bottom:16px}
+/* ---------- MOTION ----------
+   Three layers, all disabled by the prefers-reduced-motion block above
+   (animations and transitions are globally killed there, and .reveal is
+   forced visible below).
+
+   1. Page-load intro  the hero and subpage headers rise in on load, and
+      the hero name decodes from glyphs (the .scramble hook in main.js).
+   2. Scroll reveal    main.js tags key blocks with .reveal and flips them
+      to .in as they enter the viewport; --rd staggers siblings.
+   3. Widget swaps     the interactive panes animate their content changes:
+      terminal lines cascade (--d per line), detail panes fade up (.swap). */
+
+@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.hero .tag{animation:rise .5s .05s both}
+.hero h1{animation:rise .6s .16s both}
+.hero .lede{animation:rise .6s .3s both}
+.hero .hbar div{animation:rise .55s both}
+.hero .hbar div:nth-child(1){animation-delay:.44s}
+.hero .hbar div:nth-child(2){animation-delay:.52s}
+.hero .hbar div:nth-child(3){animation-delay:.6s}
+.hero .hbar div:nth-child(4){animation-delay:.68s}
+.phead .back{animation:rise .45s .02s both}
+.phead h1{animation:rise .55s .1s both}
+.phead .sub{animation:rise .55s .2s both}
+
+/* Hero ambiance: a faint blueprint grid fading out from the headline, and a
+   slow scan line that sweeps the hero. Both sit behind the content. */
+.hero{position:relative}
+.hero::before{
+  content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(59,224,224,.05) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(59,224,224,.05) 1px,transparent 1px);
+  background-size:44px 44px;
+  -webkit-mask-image:radial-gradient(640px 360px at 70% 32%,#000,transparent 72%);
+  mask-image:radial-gradient(640px 360px at 70% 32%,#000,transparent 72%);
+}
+.hero::after{
+  content:"";position:absolute;left:0;right:0;top:6%;height:1px;z-index:-1;pointer-events:none;opacity:0;
+  background:linear-gradient(90deg,transparent,rgba(59,224,224,.35) 30%,rgba(59,224,224,.35) 70%,transparent);
+  animation:scan 9s ease-in-out 1.4s infinite;
+}
+@keyframes scan{
+  0%{top:6%;opacity:0}
+  10%{opacity:.65}
+  55%{top:92%;opacity:.3}
+  70%{opacity:0}
+  100%{top:92%;opacity:0}
+}
+
+/* Scroll reveal. main.js adds .reveal (so nothing hides without JS), then
+   .in when the element enters the viewport. --rd staggers siblings. */
+.reveal{
+  opacity:0;transform:translateY(14px);
+  transition:opacity .6s cubic-bezier(.22,.65,.3,1),transform .6s cubic-bezier(.22,.65,.3,1);
+  transition-delay:var(--rd,0ms);
+}
+.reveal.in{opacity:1;transform:none}
+/* The section-heading rule draws itself once the heading reveals. */
+.shead .fill{transform-origin:left;transition:transform .8s .25s cubic-bezier(.22,.65,.3,1)}
+.shead.reveal .fill{transform:scaleX(0)}
+.shead.reveal.in .fill{transform:scaleX(1)}
+
+/* Widget content swaps: detail panes fade up on change, terminal lines
+   cascade in with a per-line delay set by main.js. */
+.swap{animation:swapIn .32s ease both}
+@keyframes swapIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.out .ln,.out .blank{animation:lnIn .3s both;animation-delay:var(--d,0ms)}
+@keyframes lnIn{from{opacity:0}to{opacity:1}}
+
+/* Reduced motion: the global kill switch above stops the animations; this
+   guarantees revealed content is never left hidden. */
+@media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none}}

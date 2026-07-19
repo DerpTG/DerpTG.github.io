@@ -188,3 +188,94 @@ document.querySelectorAll('.e-btn').forEach(function (b) {
   modal.addEventListener('click', function (e) { if (e.target === modal) close(); });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
 })();
+
+/* Motion.
+   Three pieces, each skipped when the visitor prefers reduced motion:
+     1. Name decode      the hero name resolves from glyphs into text on load.
+     2. Scroll reveal    key blocks fade up as they enter the viewport.
+     3. Widget swaps     the interactive panes animate their content changes.
+   The CSS side lives in the MOTION section of style.css. Because this file
+   loads after the page-specific scripts, every widget already exists in the
+   DOM by the time these observers attach. */
+(function () {
+  var reduce = window.matchMedia &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* 1. Name decode.
+     Any .scramble element resolves left-to-right from random glyphs into its
+     data-text over roughly three-quarters of a second. The real text is in
+     the markup, so without JS (or with reduced motion) it just reads normally. */
+  document.querySelectorAll('.scramble').forEach(function (el) {
+    var text = el.getAttribute('data-text') || el.textContent;
+    if (reduce) { el.textContent = text; return; }
+    var glyphs = '#/<>[]{}=+*^?!$%&';
+    var frame = 0;
+    var timer = setInterval(function () {
+      var out = '', done = true;
+      for (var i = 0; i < text.length; i++) {
+        if (text[i] === ' ' || frame > i * 1.6 + 6) {
+          out += text[i];
+        } else {
+          out += glyphs[(Math.random() * glyphs.length) | 0];
+          done = false;
+        }
+      }
+      el.textContent = out;
+      frame++;
+      if (done) { clearInterval(timer); el.textContent = text; }
+    }, 26);
+  });
+
+  /* 2. Scroll reveal.
+     Tag the recurring blocks with .reveal, stagger siblings via --rd, then
+     flip each to .in the first time it enters the viewport. The class is
+     added here (not in the markup) so nothing is hidden when JS is off. */
+  if (!reduce && 'IntersectionObserver' in window) {
+    var sel = [
+      '.shead', '.sdesc', '.ncard', '.org', '.sgrid', '.certs',
+      '.kc', '.term', '.feed', '.rec', '.lab-ex', '.ex-h', '.ex-sub',
+      '.bio-main', '.bio-facts', '.contact h2', '.contact p', '.links'
+    ].join(',');
+    var targets = document.querySelectorAll(sel);
+    var counts = new Map();                     // parent -> sibling index
+    targets.forEach(function (el) {
+      var n = counts.get(el.parentNode) || 0;
+      counts.set(el.parentNode, n + 1);
+      el.style.setProperty('--rd', Math.min(n * 70, 350) + 'ms');
+      el.classList.add('reveal');
+    });
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) {
+          en.target.classList.add('in');
+          io.unobserve(en.target);
+        }
+      });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.05 });
+    targets.forEach(function (el) { io.observe(el); });
+  }
+
+  /* 3. Widget swaps.
+     Watch each interactive pane for content changes. Terminal panes (.out)
+     get a per-line cascade via the --d delay; the narrative/detail panes get
+     a single fade-up by re-triggering the .swap animation. MutationObserver
+     callbacks run before the next paint, so the delays land in time. */
+  if (!reduce && 'MutationObserver' in window) {
+    document.querySelectorAll('.out').forEach(function (pane) {
+      new MutationObserver(function () {
+        var kids = pane.children;
+        for (var i = 0; i < kids.length; i++) {
+          kids[i].style.setProperty('--d', Math.min(i * 20, 480) + 'ms');
+        }
+      }).observe(pane, { childList: true });
+    });
+    document.querySelectorAll('.kc-nar, .kc-ioc, .siem-detail, .pcap-detail')
+      .forEach(function (pane) {
+        new MutationObserver(function () {
+          pane.classList.remove('swap');
+          void pane.offsetWidth;                // restart the animation
+          pane.classList.add('swap');
+        }).observe(pane, { childList: true, subtree: true });
+      });
+  }
+})();

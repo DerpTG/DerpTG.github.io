@@ -151,7 +151,7 @@
       </div>
       <div class="phish-side">
         <span class="tag">Red flags found</span>
-        <div class="phish-prog" id="phishProg">0 / 6</div>
+        <div class="phish-prog" id="phishProg">0 / 7</div>
         <div class="phish-prog-lbl">click the suspicious parts</div>
         <div class="phish-found" id="phishFound"></div>
         <div class="phish-hint" id="phishHint">Look at the sender, the links, the tone, and anything it&rsquo;s rushing you to do.</div>
@@ -604,6 +604,7 @@ pcapRender();
 /* The flags and their explanations, keyed by id. */
 var FLAGS = {
   sender:  'The display name says Flexin IT, but the actual address is a lookalike domain (flexin-watches-support.com, not flexinwatches.com). Spoofed sender is the number-one tell.',
+  subject: 'The subject threatens account loss on a deadline before you have even opened the message. Pressure in the subject line is there to get the click, not to inform you.',
   urgency: 'Manufactured urgency. A hard 24-hour deadline with a threat of losing access is designed to make you act before you think.',
   greeting:'A generic greeting. A real internal IT note to one person usually uses your name, not "Dear Employee."',
   link:    'The link text says the internal portal, but the real URL points somewhere else entirely. Always check where a link actually goes before clicking.',
@@ -616,7 +617,7 @@ var MAIL = {
   headers: [
     ['From', [{t:'Flexin IT Support '},{t:'<security@flexin-watches-support.com>', flag:'sender'}]],
     ['To', [{t:'j.moreau@flexinwatches.com'}]],
-    ['Subject', [{t:'ACTION REQUIRED: '},{t:'Your account will be disabled in 24 hours', flag:'urgency'}]]
+    ['Subject', [{t:'ACTION REQUIRED: '},{t:'Your account will be disabled in 24 hours', flag:'subject'}]]
   ],
   body: [
     [{t:'', flag:'greeting', label:'Dear Employee,'}],
@@ -634,7 +635,7 @@ var phishProg=document.getElementById('phishProg');
 var phishFound=document.getElementById('phishFound');
 var phishDone=document.getElementById('phishDone');
 var foundSet={};                       // ids the player has clicked
-var totalFlags=Object.keys(FLAGS).length;
+var totalFlags=0;                      // set after render, from the DOM
 
 function phEsc(x){return String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
@@ -660,12 +661,30 @@ var bodyHtml = MAIL.body.map(function(p){
 }).join('');
 phishBody.innerHTML = bodyHtml;
 
-/* Wire every flag: clicking (or Enter) marks it found. */
+/* Count the distinct flag ids that actually made it into the email, and set
+   the starting counter from that. Deriving it here (instead of from FLAGS)
+   keeps the target honest if the email and the explanation list drift. */
+var renderedIds = {};
+document.querySelectorAll('.flag').forEach(function(el){
+  renderedIds[el.getAttribute('data-flag')] = true;
+});
+totalFlags = Object.keys(renderedIds).length;
+phishProg.textContent = '0 / ' + totalFlags;
+
+/* Wire every flag: clicking (or Enter) marks it found.
+   If the same flag id ever appears in more than one place in the email, all
+   of its instances are marked together, and the total below counts distinct
+   ids that are actually reachable in the markup, so the counter can always
+   be completed. */
 function markFound(el){
   var id = el.getAttribute('data-flag');
   if (foundSet[id]) return;            // already found
   foundSet[id] = true;
-  el.classList.add('found');
+
+  // Mark every instance of this id, not just the one clicked.
+  document.querySelectorAll('.flag[data-flag="' + id + '"]').forEach(function(x){
+    x.classList.add('found');
+  });
 
   // Add the explanation to the side panel.
   var item = document.createElement('div');
@@ -676,7 +695,7 @@ function markFound(el){
   // Update the counter and, if complete, show the closing note.
   var n = Object.keys(foundSet).length;
   phishProg.textContent = n + ' / ' + totalFlags;
-  if (n === totalFlags) phishDone.classList.add('show');
+  if (n >= totalFlags) phishDone.classList.add('show');
 }
 
 document.querySelectorAll('.flag').forEach(function(el){

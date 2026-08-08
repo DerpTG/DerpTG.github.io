@@ -1270,3 +1270,45 @@ button.shot-thumb{padding:0;font:inherit;color:inherit;cursor:zoom-in}
   text-transform:uppercase;color:var(--signal);white-space:nowrap;
 }
 @media(pointer:coarse){.scroll-hint{display:inline}}
+
+/* ============================================================================
+   SPOT THE PHISH
+
+   Nothing here swaps in bulk, so there is no batch to cascade. What was
+   popping was the per-interaction feedback: a finding appearing in the side
+   panel, the counter ticking, a flag turning red, and the closing note.
+
+   Most of this needs no JS. A .fnd is a brand new node, so it animates the
+   moment it is inserted; .phish-done and .flag.found start animating because
+   a class change makes the rule newly match. Only the counter needs help,
+   since its text changes in place.
+   ========================================================================= */
+.phish-found .fnd{animation:fndIn .44s cubic-bezier(.22,.68,.28,1) both}
+@keyframes fndIn{
+  from{opacity:0;transform:translateX(-10px)}
+  to{opacity:1;transform:none}
+}
+/* The marker grows from the left as the entry arrives. */
+.phish-found .fnd::before{animation:fndRule .34s .12s cubic-bezier(.22,.68,.28,1) both;transform-origin:left}
+@keyframes fndRule{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+
+/* Clicking a flag should register as a hit, not a silent restyle. */
+.flag.found{animation:flagHit .5s cubic-bezier(.22,.68,.28,1)}
+@keyframes flagHit{
+  0%{background:rgba(200,16,46,.42)}
+  100%{background:rgba(200,16,46,.13)}
+}
+
+/* Counter tick. main.js adds .bump when the text changes. */
+.phish-prog{transition:color .2s}
+.phish-prog.bump{animation:bump .42s cubic-bezier(.22,.68,.28,1)}
+@keyframes bump{
+  0%{transform:scale(1)}
+  32%{transform:scale(1.16);color:var(--ink)}
+  100%{transform:scale(1)}
+}
+
+/* Closing note, once every flag is found. */
+.phish-done.show{animation:swapIn .42s cubic-bezier(.22,.68,.28,1) both}
+.phish-done.show .v{animation:cascadeIn .42s .1s cubic-bezier(.22,.68,.28,1) both}
+.phish-done.show p{animation:cascadeIn .42s .2s cubic-bezier(.22,.68,.28,1) both}

@@ -337,6 +337,17 @@ function makeModal(id, closeBtnId) {
     });
   });
 
+  /* The phish counter changes its text in place, so no new node appears to
+     animate. Watch it and bump it instead. */
+  var prog = document.getElementById('phishProg');
+  if (prog) {
+    new MutationObserver(function () {
+      prog.classList.remove('bump');
+      void prog.offsetWidth;                   // restart the animation
+      prog.classList.add('bump');
+    }).observe(prog, { childList: true, characterData: true, subtree: true });
+  }
+
   /* ---- 3. Smooth resize ----
      The viewers swap content of different lengths. Instead of snapping, each
      pane is held at a fixed pixel height; on every change we measure the new

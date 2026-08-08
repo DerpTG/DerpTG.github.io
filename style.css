@@ -1020,8 +1020,40 @@ section.first{border-top:0}
 .shead.reveal.in .fill{transform:scaleX(1)}
 
 /* ---- 3. Widget swaps ---- */
+/* Two swap styles.
+
+   .swap fades a pane in as one block. Right for short panes where the whole
+   thing reads at once.
+
+   .swap-cascade leaves the pane alone and staggers its parts instead, the way
+   the terminal panes stagger their lines. Used where a pane holds several
+   distinct pieces (a title, an ATT&CK ID, paragraphs, evidence rows) and
+   fading them together looked like the content simply popped.
+
+   The two never combine: a pane animating while its children also animate
+   multiplies the opacities and goes muddy. */
 .swap{animation:swapIn .34s cubic-bezier(.22,.68,.28,1) both}
 @keyframes swapIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* Children are listed explicitly rather than using > * because several of
+   these elements persist across swaps (only their text changes), so the
+   animation has to be re-armed by toggling the class on the parent. */
+.swap-cascade .ttl,
+.swap-cascade .att,
+.swap-cascade p,
+.swap-cascade .kc-method-lbl,
+.swap-cascade .chip,
+.swap-cascade .tag,
+.swap-cascade .ioc>div,
+.swap-cascade h4,
+.swap-cascade .siem-dh,
+.swap-cascade .siem-meta>div,
+.swap-cascade .siem-acts,
+.swap-cascade .siem-verdict{
+  animation:cascadeIn .42s cubic-bezier(.22,.68,.28,1) both;
+  animation-delay:var(--d,0ms);
+}
+@keyframes cascadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 .out .ln,.out .blank{animation:lnIn .3s both;animation-delay:var(--d,0ms)}
 @keyframes lnIn{from{opacity:0;transform:translateX(-4px)}to{opacity:1;transform:none}}
 .shots .shot-thumb{animation:swapIn .4s both;animation-delay:var(--sd,0ms)}

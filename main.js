@@ -296,14 +296,43 @@ function makeModal(id, closeBtnId) {
     }).observe(pane, { childList: true });
   });
 
-  document.querySelectorAll('.kc-nar, .kc-ioc, .siem-detail, .pcap-detail, .rec-pad, .feed-pad')
-    .forEach(function (pane) {
-      new MutationObserver(function () {
-        pane.classList.remove('swap');
-        void pane.offsetWidth;                 // restart the animation
-        pane.classList.add('swap');
-      }).observe(pane, { childList: true, subtree: true });
+  /* Panes that fade in as one block. */
+  document.querySelectorAll('.pcap-detail, .rec-pad, .feed-pad').forEach(function (pane) {
+    new MutationObserver(function () {
+      pane.classList.remove('swap');
+      void pane.offsetWidth;                   // restart the animation
+      pane.classList.add('swap');
+    }).observe(pane, { childList: true, subtree: true });
+  });
+
+  /* Panes whose parts stagger in, the way the terminal staggers its lines.
+     The kill chain used the block fade and its whole narrative appeared at
+     once, which read as the text popping rather than loading.
+
+     Several of these elements survive a swap (the kill chain only rewrites
+     kcT.textContent, it does not replace the node), so the animation has to be
+     re-armed by removing the class, forcing a reflow, and adding it back. */
+  var CASCADE = {
+    '.kc-nar': '.ttl, .att, p, .kc-method-lbl, .chip',
+    '.kc-ioc': '.tag, .ioc > div',
+    '.siem-detail': '.siem-dh, h4, .siem-meta > div, .tag, .siem-acts, .siem-verdict'
+  };
+  Object.keys(CASCADE).forEach(function (sel) {
+    document.querySelectorAll(sel).forEach(function (pane) {
+      var parts = CASCADE[sel];
+      function run() {
+        var kids = pane.querySelectorAll(parts);
+        for (var i = 0; i < kids.length; i++) {
+          kids[i].style.setProperty('--d', Math.min(i * 42, 380) + 'ms');
+        }
+        pane.classList.remove('swap-cascade');
+        void pane.offsetWidth;
+        pane.classList.add('swap-cascade');
+      }
+      run();                                   // animate the initial content too
+      new MutationObserver(run).observe(pane, { childList: true, subtree: true });
     });
+  });
 
   /* ---- 3. Smooth resize ----
      The viewers swap content of different lengths. Instead of snapping, each

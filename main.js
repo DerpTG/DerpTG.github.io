@@ -297,7 +297,7 @@ function makeModal(id, closeBtnId) {
   });
 
   /* Panes that fade in as one block. */
-  document.querySelectorAll('.pcap-detail, .rec-pad, .feed-pad').forEach(function (pane) {
+  document.querySelectorAll('.rec-pad, .feed-pad').forEach(function (pane) {
     new MutationObserver(function () {
       pane.classList.remove('swap');
       void pane.offsetWidth;                   // restart the animation
@@ -315,7 +315,10 @@ function makeModal(id, closeBtnId) {
   var CASCADE = {
     '.kc-nar': '.ttl, .att, p, .kc-method-lbl, .chip',
     '.kc-ioc': '.tag, .ioc > div',
-    '.siem-detail': '.siem-dh, h4, .siem-meta > div, .tag, .siem-acts, .siem-verdict'
+    '.siem-detail': '.siem-dh, h4, .siem-meta > div, .tag, .siem-acts, .siem-verdict',
+    /* pcap.js rewrites className outright, but it does that before setting
+       innerHTML, so the observer re-adds the cascade class afterwards. */
+    '.pcap-detail': '.pkt-tree .tag, .pkt-line, .pkt-note .tag, .pkt-note p'
   };
   Object.keys(CASCADE).forEach(function (sel) {
     document.querySelectorAll(sel).forEach(function (pane) {

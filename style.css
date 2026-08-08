@@ -1045,6 +1045,7 @@ section.first{border-top:0}
 .swap-cascade .chip,
 .swap-cascade .tag,
 .swap-cascade .ioc>div,
+.swap-cascade .pkt-line,
 .swap-cascade h4,
 .swap-cascade .siem-dh,
 .swap-cascade .siem-meta>div,

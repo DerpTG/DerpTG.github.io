@@ -240,8 +240,11 @@ function makeModal(id, closeBtnId) {
 
   /* ---- 1. Scroll reveal ---- */
   if ('IntersectionObserver' in window) {
+    // .role is deliberately absent: it lives inside .org, which is already a
+    // target, and two nested fades multiply into a muddy quarter-opacity
+    // reveal. One block, one fade.
     var sel = [
-      '.shead', '.sdesc', '.org', '.role', '.caps', '.certs', '.ncard',
+      '.shead', '.sdesc', '.org', '.caps', '.certs', '.ncard',
       '.kc', '.term', '.feed', '.rec', '.lab-ex', '.ex-h', '.ex-sub',
       '.bio-main', '.bio-facts', '.contact h2', '.contact p', '.contact .cta',
       '.factband'
@@ -251,17 +254,25 @@ function makeModal(id, closeBtnId) {
     targets.forEach(function (el) {
       var n = counts.get(el.parentNode) || 0;
       counts.set(el.parentNode, n + 1);
-      el.style.setProperty('--rd', Math.min(n * 80, 360) + 'ms');
+      el.style.setProperty('--rd', Math.min(n * 60, 220) + 'ms');
       el.classList.add('reveal');
     });
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (en) {
-        if (en.isIntersecting) {
-          en.target.classList.add('in');
-          io.unobserve(en.target);
-        }
+        if (!en.isIntersecting) return;
+        var el = en.target;
+        el.classList.add('in');
+        io.unobserve(el);
+        /* Once the fade finishes, drop both classes. The reveal rule is
+           declared after the hover rules and would otherwise keep overriding
+           them, leaving hover stuck at the reveal's half-second duration. */
+        var delay = parseInt(el.style.getPropertyValue('--rd'), 10) || 0;
+        window.setTimeout(function () {
+          el.classList.remove('reveal', 'in');
+          el.style.removeProperty('--rd');
+        }, delay + 620);
       });
-    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.04 });
+    }, { rootMargin: '0px 0px -4% 0px', threshold: 0.02 });
     targets.forEach(function (el) { io.observe(el); });
   }
 
@@ -345,71 +356,29 @@ function makeModal(id, closeBtnId) {
 /* ============================================================================
    ENTRY GATE
 
-   A full-page case-open screen. Built here rather than written into the
-   markup, so the site is never behind it: with JavaScript off the gate never
-   exists and the page loads normally.
+   The markup lives in index.html and is shown by CSS the moment the head
+   script adds .gating to <html>, which happens before first paint. This file
+   only wires the behaviour, so nothing here affects when the gate appears.
 
-   Shown only on the home page, and only once per browser session, so moving
-   between pages does not re-trigger it. The <html> element carries .gating
-   while it is up, which pauses the hero's load sequence so the intro plays
-   when the visitor arrives rather than behind the screen.
+   With JavaScript off the head script never runs, .gating is never added, the
+   gate stays hidden, and the site loads normally.
    ========================================================================= */
 (function () {
   var host = document.getElementById('gate');
-  if (!host) return;
+  var root = document.documentElement;
+  if (!host || !root.classList.contains('gating')) return;
 
   var KEY = 'fn.gate.seen';
-  try { if (sessionStorage.getItem(KEY)) return; } catch (e) { /* private mode */ }
+  function seen() { try { sessionStorage.setItem(KEY, '1'); } catch (e) {} }
 
-  var root = document.documentElement;
-
-  // A page icon with a badge, in the manner of a case-open dialog.
-  function ico(badge) {
-    return '<svg class="gate-ico" viewBox="0 0 44 44" aria-hidden="true">' +
-      '<path d="M8 3h16l10 10v27a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z" fill="#F4F5F2" stroke="#A9AEA6" stroke-width="1.5"/>' +
-      '<path d="M24 3v10h10" fill="none" stroke="#A9AEA6" stroke-width="1.5"/>' +
-      '<circle cx="31" cy="31" r="9.5" fill="#C8102E"/>' + badge + '</svg>';
-  }
-  var PLUS  = '<path d="M31 26.5v9M26.5 31h9" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>';
-  var ARROW = '<path d="M26.8 31h7.6m-3.2-3.4 3.4 3.4-3.4 3.4" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>';
-  var GLASS = '<circle cx="29.4" cy="29.4" r="3.8" fill="none" stroke="#fff" stroke-width="2.2"/><path d="M32.2 32.2 35.4 35.4" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>';
-
-  host.innerHTML =
-    '<div class="gate-bar">' +
-      '<span class="t"><i></i>Welcome</span>' +
-      '<button class="gate-x" data-gate-close aria-label="Close and enter the site">\u2715</button>' +
-    '</div>' +
-    '<div class="gate-body" role="dialog" aria-modal="true" aria-labelledby="gateName">' +
-      '<div class="gate-brand">' +
-        // The mark is favicon.svg, referenced rather than redrawn, so the gate
-        // cannot drift out of sync with the real logo.
-        '<img class="gate-logo" src="favicon.svg" alt="" width="118" height="118">' +
-        '<span class="nm" id="gateName">Felix<br>Naroditskiy</span>' +
-        '<span class="rl">Digital forensics, malware analysis, and incident response. Pick where you want to start.</span>' +
-        '<span class="sub">Analyze &middot; Document &middot; Report</span>' +
-      '</div>' +
-      '<div class="gate-opts">' +
-        '<button class="gate-opt primary" data-gate-close>' + ico(PLUS) +
-          '<span class="lbl2"><span class="h">Start investigation</span>' +
-          '<span class="d">Open the site</span></span><span class="arw">\u2192</span></button>' +
-        '<a class="gate-opt" href="projects.html">' + ico(ARROW) +
-          '<span class="lbl2"><span class="h">Open projects</span>' +
-          '<span class="d">Investigations &middot; Archive</span></span><span class="arw">\u2192</span></a>' +
-        '<a class="gate-opt" href="lab.html">' + ico(GLASS) +
-          '<span class="lbl2"><span class="h">Open the lab</span>' +
-          '<span class="d">Labs &middot; Exercises</span></span><span class="arw">\u2192</span></a>' +
-      '</div>' +
-    '</div>' +
-    '<div class="gate-foot">' +
-      '<span class="hint">Esc to skip</span>' +
-    '</div>';
-
+  /* The markup ships with hidden so the gate never appears without JS. CSS
+     overrides it under .gating for an instant first paint, but the attribute
+     is still set, which would make every host.hidden check below read true.
+     Clear it now that we know the gate is genuinely up. */
   host.hidden = false;
-  root.classList.add('gating');
+
   var first = host.querySelector('.gate-opt');
   if (first) first.focus();
-
-  function seen() { try { sessionStorage.setItem(KEY, '1'); } catch (e) {} }
 
   function dismiss() {
     seen();

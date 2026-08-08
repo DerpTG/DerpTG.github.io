@@ -41,6 +41,13 @@
 <link rel="preload" as="image" href="img/felix.jpg" imagesrcset="img/felix-sm.jpg 450w, img/felix.jpg 900w" imagesizes="420px">
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
+<script>
+/* Runs before first paint. If the gate is due this session, tag <html> now so
+   the CSS can show it the instant its markup is parsed. Doing this from
+   main.js at the end of <body> meant the whole page painted first and the
+   gate dropped on top a frame later, which read as a flash of the site. */
+(function(){try{if(!sessionStorage.getItem('fn.gate.seen'))document.documentElement.className+=' gating';}catch(e){}})();
+</script>
 <script type="application/ld+json">
 {
   "@context":"https://schema.org","@type":"Person",
@@ -56,6 +63,33 @@
 </script>
 </head>
 <body id="top">
+
+<!-- Entry gate. Written into the markup so it paints with the first frame
+     rather than being built after load, which caused a flash of the site.
+     hidden by default: it only shows when the head script has added .gating,
+     so with JavaScript off it never appears and the site is never behind it.
+     main.js only wires the behaviour. -->
+<div class="gate" id="gate" hidden>
+  <div class="gate-bar">
+    <span class="t"><i></i>Welcome</span>
+    <button class="gate-x" data-gate-close aria-label="Close and enter the site">&#10005;</button>
+  </div>
+  <div class="gate-body" role="dialog" aria-modal="true" aria-labelledby="gateName">
+    <div class="gate-brand">
+      <img class="gate-logo" src="favicon.svg" alt="" width="118" height="118">
+      <span class="nm" id="gateName">Felix<br>Naroditskiy</span>
+      <span class="rl">Digital forensics, malware analysis, and incident response. Pick where you want to start.</span>
+      <span class="sub">Analyze &middot; Document &middot; Report</span>
+    </div>
+    <div class="gate-opts">
+      <button class="gate-opt primary" data-gate-close><svg class="gate-ico" viewBox="0 0 44 44" aria-hidden="true"><path d="M8 3h16l10 10v27a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z" fill="#F4F5F2" stroke="#A9AEA6" stroke-width="1.5"/><path d="M24 3v10h10" fill="none" stroke="#A9AEA6" stroke-width="1.5"/><circle cx="31" cy="31" r="9.5" fill="#C8102E"/><path d="M31 26.5v9M26.5 31h9" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg><span class="lbl2"><span class="h">Start investigation</span><span class="d">Open the site</span></span><span class="arw">&rarr;</span></button>
+      <a class="gate-opt" href="projects.html"><svg class="gate-ico" viewBox="0 0 44 44" aria-hidden="true"><path d="M8 3h16l10 10v27a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z" fill="#F4F5F2" stroke="#A9AEA6" stroke-width="1.5"/><path d="M24 3v10h10" fill="none" stroke="#A9AEA6" stroke-width="1.5"/><circle cx="31" cy="31" r="9.5" fill="#C8102E"/><path d="M26.8 31h7.6m-3.2-3.4 3.4 3.4-3.4 3.4" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="lbl2"><span class="h">Open projects</span><span class="d">Investigations &middot; Archive</span></span><span class="arw">&rarr;</span></a>
+      <a class="gate-opt" href="lab.html"><svg class="gate-ico" viewBox="0 0 44 44" aria-hidden="true"><path d="M8 3h16l10 10v27a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z" fill="#F4F5F2" stroke="#A9AEA6" stroke-width="1.5"/><path d="M24 3v10h10" fill="none" stroke="#A9AEA6" stroke-width="1.5"/><circle cx="31" cy="31" r="9.5" fill="#C8102E"/><circle cx="29.4" cy="29.4" r="3.8" fill="none" stroke="#fff" stroke-width="2.2"/><path d="M32.2 32.2 35.4 35.4" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg><span class="lbl2"><span class="h">Open the lab</span><span class="d">Labs &middot; Exercises</span></span><span class="arw">&rarr;</span></a>
+    </div>
+  </div>
+  <div class="gate-foot"><span class="hint">Esc to skip</span></div>
+</div>
+
 
 <header class="nav">
   <div class="wrap">
@@ -315,11 +349,6 @@
     <a href="projects.html">Start with the projects &rarr;</a>
   </div>
 </footer>
-
-<!-- Entry gate mount point. main.js fills and reveals this; with JavaScript
-     off it stays empty and hidden, so the site is never behind it. Home page
-     only, and once per browser session. -->
-<div class="gate" id="gate" hidden></div>
 
 <script src="main.js"></script>
 </body>

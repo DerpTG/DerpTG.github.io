@@ -12,7 +12,6 @@ My personal cybersecurity portfolio. Digital forensics, malware analysis, and in
 | `projects.html` | Casework and archive in one place: an interactive kill-chain map, a terminal-style malware triage tool covering 12 samples, then the expandable project record list |
 | `lab.html` | A running log of self-directed work as a live alert feed, plus three try-it-yourself exercises |
 | `about.html` | Bio, quick facts, and an interests console. The computer-building entry carries photos of my own builds. |
-| `casework.html` | Redirect stub. Casework merged into `projects.html`; this keeps old links alive and declares the canonical URL so search rankings consolidate. |
 
 ## Design
 
@@ -75,7 +74,6 @@ Page bodies and the widget scripts live in `parts/`. Edit those, re-run, commit 
 ├── lab.html            Lab feed + exercises   │ generated
 ├── about.html          Bio and interests      │ by build.py
 ├── 404.html            Not-found page         ┘
-├── casework.html       Redirect stub -> projects.html
 ├── style.css           One stylesheet, tokens in :root
 ├── main.js             Nav, modals, gate, lightbox, motion
 ├── build.py            Page assembler

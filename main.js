@@ -501,3 +501,71 @@ function makeModal(id, closeBtnId) {
     else if (e.key === 'ArrowRight') show(i + 1);
   });
 })();
+
+
+/* ============================================================================
+   SCROLLABLE PANES
+
+   The kill-chain rail, the malware sample list, the SIEM queue and the
+   interests list all overflow at phone width, where the browser's overlay
+   scrollbar stays invisible until you are already scrolling. Each pane gets a
+   persistent scrollbar and an edge fade from style.css; this decides which
+   fade to show and re-checks whenever the pane can change size.
+
+   Everything degrades cleanly: without this the panes still scroll, they just
+   lose the affordance.
+   ========================================================================= */
+(function () {
+  var panes = [].slice.call(document.querySelectorAll(
+    '.rail, .samples, .siem-queue, .out, .gate-body'
+  ));
+  if (!panes.length) return;
+
+  function update(el) {
+    var x = el.scrollWidth > el.clientWidth + 2;
+    var y = el.scrollHeight > el.clientHeight + 2;
+    var cs = getComputedStyle(el);
+    // Only treat an axis as scrollable if overflow actually allows it.
+    x = x && /auto|scroll/.test(cs.overflowX);
+    y = y && /auto|scroll/.test(cs.overflowY);
+
+    el.classList.toggle('scroll-x', x);
+    el.classList.toggle('scroll-y', y && !x);   // one axis at a time is enough
+
+    if (!x && !y) { el.classList.remove('at-start', 'at-end'); return; }
+
+    var pos, max;
+    if (x) { pos = el.scrollLeft; max = el.scrollWidth - el.clientWidth; }
+    else   { pos = el.scrollTop;  max = el.scrollHeight - el.clientHeight; }
+
+    el.classList.toggle('at-start', pos <= 2);
+    el.classList.toggle('at-end', pos >= max - 2);
+  }
+
+  panes.forEach(function (el) {
+    update(el);
+    el.addEventListener('scroll', function () { update(el); }, { passive: true });
+
+    // Content swaps change the scrollable length (picking a new malware sample
+    // rewrites the terminal, picking an interest adds a photo strip).
+    if ('MutationObserver' in window) {
+      new MutationObserver(function () { update(el); })
+        .observe(el, { childList: true, subtree: true });
+    }
+  });
+
+  function updateAll() { panes.forEach(update); }
+
+  // Width changes flip these panes between scrolling and not.
+  if ('ResizeObserver' in window) {
+    var ro = new ResizeObserver(updateAll);
+    panes.forEach(function (el) { ro.observe(el); });
+  }
+  var t;
+  window.addEventListener('resize', function () {
+    clearTimeout(t); t = setTimeout(updateAll, 120);
+  });
+  // Webfonts landing changes text metrics, and images change pane height.
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(updateAll);
+  window.addEventListener('load', updateAll);
+})();

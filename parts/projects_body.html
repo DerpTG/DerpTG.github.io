@@ -1,0 +1,84 @@
+<main>
+
+<div class="phead">
+  <div class="wrap">
+    <a class="back" href="index.html">&larr; Back</a>
+    <h1>Projects</h1>
+    <p class="sub">Two investigations first. One rebuilds an intrusion from the evidence it left behind. The other takes malware apart in an isolated lab. My other projects are below them.</p>
+  </div>
+</div>
+
+<!-- 01, Kill chain. Data and logic live in the kill chain script block. -->
+<section class="first">
+  <div class="wrap">
+    <div class="shead"><span class="n">01</span><h2>Kill chain reconstruction</h2><span class="fill"></span></div>
+    <p class="sdesc">Capstone forensic investigation of a simulated ransomware attack on a municipal network. Six disk images, seven memory captures, 12.7M packets, and 90,000+ log entries. Each stage covers one part of the attack and the evidence I used to establish it.</p>
+
+    <div class="kc">
+      <div class="kc-top">
+        <span class="t">Municipal ransomware, case reconstruction</span>
+        <span class="s">Dwell time: 4 days &middot; Time-to-DC: 1h 44m</span>
+      </div>
+      <div class="rail" id="rail">
+        <button class="node on" data-sev="1" data-i="0"><span class="n">01</span><span class="nm">Initial access</span><span class="tm">Day 1</span><i class="bead"></i></button>
+        <button class="node" data-sev="2" data-i="1"><span class="n">02</span><span class="nm">Execution</span><span class="tm">Day 1</span><i class="bead"></i></button>
+        <button class="node" data-sev="3" data-i="2"><span class="n">03</span><span class="nm">Defense evasion</span><span class="tm">Day 1 &rarr;</span><i class="bead"></i></button>
+        <button class="node" data-sev="4" data-i="3"><span class="n">04</span><span class="nm">Lateral movement</span><span class="tm">+1h 44m</span><i class="bead"></i></button>
+        <button class="node" data-sev="5" data-i="4"><span class="n">05</span><span class="nm">Persistence</span><span class="tm">Day 3</span><i class="bead"></i></button>
+        <button class="node" data-sev="5" data-i="5"><span class="n">06</span><span class="nm">Exfiltration</span><span class="tm">Day 3</span><i class="bead"></i></button>
+        <button class="node" data-sev="6" data-i="6"><span class="n">07</span><span class="nm">Impact</span><span class="tm">Day 4</span><i class="bead"></i></button>
+      </div>
+      <div class="kc-body">
+        <div class="kc-nar">
+          <span class="ttl" id="kcT"></span>
+          <span class="att" id="kcA"></span>
+          <div id="kcP"></div>
+          <div class="kc-method" id="kcM"></div>
+        </div>
+        <div class="kc-ioc">
+          <span class="tag">Evidence</span>
+          <div class="ioc" id="kcE"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 02, Malware lab. Data and logic live in the malware script block. -->
+<section>
+  <div class="wrap">
+    <div class="shead"><span class="n">02</span><h2>Malware lab</h2><span class="fill"></span></div>
+    <p class="sdesc">Twelve public malware samples analyzed in an isolated FlareVM environment. Each sample followed the same workflow: verify the PE header, hash it, check against VirusTotal, identify the family, test for packing and obfuscation, pull strings, then detonate and observe behavior. Static triage used HxD, HashMyFiles, Exe Info PE, and PeStudio; dynamic analysis used Process Monitor, Regshot, System Informer, Wireshark, and FakeNet-NG to simulate the network for C2. Pick a sample to see its full triage record.</p>
+
+    <div class="term">
+      <div class="term-top">
+        <span class="path">flarevm@win10-x64-malware:~/samples</span>
+      </div>
+      <div class="term-grid">
+        <div class="samples" id="smpList"></div>
+        <div class="out" id="smpOut"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 03, The wider archive. Data and logic live in the projects script block. -->
+<section>
+  <div class="wrap">
+    <div class="shead"><span class="n">03</span><h2>The archive</h2><span class="fill"></span></div>
+    <p class="sdesc">Response playbooks, risk analysis, and code. Click a record to open it.</p>
+
+    <div class="rec">
+      <div class="rec-top">
+        <span class="t">projects.log &middot; 5 records</span>
+      </div>
+      <div class="rec-head">
+        <span class="rc-no">No.</span><span class="rc-cat">Category</span>
+        <span class="rc-name">Project</span><span class="rc-src">Team</span><span></span>
+      </div>
+      <div class="rec-list" id="recList"></div>
+    </div>
+  </div>
+</section>
+
+</main>

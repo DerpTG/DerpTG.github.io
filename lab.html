@@ -1,111 +1,87 @@
 <!DOCTYPE html>
-<!--
-  lab.html - Lab page
-
-  A running feed of self-directed work, presented as a SOC alert queue. The
-  lab log entries are real; the SIEM styling is the skin. Page structure:
-    1. Nav        shared site navigation (Lab is the active link)
-    2. Page header
-    3. Lab feed   the interactive log. Each entry is a row in an alert-queue
-                  layout; clicking one expands its detail. Data and logic live
-                  in the lab feed script block at the bottom.
-
-  One page-specific script block builds the feed, followed by the shared
-  main.js.
--->
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Lab — Felix Naroditskiy</title>
-<meta name="description" content="A running log of self-directed security work, laid out as a live alert feed.">
+<title>Lab &middot; Felix Naroditskiy</title>
+<meta name="description" content="A running log of self-directed security work, laid out as a live alert feed, plus three exercises you can try yourself.">
 <link rel="canonical" href="https://felixnaroditskiy.com/lab.html">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Felix Naroditskiy">
-<meta property="og:title" content="Lab — Felix Naroditskiy">
-<meta property="og:description" content="A running log of self-directed security work, laid out as a live alert feed.">
+<meta property="og:title" content="Lab &middot; Felix Naroditskiy">
+<meta property="og:description" content="A running log of self-directed security work, laid out as a live alert feed, plus three exercises you can try yourself.">
 <meta property="og:url" content="https://felixnaroditskiy.com/lab.html">
-<meta property="og:image" content="https://felixnaroditskiy.com/og.png">
+<meta property="og:image" content="https://felixnaroditskiy.com/img/og.png">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Lab — Felix Naroditskiy">
-<meta name="twitter:description" content="A running log of self-directed security work, laid out as a live alert feed.">
-<meta name="twitter:image" content="https://felixnaroditskiy.com/og.png">
+<meta name="twitter:title" content="Lab &middot; Felix Naroditskiy">
+<meta name="twitter:description" content="A running log of self-directed security work, laid out as a live alert feed, plus three exercises you can try yourself.">
+<meta name="twitter:image" content="https://felixnaroditskiy.com/img/og.png">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="alternate icon" href="favicon-32.png" type="image/png" sizes="32x32">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<!-- Nav. Lab is the active page. Keep this block in sync across all pages. -->
 <header class="nav">
   <div class="wrap">
-    <a class="brand" href="index.html"><i class="dot"></i>F. NARODITSKIY</a>
-    <nav>
+    <a class="brand" href="index.html"><i aria-hidden="true"></i>F. NARODITSKIY</a>
+    <button class="navtog" id="navtog" aria-expanded="false" aria-controls="pagenav">Menu</button>
+    <nav id="pagenav">
       <a href="index.html">Home</a>
-      <a href="casework.html">Casework</a>
-      <a href="lab.html" class="here">Lab</a>
       <a href="projects.html">Projects</a>
+      <a href="lab.html" class="here">Lab</a>
       <a href="about.html">About</a>
     </nav>
+    <span class="nav-act">
+      <a class="solid" href="index.html#top">Contact me</a>
+    </span>
   </div>
 </header>
-
 <main>
 
-<!-- Page header -->
 <div class="phead">
   <div class="wrap">
     <a class="back" href="index.html">&larr; Back</a>
     <h1>The lab</h1>
-    <p class="sub">A record of the hands-on labs I've worked through: forensic investigations, detection and monitoring, and network defense. It's laid out the way I'd read it on the job, newest at the top, severity on the left. Click a line to open it.</p>
+    <p class="sub">The labs I have worked through so far, across forensic investigations, detection and monitoring, and network defense. Laid out the way I would read it at work, newest at the top and severity on the left. Click a line to open it.</p>
   </div>
 </div>
 
-<!-- Lab feed.
-     Styled as a SOC alert queue. The container fills from the LOG array in
-     the script below: a header strip, then one expandable row per entry. -->
+<!-- 01, Lab feed. Data and logic live in the feed script block. -->
 <section class="first">
   <div class="wrap">
-    <div class="shead"><h2>Hands-on labs</h2><span class="fill"></span></div>
-    <p class="sdesc">Lab work from my coursework and independent study. Open any entry to read the setup, what I did, and what I found. Framed as hands-on lab experience, not production tooling. New entries land here as I finish rooms on TryHackMe.</p>
+    <div class="shead"><span class="n">01</span><h2>Hands-on labs</h2><span class="fill"></span></div>
+    <p class="sdesc">Lab work from coursework and my own study. Open an entry for the setup, what I did, and what I found. This is lab experience, not production work. New entries go up as I finish rooms on TryHackMe.</p>
 
     <div class="feed">
       <div class="feed-top">
-        <span class="t">LAB FEED &middot; SELF-DIRECTED WORK</span>
-        <span class="feed-live"><i></i>ACTIVE &middot; UPDATED REGULARLY</span>
+        <span class="t">Lab feed &middot; self-directed work</span>
+        <span class="feed-live"><i></i>Active &middot; updated regularly</span>
       </div>
-      <!-- Column labels, mirrored by each row's grid. -->
       <div class="feed-head">
         <span class="fh-sev">Sev</span><span class="fh-when">Status</span>
         <span class="fh-what">Work</span><span class="fh-tools">Stack</span>
       </div>
-      <!-- Rows are built here by the script. -->
       <div class="feed-list" id="feedList"></div>
     </div>
   </div>
 </section>
 
-<!-- Interactive labs.
-     Three try-it-yourself exercises, all set at the fictional Flexin Watches.
-     They're separate from the real lab feed above: this is a playground, not
-     casework. Each exercise has its own script block near the bottom. -->
+<!-- 02, Three try-it-yourself exercises, set at the fictional Flexin Watches. -->
 <section>
   <div class="wrap">
-    <div class="shead"><h2>Try it yourself</h2><span class="fill"></span></div>
-    <p class="sdesc">Three short exercises set at Flexin Watches, a made-up watch company. Work an alert queue, read a packet capture, and hunt the red flags in a phishing email. No sign-up, nothing to install. Just click in.</p>
+    <div class="shead"><span class="n">02</span><h2>Try it yourself</h2><span class="fill"></span></div>
+    <p class="sdesc">Three short exercises set at Flexin Watches, a company I made up. Work an alert queue, read a packet capture, find the red flags in a phishing email. Nothing to sign up for, nothing to install.</p>
 
-    <!-- Exercise 1: SIEM triage.
-         An alert queue. Pick a disposition for each alert, get scored. Data
-         and logic live in the SIEM script block below. -->
     <h3 class="ex-h">1 &middot; SIEM triage</h3>
-    <p class="ex-sub">You&rsquo;re the Tier-1 analyst on shift. Each alert needs a call: escalate, investigate, or close. Some look scarier than they are, and one quiet one isn&rsquo;t quiet at all.</p>
+    <p class="ex-sub">You are the Tier-1 analyst on shift. Every alert needs a call: escalate, investigate, or close. A couple look worse than they are, and one of the quiet ones is not quiet at all.</p>
     <div class="lab-ex siem-wrap">
       <div class="lab-ex-top">
-        <span class="t">FLEXIN WATCHES SOC &middot; ALERT QUEUE</span>
+        <span class="t">Flexin Watches SOC &middot; alert queue</span>
         <span class="score" id="siemScore">TRIAGED 0 / 5</span>
       </div>
       <div class="siem-grid">
@@ -114,12 +90,8 @@
       </div>
     </div>
 
-    <!-- Exercise 2: PCAP analysis.
-         A packet list from a Flexin capture. Click a packet to expand its
-         detail and the note on why it matters. Data and logic in the PCAP
-         script block below. -->
     <h3 class="ex-h">2 &middot; Packet capture</h3>
-    <p class="ex-sub">A slice of traffic from a Flexin workstation during a suspected data theft. Read it the way you would in Wireshark: click a packet to open its detail and see what made it evidence.</p>
+    <p class="ex-sub">A slice of traffic from a Flexin workstation during a suspected data theft. Read it the way you would in Wireshark. Click a packet to open it and see what made it evidence.</p>
     <div class="lab-ex">
       <div class="lab-ex-top">
         <span class="t">flexin-workstation-capture.pcapng</span>
@@ -138,12 +110,8 @@
       <div class="pcap-detail" id="pcapDetail"></div>
     </div>
 
-    <!-- Exercise 3: Phishing red-flag hunt.
-         A rendered suspicious email. Click the phrases that are red flags;
-         the side panel tracks how many of them you've found. Data and logic
-         in the phishing script block below. -->
     <h3 class="ex-h">3 &middot; Spot the phish</h3>
-    <p class="ex-sub">This email landed in a Flexin employee&rsquo;s inbox. Click every part you think is a red flag. The panel keeps score, and each flag explains itself once you find it.</p>
+    <p class="ex-sub">This email landed in a Flexin employee&rsquo;s inbox. Click anything you think is a red flag. The panel keeps score and each flag explains itself once you find it.</p>
     <div class="lab-ex phish">
       <div class="phish-mail">
         <div class="phish-hd" id="phishHd"></div>
@@ -157,7 +125,7 @@
         <div class="phish-hint" id="phishHint">Look at the sender, the links, the tone, and anything it&rsquo;s rushing you to do.</div>
         <div class="phish-done" id="phishDone">
           <span class="v">All flags found</span>
-          <p>That&rsquo;s the full set. Real phishing rarely trips all of these at once, but any one of them is enough to slow down and verify before clicking.</p>
+          <p>That is all of them. Real phishing rarely trips this many at once, but any single one is reason enough to stop and verify before you click.</p>
         </div>
       </div>
     </div>
@@ -166,29 +134,27 @@
 
 </main>
 
-<!-- Footer -->
+<div class="modal" id="resumeModal" role="dialog" aria-modal="true" aria-label="Resume">
+  <div class="modal-box">
+    <div class="modal-hd">
+      <span class="t">Resume &middot; F. Naroditskiy</span>
+      <span class="actions">
+        <a class="dl" href="NaroditskiyFelixResume.pdf" download>Download</a>
+        <a href="NaroditskiyFelixResume.pdf" target="_blank" rel="noopener">Open in tab</a>
+        <button id="closeResume">Close</button>
+      </span>
+    </div>
+    <iframe id="resumeFrame" title="Resume" src="about:blank"></iframe>
+    <p class="pdf-fallback">Your browser can&rsquo;t preview PDFs inline.<br><a href="NaroditskiyFelixResume.pdf" target="_blank" rel="noopener">Open the resume &rarr;</a></p>
+  </div>
+</div>
+
 <footer>
   <div class="wrap">
-    <span>© 2026 F. NARODITSKIY</span>
-    <a href="projects.html">NEXT: PROJECTS &rarr;</a>
+    <span>&copy; 2026 F. Naroditskiy</span>
+    <a href="about.html">Next: about &rarr;</a>
   </div>
 </footer>
-
-<!--
-     Lab feed script.
-
-     LOG holds the lab entries, newest first. Each entry has:
-       sev    severity-style tag driving the left color: 'active', 'done',
-              or 'note' (active = in progress, done = complete, note = a
-              smaller writeup)
-       status the short status word shown in the Status column
-       title  the one-line summary of the work
-       tools  the stack, shown as small tags
-       body   an array of paragraphs revealed when the row is expanded
-
-     Clicking a row toggles it open. Only the styling borrows from a SIEM
-     queue; the content is real work.
--->
 <script>
 /* The lab entries, newest first. */
 var LOG = [
@@ -261,7 +227,7 @@ var LOG = [
     tools: ['Windows Server 2016', 'Active Directory', 'Group Policy', 'PowerShell'],
     body: [
       'Hands-on AD administration from two separate courses. In the first build I stood up a domain controller, deployed a new forest as the root, enabled DNS delegation, authorized DHCP, joined Windows clients to the domain, and added users both through the Administrative Center and with PowerShell (New-ADUser).',
-      'The second build focused on administration: creating user accounts, organizing them into Organizational Units, applying Group Policy Objects that restricted Task Manager and the command prompt, and delegating scoped password-reset permissions to a department head \u2014 role-based access control and least privilege in practice, at lab scale.'
+      'The second build focused on administration: creating user accounts, organizing them into Organizational Units, applying Group Policy Objects that restricted Task Manager and the command prompt, and delegating scoped password-reset permissions to a department head, role-based access control and least privilege in practice, at lab scale.'
     ]
   }
 ];
@@ -307,23 +273,6 @@ LOG.forEach(function (entry, i) {
   feedList.appendChild(row);
 });
 </script>
-
-<!--
-     Exercise 1: SIEM triage script.
-
-     ALERTS holds the alert queue for Flexin Watches. Each alert has:
-       sev     severity band: 'crit', 'high', 'med', or 'low' (sets color)
-       rule    the detection rule name
-       host    the affected asset
-       time    a relative timestamp
-       src     the data source
-       detail  an array of [label, value] rows for the detail pane
-       correct the right disposition id: 'escalate', 'investigate', 'close'
-       why     feedback text per disposition, so every choice gets a response
-
-     Clicking an alert loads its detail; picking a disposition scores it.
-     Everything runs in the browser.
--->
 <script>
 /* The three calls an analyst can make. */
 var DISPOS = [
@@ -511,18 +460,6 @@ function siemUpdateScore(){
 siemRenderQueue();
 siemSelect(0, siemQueue.querySelector('.siem-row'));
 </script>
-
-<!--
-     Exercise 2: Packet capture script.
-
-     PACKETS holds the capture rows. Each has:
-       no, time, src, dst, proto, info  the columns shown in the list
-       tone   row emphasis: '', 'cool', 'warm', or 'hot'
-       tree   an array of [label, value] dissection rows
-       note   the plain-language "why this is evidence" annotation
-
-     Clicking a row expands its detail; clicking it again collapses it.
--->
 <script>
 var PACKETS = [
   {no:2041,time:'12.004',src:'10.10.4.55',dst:'10.10.4.9:21',proto:'FTP',tone:'',
@@ -542,7 +479,7 @@ var PACKETS = [
    tree:[['Stream','tcp.stream eq 7'],['Bytes','4.2 MB this flow'],['Direction','Almost entirely outbound'],['Rate','Sustained, no pauses'],['Shape','Bulk upload, not browsing']],
    note:'Large, sustained, outbound-only volume on a fresh external connection is the shape of exfiltration. Volume alone isn\u2019t proof; volume plus direction plus that destination is.'},
   {no:2074,time:'13.560',src:'45.148.10.32',dst:'10.10.4.55',proto:'TCP',tone:'warm',
-   info:'[RST, ACK] \u2014 abrupt teardown',
+   info:'[RST, ACK], abrupt teardown',
    tree:[['TCP','443\u2192049610 [RST,ACK]'],['Meaning','Connection cut abruptly'],['Count','part of a repeating pattern'],['Normal?','Occasional resets are fine'],['Here','Scripted open/dump/teardown loop']],
    note:'One reset is nothing. This one is part of a repeating open-dump-teardown rhythm, which is a tool working in a loop rather than a person using a browser.'},
   {no:2088,time:'14.113',src:'10.10.4.55',dst:'45.148.10.32:443',proto:'TLS',tone:'hot',
@@ -591,15 +528,6 @@ function pcapToggle(i,row){
 }
 pcapRender();
 </script>
-
-<!--
-     Exercise 3: Phishing red-flag hunt script.
-
-     The email is defined in MAIL (headers + body segments). Body segments
-     that are red flags carry a flag id; clicking one marks it found and adds
-     its explanation to the side panel. FLAGS holds the explanation per id.
-     When all flags are found, the "all flags found" note appears.
--->
 <script>
 /* The flags and their explanations, keyed by id. */
 var FLAGS = {

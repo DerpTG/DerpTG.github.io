@@ -1,0 +1,68 @@
+<script>
+var PACKETS = [
+  {no:2041,time:'12.004',src:'10.10.4.55',dst:'10.10.4.9:21',proto:'FTP',tone:'',
+   info:'Response: 230 Login successful',
+   tree:[['Frame','2041 \u00b7 66 bytes'],['TCP','495\u2192021 [PSH,ACK]'],['FTP','USER svc-backup / 230 OK'],['Host','Internal backup server'],['Note','Normal so far']],
+   note:'A normal login to an internal FTP server. It only matters as the start of a session whose later behavior isn\u2019t normal. This is your baseline.'},
+  {no:2044,time:'12.219',src:'10.10.4.55',dst:'10.10.4.9:21',proto:'FTP',tone:'cool',
+   info:'Request: STOR movement-cad-2026.zip',
+   tree:[['FTP','STOR movement-cad-2026.zip'],['Size','payload follows on data channel'],['Content','Watch movement CAD archive'],['Direction','Upload from workstation'],['Odd?','Backup account pushing design files']],
+   note:'The backup service account is uploading a design archive. Backup accounts pull data on a schedule; they don\u2019t push crown-jewel CAD files ad hoc. The account is being misused.'},
+  {no:2050,time:'12.377',src:'10.10.4.55',dst:'45.148.10.32:443',proto:'TLS',tone:'hot',
+   info:'Client Hello \u2192 external host, SNI absent',
+   tree:[['TCP','49610\u2192443 [SYN]'],['TLS','Client Hello, no SNI'],['Dest','45.148.10.32 (hosting provider)'],['GeoIP','Outside any Flexin region'],['Timing','Opens right after the STOR']],
+   note:'A second channel to an external hosting IP with no server name in the handshake, opened right after the internal file grab. This is where the stolen designs actually leave the building.'},
+  {no:2061,time:'12.902',src:'10.10.4.55',dst:'45.148.10.32:443',proto:'TLS',tone:'warm',
+   info:'Application Data \u00b7 4.2 MB and climbing',
+   tree:[['Stream','tcp.stream eq 7'],['Bytes','4.2 MB this flow'],['Direction','Almost entirely outbound'],['Rate','Sustained, no pauses'],['Shape','Bulk upload, not browsing']],
+   note:'Large, sustained, outbound-only volume on a fresh external connection is the shape of exfiltration. Volume alone isn\u2019t proof; volume plus direction plus that destination is.'},
+  {no:2074,time:'13.560',src:'45.148.10.32',dst:'10.10.4.55',proto:'TCP',tone:'warm',
+   info:'[RST, ACK], abrupt teardown',
+   tree:[['TCP','443\u2192049610 [RST,ACK]'],['Meaning','Connection cut abruptly'],['Count','part of a repeating pattern'],['Normal?','Occasional resets are fine'],['Here','Scripted open/dump/teardown loop']],
+   note:'One reset is nothing. This one is part of a repeating open-dump-teardown rhythm, which is a tool working in a loop rather than a person using a browser.'},
+  {no:2088,time:'14.113',src:'10.10.4.55',dst:'45.148.10.32:443',proto:'TLS',tone:'hot',
+   info:'Session total: 41 MB out in 90 seconds',
+   tree:[['Baseline','This host: ~2 MB/hr outbound'],['This window','41 MB in 90 seconds'],['Multiplier','far above normal'],['Content','Matches the design archive size'],['Verdict','Exfiltration confirmed']],
+   note:'The summary that closes it. This workstation normally sends a couple of megabytes an hour, and it just pushed 41 MB to an external host in a minute and a half, right after grabbing Flexin\u2019s design files. Put together, that\u2019s exfiltration.'}
+];
+
+var pcapList=document.getElementById('pcapList'),pcapDetail=document.getElementById('pcapDetail');
+var pOpen=null;
+function pEsc(x){return String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function pcapRender(){
+  pcapList.innerHTML='';
+  PACKETS.forEach(function(p,i){
+    var row=document.createElement('button');
+    row.className='pcap-row'+(p.tone?' t-'+p.tone:'');
+    row.innerHTML=
+      '<span class="c-no">'+p.no+'</span>'+
+      '<span class="c-time">'+pEsc(p.time)+'</span>'+
+      '<span class="c-src">'+pEsc(p.src)+'</span>'+
+      '<span class="c-dst">'+pEsc(p.dst)+'</span>'+
+      '<span class="c-proto">'+pEsc(p.proto)+'</span>'+
+      '<span class="c-info">'+pEsc(p.info)+'</span>';
+    row.addEventListener('click',function(){ pcapToggle(i,row); });
+    pcapList.appendChild(row);
+  });
+}
+function pcapToggle(i,row){
+  if(pOpen===i){
+    pOpen=null;pcapDetail.className='pcap-detail';pcapDetail.innerHTML='';
+    pcapList.querySelectorAll('.pcap-row').forEach(function(r){r.classList.remove('on');});
+    return;
+  }
+  pOpen=i;
+  pcapList.querySelectorAll('.pcap-row').forEach(function(r){r.classList.remove('on');});
+  if(row) row.classList.add('on');
+  var p=PACKETS[i];
+  var tree=p.tree.map(function(t){
+    return '<div class="pkt-line"><span>'+pEsc(t[0])+'</span><b>'+pEsc(t[1])+'</b></div>';
+  }).join('');
+  pcapDetail.className='pcap-detail show'+(p.tone?' t-'+p.tone:'');
+  pcapDetail.innerHTML=
+    '<div class="pkt-tree"><span class="tag">Frame '+p.no+' \u00b7 dissection</span>'+tree+'</div>'+
+    '<div class="pkt-note"><span class="tag">Why it\u2019s evidence</span><p>'+pEsc(p.note)+'</p></div>';
+}
+pcapRender();
+</script>

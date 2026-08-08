@@ -1,0 +1,118 @@
+<script>
+/* The lab entries, newest first. */
+var LOG = [
+  {
+    sev: 'done', status: 'Complete',
+    title: 'Windows Security Log analysis with a custom Python parser',
+    tools: ['Python', 'ElementTree', 'Windows Event Logs'],
+    body: [
+      'Investigated a compromised Windows Server from its Security Log. I wrote a Python script using ElementTree to parse the XML and the csv module to generate structured output, then analyzed logon, logoff, and failed-logon patterns for indicators of compromise.',
+      'The parser worked through 78,320 events across roughly 24 hours. It surfaced a standout account (grant.larson) with 85 logins, only two failed logons (both administrator, from the loopback address on the domain controller), a large number of off-hours logins, and audit-log clearing (Event ID 1102), which pointed to deliberate evidence removal. I closed with recommendations covering account lockout, MFA, behavioral baselining, and follow-on forensics.'
+    ]
+  },
+  {
+    sev: 'done', status: 'Complete',
+    title: 'Memory analysis of an infected workstation',
+    tools: ['Volatility', 'Windows 7 memory dump'],
+    body: [
+      'Analyzed a 6.4 GB memory dump from a Windows 7 workstation using Volatility. Working from imageinfo through pslist and pstree, I established a normal process baseline and then looked for anything that did not belong.',
+      'The dump contained a process named evilgeth.exe masquerading as the legitimate geth.exe (Go Ethereum), consistent with unauthorized crypto-mining and possible wallet or key theft. I compared it against the legitimate Windows shell process to confirm the finding and recommended reverse engineering, network isolation, and follow-on disk and log analysis.'
+    ]
+  },
+  {
+    sev: 'done', status: 'Complete',
+    title: 'Network traffic analysis of an enterprise compromise',
+    tools: ['Wireshark', 'PCAP'],
+    body: [
+      'Examined a packet capture from a compromised enterprise network in Wireshark, using display filters and conversation and endpoint analysis to map the environment and isolate anomalies.',
+      'The capture showed 164 active hosts across external, DMZ, core, and workstation segments. The key anomaly was a server cluster running an unusual set of services, including unsecured FTP, Telnet, remote exec and login, and obsolete Gopher, consistent with enumeration, backdoors, C2, and likely exfiltration. NetBIOS was also leaking to the open internet. I assessed it as a multi-stage, APT-style compromise and recommended segmentation and deeper packet, log, and memory analysis.'
+    ]
+  },
+  {
+    sev: 'done', status: 'Complete',
+    title: 'Disk image analysis and attack-timeline reconstruction',
+    tools: ['FTK Imager', 'Autopsy', 'HxD', 'SQLite'],
+    body: [
+      'Reconstructed an intrusion on a shared small-business workstation from its disk image, verifying image integrity with MD5 hashing before analysis and working through FTK Imager, Autopsy, HxD, and a SQLite browser.',
+      'I separated normal use by the primary user from the malicious activity of a second account, which downloaded an IRC client and Tor as the likely initial vector. From there I traced the timeline: portable archiving and secure-deletion tools installed, a malware payload staged on the desktop, and batch scripts for reconnaissance and deletion hidden in the Recycle Bin and a public samples folder, ending with the user discovering their documents gone. I recommended isolation, quarantine, wipe-and-clean-backup recovery, and analysis of the other workstations.'
+    ]
+  },
+  {
+    sev: 'done', status: 'Complete',
+    title: 'Intrusion detection with Snort',
+    tools: ['Snort', 'nmap'],
+    body: [
+      'Set up Snort as a network IDS on a target host and generated attack traffic from a separate machine to test detection. I ran the sensor in console mode with logging enabled and drove traffic with nmap.',
+      'Each test produced the expected alert: a ping sweep triggered an ICMP detection, a SYN scan and a version scan both raised SYN-scan alerts, and a manual HTTP request flagged a suspicious request on port 80. For each, I captured the source and destination addresses, ports, and timestamps, which is the raw material a Tier-1 analyst works from.'
+    ]
+  },
+  {
+    sev: 'done', status: 'Complete',
+    title: 'Network defense lab series',
+    tools: ['tcpdump', 'hping3', 'nmap', 'VyOS', 'OSSEC', 'ELK'],
+    body: [
+      'A series of blue-team fundamentals labs across Linux, traffic analysis, and defensive tooling. Highlights: capturing and analyzing HTTP and SSH traffic with tcpdump, running a SYN flood with hping3 and watching the server\u2019s connection queue degrade, host and service discovery with nmap, blocking forged and invalid addresses on a VyOS firewall, and configuring OSSEC as a host-based IDS.',
+      'The series also covered split-horizon DNS, centralized logging with Rsyslog and NXLog across Linux, FreeBSD, and Windows, a buffer-overflow exploit written in C and Python to gain escalated privileges, and standing up the Elastic Stack (Elasticsearch, Logstash, Kibana) to collect and visualize log data. Additional web-assessment work used OWASP ZAP, Nikto, PKI and a local certificate authority, and Splunk with the Universal Forwarder.'
+    ]
+  },
+  {
+    sev: 'done', status: 'Complete',
+    title: 'ARP-poisoning man-in-the-middle investigation',
+    tools: ['Wireshark', 'ARP'],
+    body: [
+      'Analyzed a capture of a workstation and its gateway and identified a man-in-the-middle: a third machine sending gratuitous ARP replies to remap the gateway\u2019s IP address to its own MAC, visible as a destination-MAC swap partway through the capture, along with modified HTTP traffic passing through it.',
+      'I built an endpoint table to establish who was actually talking to whom, then closed with the standard countermeasures: dynamic ARP inspection, static ARP entries for critical hosts, and IDS/IPS monitoring for gratuitous ARP.'
+    ]
+  },
+  {
+    sev: 'done', status: 'Complete',
+    title: 'Active Directory administration across two lab builds',
+    tools: ['Windows Server 2016', 'Active Directory', 'Group Policy', 'PowerShell'],
+    body: [
+      'Hands-on AD administration from two separate courses. In the first build I stood up a domain controller, deployed a new forest as the root, enabled DNS delegation, authorized DHCP, joined Windows clients to the domain, and added users both through the Administrative Center and with PowerShell (New-ADUser).',
+      'The second build focused on administration: creating user accounts, organizing them into Organizational Units, applying Group Policy Objects that restricted Task Manager and the command prompt, and delegating scoped password-reset permissions to a department head, role-based access control and least privilege in practice, at lab scale.'
+    ]
+  }
+];
+
+var feedList = document.getElementById('feedList');
+
+/* Escape any characters that could break the row markup. */
+function fesc(x){return String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+/* Build one expandable row per entry. */
+LOG.forEach(function (entry, i) {
+  var row = document.createElement('article');
+  row.className = 'feed-row sev-' + entry.sev;
+
+  // The tool tags shown in the Stack column.
+  var tools = entry.tools.map(function (t) {
+    return '<span class="chip">' + fesc(t) + '</span>';
+  }).join('');
+
+  // The hidden body paragraphs, revealed on expand.
+  var body = entry.body.map(function (p) {
+    return '<p>' + p + '</p>';
+  }).join('');
+
+  row.innerHTML =
+    '<button class="feed-btn" aria-expanded="false">' +
+      '<span class="feed-sev">' + entry.sev.toUpperCase() + '</span>' +
+      '<span class="feed-status">' + fesc(entry.status) + '</span>' +
+      '<span class="feed-title">' + fesc(entry.title) + '</span>' +
+      '<span class="feed-tools">' + tools + '</span>' +
+      '<span class="feed-caret">+</span>' +
+    '</button>' +
+    '<div class="feed-body"><div class="feed-in"><div class="feed-pad">' + body + '</div></div></div>';
+
+  // Clicking the row header toggles it open and flips the +/- caret.
+  var btn = row.querySelector('.feed-btn');
+  btn.addEventListener('click', function () {
+    var open = row.classList.toggle('on');
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    row.querySelector('.feed-caret').textContent = open ? '\u2212' : '+';
+  });
+
+  feedList.appendChild(row);
+});
+</script>

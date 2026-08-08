@@ -1,0 +1,103 @@
+<script>
+/* The flags and their explanations, keyed by id. */
+var FLAGS = {
+  sender:  'The display name says Flexin IT, but the actual address is a lookalike domain (flexin-watches-support.com, not flexinwatches.com). Spoofed sender is the number-one tell.',
+  subject: 'The subject threatens account loss on a deadline before you have even opened the message. Pressure in the subject line is there to get the click, not to inform you.',
+  urgency: 'Manufactured urgency. A hard 24-hour deadline with a threat of losing access is designed to make you act before you think.',
+  greeting:'A generic greeting. A real internal IT note to one person usually uses your name, not "Dear Employee."',
+  link:    'The link text says the internal portal, but the real URL points somewhere else entirely. Always check where a link actually goes before clicking.',
+  attach:  'An unexpected attachment you didn\u2019t ask for, with a name built to look routine. Payroll and reset files are common lures.',
+  signoff: 'A vague sign-off with no real name, no direct line, no ticket number. Legitimate IT gives you a way to verify them.'
+};
+
+/* The email. Segments with a "flag" become clickable red flags. */
+var MAIL = {
+  headers: [
+    ['From', [{t:'Flexin IT Support '},{t:'<security@flexin-watches-support.com>', flag:'sender'}]],
+    ['To', [{t:'j.moreau@flexinwatches.com'}]],
+    ['Subject', [{t:'ACTION REQUIRED: '},{t:'Your account will be disabled in 24 hours', flag:'subject'}]]
+  ],
+  body: [
+    [{t:'', flag:'greeting', label:'Dear Employee,'}],
+    [{t:'We detected unusual sign-in activity on your Flexin Watches account. For your protection, access will be suspended '},{t:'within 24 hours unless you verify immediately', flag:'urgency'},{t:'.'}],
+    [{t:'Please confirm your credentials through the '},{t:'Flexin employee portal', flag:'link', label:'Flexin employee portal'},{t:' to keep your account active.'}],
+    [{t:'We have also attached a copy of the security notice '},{t:'(Account_Reset_Instructions.html)', flag:'attach'},{t:' for your records.'}],
+    [{t:'Regards,'}],
+    [{t:'', flag:'signoff', label:'The IT Team'}]
+  ]
+};
+
+var phishHd=document.getElementById('phishHd');
+var phishBody=document.getElementById('phishBody');
+var phishProg=document.getElementById('phishProg');
+var phishFound=document.getElementById('phishFound');
+var phishDone=document.getElementById('phishDone');
+var foundSet={};                       // ids the player has clicked
+var totalFlags=0;                      // set after render, from the DOM
+
+function phEsc(x){return String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+/* Turn a segment into HTML: a clickable span if it's a flag, else plain text. */
+function segHtml(seg){
+  var text = seg.label ? seg.label : seg.t;
+  if (seg.flag) {
+    return '<span class="flag" data-flag="' + seg.flag + '" tabindex="0" role="button">' + phEsc(text) + '</span>';
+  }
+  return phEsc(text);
+}
+
+/* Render the headers. */
+var hdHtml = MAIL.headers.map(function(h){
+  var val = h[1].map(segHtml).join('');
+  return '<div class="row"><span class="lbl">' + h[0] + '</span><span>' + val + '</span></div>';
+}).join('');
+phishHd.innerHTML = hdHtml;
+
+/* Render the body paragraphs. */
+var bodyHtml = MAIL.body.map(function(p){
+  return '<p>' + p.map(segHtml).join('') + '</p>';
+}).join('');
+phishBody.innerHTML = bodyHtml;
+
+/* Count the distinct flag ids that actually made it into the email, and set
+   the starting counter from that. Deriving it here (instead of from FLAGS)
+   keeps the target honest if the email and the explanation list drift. */
+var renderedIds = {};
+document.querySelectorAll('.flag').forEach(function(el){
+  renderedIds[el.getAttribute('data-flag')] = true;
+});
+totalFlags = Object.keys(renderedIds).length;
+phishProg.textContent = '0 / ' + totalFlags;
+
+/* Wire every flag: clicking (or Enter) marks it found.
+   If the same flag id ever appears in more than one place in the email, all
+   of its instances are marked together, and the total below counts distinct
+   ids that are actually reachable in the markup, so the counter can always
+   be completed. */
+function markFound(el){
+  var id = el.getAttribute('data-flag');
+  if (foundSet[id]) return;            // already found
+  foundSet[id] = true;
+
+  // Mark every instance of this id, not just the one clicked.
+  document.querySelectorAll('.flag[data-flag="' + id + '"]').forEach(function(x){
+    x.classList.add('found');
+  });
+
+  // Add the explanation to the side panel.
+  var item = document.createElement('div');
+  item.className = 'fnd';
+  item.textContent = FLAGS[id];
+  phishFound.appendChild(item);
+
+  // Update the counter and, if complete, show the closing note.
+  var n = Object.keys(foundSet).length;
+  phishProg.textContent = n + ' / ' + totalFlags;
+  if (n >= totalFlags) phishDone.classList.add('show');
+}
+
+document.querySelectorAll('.flag').forEach(function(el){
+  el.addEventListener('click', function(){ markFound(el); });
+  el.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); markFound(el); } });
+});
+</script>

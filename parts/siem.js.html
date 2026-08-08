@@ -1,0 +1,187 @@
+<script>
+/* The three calls an analyst can make. */
+var DISPOS = [
+  { id: 'escalate',    label: 'Escalate' },
+  { id: 'investigate', label: 'Investigate' },
+  { id: 'close',       label: 'Close as benign' }
+];
+
+/* The Flexin Watches alert queue. */
+var ALERTS = [
+  {
+    sev: 'crit', rule: 'Mass file rename on design share', host: 'FLX-FS02 (file server)',
+    time: 'T+00:01', src: 'EDR',
+    detail: [
+      ['Rule', 'Rapid rename + new extension'],
+      ['Host', 'FLX-FS02 \u00b7 Movement designs'],
+      ['Process', 'wscript.exe \u2192 unknown child'],
+      ['Files touched', '3,400 in two minutes'],
+      ['Extension', '.sketch \u2192 .flxlock']
+    ],
+    correct: 'escalate',
+    why: {
+      escalate: 'Correct. Thousands of the company\u2019s watch-design files renamed to a new extension in two minutes is active encryption, not a maybe. This is the one you page someone for right away. Every minute of hesitation is more of Flexin\u2019s IP gone.',
+      investigate: 'Too slow. Investigating suits an ambiguous alert, but mass rename to a ransomware-style extension is already confirmed impact. While you gather detail, the encryption keeps running.',
+      close: 'The worst call here. Nothing benign renames 3,400 design files in two minutes. This is a live ransomware event on Flexin\u2019s crown-jewel data.'
+    }
+  },
+  {
+    sev: 'high', rule: 'Impossible-travel sign-in', host: 'r.okafor@flexinwatches.com',
+    time: 'T+00:06', src: 'Identity provider',
+    detail: [
+      ['Rule', 'Two logins, geographically impossible'],
+      ['User', 'r.okafor (Finance)'],
+      ['Login 1', 'Geneva, CH \u00b7 14:02'],
+      ['Login 2', 'Manila, PH \u00b7 14:14'],
+      ['MFA', 'Satisfied on both']
+    ],
+    correct: 'escalate',
+    why: {
+      escalate: 'Correct. Twelve minutes between Geneva and Manila is impossible, and MFA passing on both makes it worse, not better. It points to a stolen session token. Escalate for a credential reset and session revocation.',
+      investigate: 'A defensible first move, but don\u2019t sit on it. MFA satisfied on both logins is the tell that a token was likely stolen. Treat it as compromise and escalate rather than just watching.',
+      close: 'Wrong. A VPN explains one odd location, not two valid MFA logins on two continents twelve minutes apart. This account is compromised.'
+    }
+  },
+  {
+    sev: 'med', rule: 'Beacon to newly-registered domain', host: 'FLX-MKT07',
+    time: 'T+00:14', src: 'DNS / proxy',
+    detail: [
+      ['Rule', 'DNS to domain registered < 48h ago'],
+      ['Host', 'FLX-MKT07 (Marketing laptop)'],
+      ['Domain', 'flexin-cdn-assets[.]shop'],
+      ['Frequency', 'Every 60s, exactly'],
+      ['Payload', 'Small, uniform']
+    ],
+    correct: 'investigate',
+    why: {
+      investigate: 'Correct. A brand-new domain that spoofs the Flexin name, contacted on an exact 60-second heartbeat with small uniform payloads, is classic C2 beaconing. It\u2019s not confirmed yet, though. Dig in: pull the process, check other hosts, then decide if it escalates.',
+      escalate: 'Understandable, but early. Beacon-like patterns are suspicious, not confirmed. Investigate first so you escalate with evidence rather than a hunch.',
+      close: 'Too hasty. The exact, regular heartbeat is what separates this from normal browsing noise. It may be benign, but you don\u2019t know that yet.'
+    }
+  },
+  {
+    sev: 'low', rule: 'Failed logins then success', host: 'FLX-RECEPTION',
+    time: 'T+00:21', src: 'Windows security log',
+    detail: [
+      ['Rule', '4625 \u00d7 5 then 4624 success'],
+      ['Host', 'FLX-RECEPTION (lobby kiosk)'],
+      ['Account', 'frontdesk (shared)'],
+      ['Interval', 'Over 3 minutes'],
+      ['Source', 'Local console, not remote']
+    ],
+    correct: 'close',
+    why: {
+      close: 'Correct, in context. Five failures over three minutes at the local console of a shared lobby kiosk, ending in success, is a human mistyping a shared password. No remote source, no lockout, slow human pace. Note it and move on.',
+      investigate: 'Not wrong, just low-value. The signals (local console, human pace, shared account) all point to a fat-fingered password. Time spent here is time the real alerts sit waiting.',
+      escalate: 'Over-escalation. Paging someone for five slow failed logins at a reception kiosk teaches responders to tune out your pages. Save escalation for the impossible-travel alert, which earned it.'
+    }
+  },
+  {
+    sev: 'high', rule: 'Office spawned encoded PowerShell', host: 'FLX-HR03',
+    time: 'T+00:29', src: 'EDR',
+    detail: [
+      ['Rule', 'powershell.exe -enc (base64)'],
+      ['Host', 'FLX-HR03 (HR workstation)'],
+      ['Parent', 'WINWORD.EXE'],
+      ['Decoded', 'DownloadString \u2192 http://\u2026'],
+      ['Attachment', '"Q3_Payroll_Update.docm"']
+    ],
+    correct: 'escalate',
+    why: {
+      escalate: 'Correct. A macro-enabled Word doc spawning encoded PowerShell that pulls a remote payload is the textbook loader chain. WINWORD.EXE as the parent is the smoking gun. Escalate and isolate the host.',
+      investigate: 'Half-right, but don\u2019t linger. You can confirm the decode, but Office spawning encoded PowerShell with a DownloadString is malicious on its face. Isolate now, scope it after.',
+      close: 'Wrong. Encoded PowerShell exists to hide intent, and legitimate documents don\u2019t launch it. Office spawning PowerShell is one of the most reliable malicious signals there is.'
+    }
+  }
+];
+
+var siemQueue  = document.getElementById('siemQueue');
+var siemDetail = document.getElementById('siemDetail');
+var siemScore  = document.getElementById('siemScore');
+var sAnswered = [];   // disposition chosen per alert, once answered
+var sCorrect  = 0;    // running count of correct calls
+
+function sEsc(x){return String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+/* Build the left-rail queue. */
+function siemRenderQueue(){
+  siemQueue.innerHTML = '';
+  ALERTS.forEach(function(a, i){
+    var row = document.createElement('button');
+    row.className = 'siem-row sev-' + a.sev + (sAnswered[i] ? ' done' : '');
+    row.innerHTML =
+      '<span class="siem-sev">' + a.sev.toUpperCase() + '</span>' +
+      '<span class="siem-rule">' + sEsc(a.rule) + '</span>' +
+      '<span class="siem-host">' + sEsc(a.host) + ' \u00b7 ' + sEsc(a.time) + '</span>' +
+      (sAnswered[i] ? '<span class="siem-tick">\u2713</span>' : '');
+    row.addEventListener('click', function(){ siemSelect(i, row); });
+    siemQueue.appendChild(row);
+  });
+}
+
+/* Render the detail pane for alert i and wire its disposition buttons. */
+function siemSelect(i, row){
+  siemQueue.querySelectorAll('.siem-row').forEach(function(r){ r.classList.remove('on'); });
+  if (row) row.classList.add('on');
+  var a = ALERTS[i];
+
+  var rows = a.detail.map(function(d){
+    return '<div><span>' + sEsc(d[0]) + '</span><b>' + sEsc(d[1]) + '</b></div>';
+  }).join('');
+  var btns = DISPOS.map(function(d){
+    return '<button class="siem-act" data-do="' + d.id + '">' + d.label + '</button>';
+  }).join('');
+
+  siemDetail.innerHTML =
+    '<div class="siem-dh"><span class="siem-sev sev-' + a.sev + '">' + a.sev.toUpperCase() + '</span>' +
+      '<span class="siem-src">' + sEsc(a.src) + '</span></div>' +
+    '<h4>' + sEsc(a.rule) + '</h4>' +
+    '<div class="siem-meta">' + rows + '</div>' +
+    '<span class="tag">Your call</span>' +
+    '<div class="siem-acts">' + btns + '</div>' +
+    '<div class="siem-verdict" id="siemVerdict"></div>';
+
+  if (sAnswered[i]) {
+    siemLock(i, sAnswered[i]);
+  } else {
+    siemDetail.querySelectorAll('.siem-act').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var choice = btn.getAttribute('data-do');
+        if (!sAnswered[i]) {
+          sAnswered[i] = choice;
+          if (choice === a.correct) sCorrect++;
+          siemUpdateScore();
+          siemRenderQueue();
+        }
+        siemLock(i, choice);
+      });
+    });
+  }
+}
+
+/* Show the graded result and lock the buttons. */
+function siemLock(i, choice){
+  var a = ALERTS[i];
+  var right = (choice === a.correct);
+  siemDetail.querySelectorAll('.siem-act').forEach(function(btn){
+    btn.disabled = true;
+    var id = btn.getAttribute('data-do');
+    if (id === choice) btn.classList.add(right ? 'picked-good' : 'picked-bad');
+    if (id === a.correct) btn.classList.add('is-correct');
+  });
+  var verdict = document.getElementById('siemVerdict');
+  verdict.className = 'siem-verdict show ' + (right ? 'good' : 'bad');
+  verdict.innerHTML =
+    '<span class="v">' + (right ? 'Correct call' : 'Not the call') + '</span>' +
+    '<p>' + sEsc(a.why[choice]) + '</p>';
+}
+
+function siemUpdateScore(){
+  var done = sAnswered.filter(function(x){ return x; }).length;
+  siemScore.textContent = 'TRIAGED ' + done + ' / ' + ALERTS.length +
+    (done === ALERTS.length ? '  \u00b7  ' + sCorrect + ' correct' : '');
+}
+
+siemRenderQueue();
+siemSelect(0, siemQueue.querySelector('.siem-row'));
+</script>

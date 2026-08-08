@@ -1,325 +1,326 @@
 <!DOCTYPE html>
 <!--
-  index.html - Home page
+  index.html · Home
 
-  The site's front door. Structure, top to bottom:
-    1. Head          metadata, fonts, stylesheet
-    2. Nav           sticky navigation, shared across every page
-    3. Hero          name, one-line summary, and a facts bar
-    4. The work      three cards linking to Casework, Lab, and Projects
-    5. Experience    collapsible work history, with the Stemuli roles grouped
-    6. Capabilities  a skills grid and clickable certification badges
-    7. Contact       email, LinkedIn, GitHub, resume
-    8. Resume modal  hidden overlay showing the resume PDF
-    9. Cert modal    hidden overlay with certification detail
-   10. Footer
+  Keep this filename. GitHub Pages serves index.html as the site root, so
+  felixnaroditskiy.com/ resolves here. The nav label is what readers see.
 
-  Behavior for the interactive pieces lives in main.js. Styling lives in
-  style.css.
+  Structure:
+    1. Nav          sticky. One action button: Contact me.
+    2. Hero         full viewport height. Name, line, portrait, actions.
+    3. Facts        four-cell strip, its own band below the hero
+    4. Experience   fully open. Stemuli's two roles share one employer block.
+    5. Capabilities skills grid + clickable certifications
+    6. The work     three cards into Projects, Lab, About
+    7. Contact
+    8. Modals       resume and certification overlays
+    9. Gate         welcome dialog, built by main.js on first visit per session
 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Felix Naroditskiy - Cybersecurity</title>
-<meta name="description" content="The cybersecurity portfolio of Felix Naroditskiy: digital forensics casework, malware analysis, hands-on labs, and incident response projects, with security governance and compliance work alongside.">
+<title>Felix Naroditskiy · Cybersecurity</title>
+<meta name="description" content="Felix Naroditskiy works in digital forensics, malware analysis, and incident response. Ransomware casework, malware triage, hands-on labs, and security governance projects.">
 <link rel="canonical" href="https://felixnaroditskiy.com/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Felix Naroditskiy">
-<meta property="og:title" content="Felix Naroditskiy - Cybersecurity">
-<meta property="og:description" content="The cybersecurity portfolio of Felix Naroditskiy: digital forensics casework, malware analysis, hands-on labs, and incident response projects, with security governance and compliance work alongside.">
+<meta property="og:title" content="Felix Naroditskiy · Cybersecurity">
+<meta property="og:description" content="Digital forensics, malware analysis, and incident response. Ransomware casework, malware triage, and hands-on labs.">
 <meta property="og:url" content="https://felixnaroditskiy.com/">
-<meta property="og:image" content="https://felixnaroditskiy.com/og.png">
+<meta property="og:image" content="https://felixnaroditskiy.com/img/og.png">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Felix Naroditskiy - Cybersecurity">
-<meta name="twitter:description" content="The cybersecurity portfolio of Felix Naroditskiy: digital forensics casework, malware analysis, hands-on labs, and incident response projects, with security governance and compliance work alongside.">
-<meta name="twitter:image" content="https://felixnaroditskiy.com/og.png">
+<meta name="twitter:title" content="Felix Naroditskiy · Cybersecurity">
+<meta name="twitter:description" content="Digital forensics, malware analysis, and incident response.">
+<meta name="twitter:image" content="https://felixnaroditskiy.com/img/og.png">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="alternate icon" href="favicon-32.png" type="image/png" sizes="32x32">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<!-- Preconnect warms up the connection to Google Fonts so text renders faster. -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<!-- Space Grotesk = display/body font; IBM Plex Mono = the monospace "data" font. -->
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="preload" as="image" href="img/felix.jpg" imagesrcset="img/felix-sm.jpg 450w, img/felix.jpg 900w" imagesizes="420px">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 <script type="application/ld+json">
 {
-  "@context": "https://schema.org",
-  "@type": "Person",
-  "name": "Felix Naroditskiy",
-  "url": "https://felixnaroditskiy.com/",
-  "jobTitle": "Cybersecurity Specialist",
-  "alumniOf": "Penn State University",
-  "email": "mailto:fnaroditskiy@gmail.com",
-  "sameAs": [
-    "https://www.linkedin.com/in/felix-naroditskiy",
-    "https://github.com/DerpTG"
-  ]
+  "@context":"https://schema.org","@type":"Person",
+  "name":"Felix Naroditskiy",
+  "url":"https://felixnaroditskiy.com/",
+  "image":"https://felixnaroditskiy.com/img/felix.jpg",
+  "jobTitle":"Cybersecurity Specialist",
+  "alumniOf":"Pennsylvania State University",
+  "email":"mailto:fnaroditskiy@gmail.com",
+  "address":{"@type":"PostalAddress","addressLocality":"Warminster","addressRegion":"PA","addressCountry":"US"},
+  "sameAs":["https://www.linkedin.com/in/felix-naroditskiy","https://github.com/DerpTG"]
 }
 </script>
 </head>
-<body>
+<body id="top">
 
-<!-- Nav, shared on every page.
-     Sticky bar. The .here class marks the current page so it looks "active".
-     If you add or rename a page, update this same block on every HTML file. -->
 <header class="nav">
   <div class="wrap">
-    <a class="brand" href="index.html"><i class="dot"></i>F. NARODITSKIY</a>
-    <nav>
+    <a class="brand" href="index.html"><i aria-hidden="true"></i>F. NARODITSKIY</a>
+    <button class="navtog" id="navtog" aria-expanded="false" aria-controls="pagenav">Menu</button>
+    <nav id="pagenav">
       <a href="index.html" class="here">Home</a>
-      <a href="casework.html">Casework</a>
-      <a href="lab.html">Lab</a>
       <a href="projects.html">Projects</a>
+      <a href="lab.html">Lab</a>
       <a href="about.html">About</a>
     </nav>
+    <span class="nav-act">
+      <a class="solid" href="index.html#top">Contact me</a>
+    </span>
   </div>
 </header>
 
 <main>
 
-<!-- Hero.
-     The first thing a visitor reads. The <em> line is the one-line summary of what I do.
-     one plain sentence that says what I do. The .hbar below is a
-     four-cell facts strip (Focus / Location / Degree / In progress). -->
+<!-- Hero. Fills the viewport. The name sits under solid bars in CSS that
+     retract on load; the text underneath is ordinary markup, so it stays
+     selectable and readable with animation off. -->
 <div class="hero">
+  <div class="wrap hero-grid">
+    <div class="hero-main">
+      <span class="lbl">Cybersecurity &middot; Forensics &middot; Incident response</span>
+      <h1>
+        <span class="red">Felix</span>
+        <span class="red">Naroditskiy</span>
+      </h1>
+      <p class="tagline">Protecting data, and finding the <b>weak points</b> before someone else does.</p>
+      <p class="lede">I do digital forensics, malware analysis, and blue-team security work. Three years of that has been governance and compliance at an EdTech startup, where I started as an intern.</p>
+      <div class="cta">
+        <a class="solid" href="mailto:fnaroditskiy@gmail.com">fnaroditskiy@gmail.com</a>
+        <a href="#" data-resume>Read my resume</a>
+        <a class="plain" href="https://www.linkedin.com/in/felix-naroditskiy" target="_blank" rel="noopener">LinkedIn</a>
+        <a class="plain" href="https://github.com/DerpTG" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+
+    <!-- Portrait, tagged like a case photograph. Every field is real. -->
+    <figure class="shot">
+      <img src="img/felix.jpg" srcset="img/felix-sm.jpg 450w, img/felix.jpg 900w" sizes="(max-width:1000px) 330px, 420px"
+           width="900" height="900" alt="Felix Naroditskiy" fetchpriority="high">
+      <figcaption class="shot-tag">
+        <span class="row"><span class="k">Name</span><span class="v">F. Naroditskiy</span></span>
+        <span class="row"><span class="k">Role</span><span class="v">Cybersecurity Specialist</span></span>
+        <span class="row"><span class="k">Based in</span><span class="v">Warminster, PA</span></span>
+      </figcaption>
+    </figure>
+  </div>
+
+  <a class="scroll-cue" href="#facts" aria-label="Scroll to details"><span></span>Scroll</a>
+</div>
+
+<!-- Facts strip. Its own band so the hero can hold the viewport. -->
+<div class="factband" id="facts">
   <div class="wrap">
-    <span class="tag">Cybersecurity &middot; Forensics &middot; Incident response</span>
-    <h1><span class="scramble" data-text="Felix Naroditskiy">Felix Naroditskiy</span><br><em>Protecting data, and finding the weak points before someone else does.</em></h1>
-    <p class="lede">Cybersecurity graduate focused on digital forensics, malware analysis, and blue-team security operations, with three years of security governance and compliance work at an EdTech startup. This is where I show the work.</p>
-    <!-- .hbar = definition list styled as a row of labelled facts.
-         Each <div> is one cell: <dt> is the label, <dd> is the value. -->
-    <dl class="hbar">
-      <div><dt>Focus</dt><dd>Security analysis &middot; SOC &middot; IR / DFIR &middot; GRC</dd></div>
-      <div><dt>Location</dt><dd>Warminster, PA &middot; Remote</dd></div>
-      <div><dt>Degree</dt><dd>B.S. Cybersecurity Analytics &amp; Operations, Penn State</dd></div>
-      <div><dt>Studying</dt><dd><button class="wip-link" data-cert="cysa">CompTIA CySA+</button></dd></div>
+    <dl class="facts">
+      <div><dt class="lbl">Focus</dt><dd>Security analysis, SOC work, incident response, and GRC</dd></div>
+      <div><dt class="lbl">Based in</dt><dd>Warminster, PA. Remote, or hybrid near Philadelphia.</dd></div>
+      <div><dt class="lbl">Degree</dt><dd>B.S. Cybersecurity Analytics and Operations, Penn State</dd></div>
+      <div><dt class="lbl">Studying</dt><dd><button class="wip-link" data-cert="cysa">CompTIA CySA+</button></dd></div>
     </dl>
   </div>
 </div>
 
-<!-- The work.
-     Three navigation cards. Each .ncard is a full-card link to a section
-     of the site. .tag = eyebrow label, .go = the bottom row (label + stat). -->
+<!-- Experience. Open by default. Stemuli's two roles share one block. -->
 <section>
   <div class="wrap">
-    <div class="shead"><h2>The work</h2><span class="fill"></span></div>
-    <p class="sdesc">Three ways in. All of it is real casework, so click through and poke at it.</p>
+    <div class="shead"><span class="n">01</span><h2>Experience</h2><span class="fill"></span></div>
+    <p class="sdesc">Three years at Stemuli, intern to specialist. Before that, three summers doing hardware and end-user support at a small business near home.</p>
 
-    <div class="navgrid">
-      <a class="ncard" href="casework.html">
-        <span class="tag">Forensics</span>
-        <h3>Casework</h3>
-        <p>A ransomware kill chain reconstructed from disk, memory, network, and log evidence, plus twelve malware samples taken apart in an isolated lab.</p>
-        <span class="go"><span>Open casework</span><span class="stat">2 investigations</span></span>
-      </a>
+    <div class="roles">
 
-      <a class="ncard" href="lab.html">
-        <span class="tag">Hands-on</span>
-        <h3>Lab</h3>
-        <p>Hands-on labs in forensics, detection, and network defense, laid out as an alert feed, plus three exercises you can try yourself.</p>
-        <span class="go"><span>Enter the lab</span><span class="stat">8 labs &middot; 3 exercises</span></span>
-      </a>
-
-      <a class="ncard" href="projects.html">
-        <span class="tag">Archive</span>
-        <h3>Projects</h3>
-        <p>Incident-response playbooks, risk analysis, networking labs, and code, including three repos on GitHub.</p>
-        <span class="go"><span>Browse projects</span><span class="stat">5 projects</span></span>
-      </a>
-    </div>
-  </div>
-</section>
-
-<!-- Experience.
-     Collapsible work history. Each .entry is one row; clicking its .e-btn
-     toggles the .on class (handled in main.js), which expands .e-body.
-
-     The two Stemuli roles are wrapped together in a .org group with a
-     single shared header (.org-hd) so they read as one employer with two
-     titles, rather than two unrelated jobs. FEBA stands on its own. -->
-<section>
-  <div class="wrap">
-    <div class="shead"><h2>Experience</h2><span class="fill"></span></div>
-    <p class="sdesc">Open a role to see what the work actually was.</p>
-
-    <div class="log">
-
-      <!-- ---- Employer group: Stemuli (two stacked roles) ---- -->
-      <div class="org">
-        <!-- Shared employer header: logo mark + name + location.
-             .org-logo is a CSS-drawn monogram so there's no image file to load. -->
+      <article class="org">
         <div class="org-hd">
-          <span class="org-logo" aria-hidden="true">S</span>
+          <span class="org-mark"><img src="img/logo-stemuli.png" alt="" width="34" height="34" loading="lazy"></span>
           <span class="org-meta">
             <span class="org-name">Stemuli</span>
-            <span class="org-loc">Dallas, TX &middot; Remote</span>
+            <span class="org-loc">Dallas, TX &middot; Remote &middot; 2023 to now</span>
           </span>
         </div>
 
-        <!-- Role 1 (current) -->
-        <article class="entry">
-          <button class="e-btn" aria-expanded="false">
-            <span class="e-date">Aug. 2024 &ndash; Now</span>
-            <span><span class="e-ttl">Cybersecurity Specialist</span><span class="e-tools">SECURITY PROGRAM &middot; GRC &amp; COMPLIANCE &middot; RESEARCH OPS</span></span>
-            <span class="e-badge done">Current</span>
-          </button>
-          <div class="e-body"><div class="e-in"><div class="e-pad">
-            &bull; Leading a company-wide security program build-out: ran a NIST CSF 2.0 gap assessment, built a prioritized 44-item policy and controls roadmap, and drafted the privacy policy, Terms of Service, and AI vendor data terms for legal review.<br>
-            &bull; Drive COPPA/FERPA compliance for a K-12 platform, translating regulatory changes into platform policy, consent workflows, and remediation tracking.<br>
-            &bull; Run recurring security control and tool assessments across 15+ cloud and SaaS platforms, write the hardening recommendations that come out of them, and deliver weekly security-awareness briefings and new-hire orientations.<br>
-            &bull; Built and manage a paid cohort of 55+ student research testers from zero, and designed their segmented access model &mdash; role-based permissions, identity verification, and moderation controls for student data separation.<br>
-            &bull; Produce recurring qualitative research reports, using AI-assisted analysis to speed up synthesis of participant feedback.
-          </div></div></div>
-        </article>
+        <div class="role">
+          <div class="role-meta">
+            <span class="role-no">Current</span>
+            <span class="role-when">Aug 2024 to now</span>
+          </div>
+          <div>
+            <h3 class="role-ttl">Cybersecurity Specialist</h3>
+            <span class="role-tools">GRC &middot; Privacy compliance &middot; Cloud security</span>
+            <ul>
+              <li>Drive <b>COPPA and FERPA compliance</b> for a K-12 platform and build out the wider security program, starting from a NIST CSF gap assessment. Translate regulatory changes into policy, consent workflows, and tracked remediation.</li>
+              <li>Assess security controls and tooling across <b>15+ cloud and SaaS platforms</b> on a recurring basis, write the resulting hardening recommendations, and deliver weekly security awareness briefings and new-hire orientation.</li>
+              <li>Built a paid cohort of <b>55+ student research testers</b> from zero and designed its segmented access model, covering role-based permissions, identity verification, and moderation controls that keep student data separated.</li>
+              <li>Produce recurring research reports, using AI-assisted analysis to speed up synthesis while keeping participant data handled properly.</li>
+            </ul>
+          </div>
+        </div>
 
-        <!-- Role 2 (prior, same employer) -->
-        <article class="entry">
-          <button class="e-btn" aria-expanded="false">
-            <span class="e-date">Sep. 2023 &ndash; Aug. 2024</span>
-            <span><span class="e-ttl">Cybersecurity and Technology Intern</span><span class="e-tools">DATA GOVERNANCE &middot; CLOUD SECURITY RESEARCH</span></span>
-            <span class="e-badge">Prior</span>
-          </button>
-          <div class="e-body"><div class="e-in"><div class="e-pad">
-            &bull; Led data compliance initiatives, researching and proposing governance procedures aligned with CIS, NIST, COPPA, and FERPA under Zero Trust principles.<br>
-            &bull; Analyzed vendor and partner security questionnaires and audited tooling across AWS RDS, GCP, Azure, and SaaS platforms, assessing encryption, IAM, and policy compliance.<br>
-            &bull; Wrote 4 team-specific onboarding handbooks and a 9-domain employee security training handbook.
-          </div></div></div>
-        </article>
-      </div>
+        <div class="role">
+          <div class="role-meta">
+            <span class="role-no">Prior</span>
+            <span class="role-when">Sep 2023 to Aug 2024</span>
+          </div>
+          <div>
+            <h3 class="role-ttl">Cybersecurity and Technology Intern</h3>
+            <span class="role-tools">Data governance &middot; Cloud security research</span>
+            <ul>
+              <li>Led data compliance initiatives, researching and proposing governance procedures aligned to <b>CIS, NIST, COPPA, and FERPA</b> under Zero Trust principles.</li>
+              <li>Reviewed vendor and partner security questionnaires and audited tooling across <b>AWS RDS, GCP, Azure</b>, and other SaaS platforms, assessing encryption, IAM, and policy compliance.</li>
+              <li>Wrote four team-specific onboarding handbooks and a nine-domain security training handbook for all employees.</li>
+            </ul>
+          </div>
+        </div>
+      </article>
 
-      <!-- ---- Employer group: FEBA (single role) ---- -->
-      <div class="org">
+      <article class="org">
         <div class="org-hd">
-          <span class="org-logo" aria-hidden="true">F</span>
+          <span class="org-mark"><img src="img/logo-feba.png" alt="" width="34" height="34" loading="lazy"></span>
           <span class="org-meta">
             <span class="org-name">FEBA, LLC</span>
-            <span class="org-loc">Warminster, PA</span>
+            <span class="org-loc">Warminster, PA &middot; 2020 to 2023</span>
           </span>
         </div>
 
-        <article class="entry">
-          <button class="e-btn" aria-expanded="false">
-            <span class="e-date">Jun. 2020 &ndash; Aug. 2023</span>
-            <span><span class="e-ttl">Technology and Computer Hardware Intern</span><span class="e-tools">END-USER SUPPORT &middot; WINDOWS &middot; HARDWARE</span></span>
-            <span class="e-badge">Prior</span>
-          </button>
-          <div class="e-body"><div class="e-in"><div class="e-pad">
-            &bull; Direct end-user technical support in a small-business environment, diagnosing and resolving hardware and software issues to minimize downtime.<br>
-            &bull; Supported and configured Windows systems and VoIP phone services; installed, updated, and troubleshot software.<br>
-            &bull; Hardware troubleshooting, repair, and component replacement, plus printer and peripheral setup.
-          </div></div></div>
-        </article>
-      </div>
+        <div class="role">
+          <div class="role-meta">
+            <span class="role-no">Prior</span>
+            <span class="role-when">Jun 2020 to Aug 2023</span>
+          </div>
+          <div>
+            <h3 class="role-ttl">Technology and Computer Hardware Intern</h3>
+            <span class="role-tools">End-user support &middot; Windows &middot; Hardware</span>
+            <ul>
+              <li>Provided direct end-user support at a small business, diagnosing hardware and software problems and minimizing downtime.</li>
+              <li>Supported and configured Windows systems and VoIP phone service; installed, updated, and troubleshot software.</li>
+              <li>Repaired and replaced hardware components, and set up printers and other peripherals.</li>
+            </ul>
+          </div>
+        </div>
+      </article>
 
     </div>
   </div>
 </section>
 
-<!-- Capabilities.
-     Static skills grid (.sgrid) split into four labelled columns, followed
-     by the certification badges (.certs).
-
-     The certs are BUTTONS, not plain text: each carries data-cert="<id>",
-     and main.js looks that id up in a CERTS object to fill and open the
-     #certModal overlay with the cert's details + verification link.
-     The last badge (CySA+) is in progress, so it has no data-cert and
-     doesn't open anything; it's just a status marker. -->
+<!-- Capabilities. Static grid + clickable certification badges. -->
 <section>
   <div class="wrap">
-    <div class="shead"><h2>Capabilities</h2><span class="fill"></span></div>
-    <div class="sgrid">
-      <div class="scol"><span class="tag">Analysis</span>
-        <ul><li>Digital forensics</li><li>Malware analysis</li><li>Incident response</li><li>SIEM &amp; log analysis</li><li>Packet analysis</li><li>Threat detection</li></ul>
+    <div class="shead"><span class="n">02</span><h2>Capabilities</h2><span class="fill"></span></div>
+    <p class="sdesc">What I work with. Click a certification to see what it covers.</p>
+
+    <div class="caps">
+      <div class="cap"><span class="lbl">Analysis</span>
+        <ul><li>Digital forensics</li><li>Malware analysis</li><li>Incident response</li><li>SIEM and log analysis</li><li>Packet analysis</li><li>Threat detection</li></ul>
       </div>
-      <div class="scol"><span class="tag">Tooling</span>
+      <div class="cap"><span class="lbl">Tooling</span>
         <ul><li>Wireshark, tcpdump</li><li>Volatility, Autopsy, FTK</li><li>Splunk, Elastic (ELK)</li><li>PeStudio, ProcMon, Regshot</li><li>FakeNet-NG, VirusTotal</li><li>Nmap, Snort, Linux</li></ul>
       </div>
-      <div class="scol"><span class="tag">Governance</span>
-        <ul><li>GRC</li><li>COPPA / FERPA</li><li>Vendor &amp; third-party risk</li><li>CIS, NIST, ISO 27000</li><li>Control assessments</li><li>IAM &amp; Zero Trust</li></ul>
+      <div class="cap"><span class="lbl">Governance</span>
+        <ul><li>GRC</li><li>COPPA and FERPA</li><li>Vendor and third-party risk</li><li>CIS, NIST, ISO 27000</li><li>Control assessments</li><li>IAM and Zero Trust</li></ul>
       </div>
-      <div class="scol"><span class="tag">Code</span>
+      <div class="cap"><span class="lbl">Code</span>
         <ul><li>Python</li><li>Java</li><li>JavaScript</li><li>SQL</li><li>HTML</li><li>Git</li></ul>
       </div>
     </div>
 
-    <!-- Clickable certification badges. data-cert maps to CERTS[...] in main.js. -->
     <div class="certs">
       <button class="cert" data-cert="secplus">CompTIA Security+</button>
       <button class="cert" data-cert="sc900">Microsoft SC-900</button>
       <button class="cert" data-cert="az900">Microsoft AZ-900</button>
       <button class="cert" data-cert="dp900">Microsoft DP-900</button>
-      <button class="cert prog" data-cert="cysa">CompTIA CySA+ &mdash; in progress</button>
+      <button class="cert prog" data-cert="cysa">CompTIA CySA+, in progress</button>
     </div>
   </div>
 </section>
 
-<!-- Contact.
-     .links holds the four contact actions. The first (.pri) is the
-     primary/filled button. The resume link carries data-resume, which
-     main.js uses to open the #resumeModal instead of navigating away. -->
+<!-- The work. Three cards. Casework lives inside Projects. -->
+<section>
+  <div class="wrap">
+    <div class="shead"><span class="n">03</span><h2>The work</h2><span class="fill"></span></div>
+    <p class="sdesc">Three ways in. Most of it opens up, so click around.</p>
+
+    <div class="navgrid">
+      <a class="ncard" href="projects.html">
+        <span class="lbl">Casework and archive</span>
+        <h3>Projects</h3>
+        <p>A ransomware attack rebuilt stage by stage from disk, memory, network, and log evidence. Twelve malware samples pulled apart in an isolated lab. Below those, my response playbooks, risk analysis, and code.</p>
+        <span class="go"><span>Open projects <span class="arw">&rarr;</span></span><span class="ct">Investigations &middot; Archive</span></span>
+      </a>
+
+      <a class="ncard" href="lab.html">
+        <span class="lbl">Hands-on</span>
+        <h3>Lab</h3>
+        <p>Labs I worked through in forensics, detection, and network defense, written up the way I would read them at work. Three exercises at the bottom you can try yourself.</p>
+        <span class="go"><span>Enter the lab <span class="arw">&rarr;</span></span><span class="ct">Labs &middot; Exercises</span></span>
+      </a>
+
+      <a class="ncard" href="about.html">
+        <span class="lbl">Background</span>
+        <h3>About</h3>
+        <p>Where I came from, and what I do when I am not working.</p>
+        <span class="go"><span>Read about me <span class="arw">&rarr;</span></span><span class="ct">Bio &middot; Interests</span></span>
+      </a>
+    </div>
+  </div>
+</section>
+
 <section class="contact" id="contact">
   <div class="wrap">
-    <h2>Get in touch.</h2>
-    <p>If you've got something that needs taking apart, I'd like to hear about it.</p>
-    <div class="links">
-      <a class="pri" href="mailto:fnaroditskiy@gmail.com">fnaroditskiy@gmail.com</a>
-      <a href="https://www.linkedin.com/in/felix-naroditskiy" target="_blank" rel="noopener">LinkedIn</a>
-      <a href="https://github.com/DerpTG" target="_blank" rel="noopener">GitHub</a>
+    <h2>Contact</h2>
+    <p>Email is the fastest way to reach me. LinkedIn works too.</p>
+    <div class="cta">
+      <a class="solid" href="mailto:fnaroditskiy@gmail.com">fnaroditskiy@gmail.com</a>
       <a href="#" data-resume>Resume</a>
+      <a class="plain" href="https://www.linkedin.com/in/felix-naroditskiy" target="_blank" rel="noopener">LinkedIn</a>
+      <a class="plain" href="https://github.com/DerpTG" target="_blank" rel="noopener">GitHub</a>
     </div>
   </div>
 </section>
 
 </main>
 
-<!-- Resume modal.
-     Hidden by default (CSS .modal has display:none). main.js adds the
-     .show class when a [data-resume] link is clicked, and points the
-     iframe at the PDF. Clicking the backdrop, the Close button, or Esc
-     closes it. The two top links let visitors download or open in a tab. -->
-<div class="modal" id="resumeModal">
+<div class="modal" id="resumeModal" role="dialog" aria-modal="true" aria-label="Resume">
   <div class="modal-box">
     <div class="modal-hd">
-      <span class="t">RESUME &mdash; F. NARODITSKIY</span>
+      <span class="t">Resume &middot; F. Naroditskiy</span>
       <span class="actions">
-        <a class="dl" href="NaroditskiyFelixResume.pdf" download>Download PDF</a>
+        <a class="dl" href="NaroditskiyFelixResume.pdf" download>Download</a>
         <a href="NaroditskiyFelixResume.pdf" target="_blank" rel="noopener">Open in tab</a>
         <button id="closeResume">Close</button>
       </span>
     </div>
     <iframe id="resumeFrame" title="Resume" src="about:blank"></iframe>
+    <p class="pdf-fallback">Your browser cannot preview PDFs inline.<br><a href="NaroditskiyFelixResume.pdf" target="_blank" rel="noopener">Open the resume &rarr;</a></p>
   </div>
 </div>
 
-<!-- Cert modal.
-     Hidden overlay reused for every certification. main.js fills these
-     empty slots (#certName, #certBody, #certVerify) from the CERTS data
-     for whichever badge was clicked, then adds .show. Structure mirrors
-     the resume modal so it inherits the same styling. -->
-<div class="modal" id="certModal">
+<div class="modal" id="certModal" role="dialog" aria-modal="true" aria-label="Certification detail">
   <div class="modal-box cert-box">
     <div class="modal-hd">
-      <span class="t" id="certName">CERTIFICATION</span>
+      <span class="t" id="certName">Certification</span>
       <span class="actions">
         <a class="dl" id="certVerify" href="#" target="_blank" rel="noopener">Verify</a>
         <button id="closeCert">Close</button>
       </span>
     </div>
-    <div class="cert-body" id="certBody"><!-- filled by main.js --></div>
+    <div class="cert-body" id="certBody"></div>
   </div>
 </div>
 
-<!-- Footer -->
 <footer>
   <div class="wrap">
-    <span>© 2026 F. NARODITSKIY</span>
-    <a href="casework.html">START WITH THE CASEWORK →</a>
+    <span>&copy; 2026 F. Naroditskiy</span>
+    <a href="projects.html">Start with the casework &rarr;</a>
   </div>
 </footer>
 
-<!-- All interactive behavior (accordions, both modals, cert data) is here. -->
+<!-- Entry gate mount point. main.js fills and reveals this; with JavaScript
+     off it stays empty and hidden, so the site is never behind it. Home page
+     only, and once per browser session. -->
+<div class="gate" id="gate" hidden></div>
+
 <script src="main.js"></script>
 </body>
 </html>

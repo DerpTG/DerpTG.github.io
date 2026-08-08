@@ -1,0 +1,92 @@
+<main>
+
+<div class="phead">
+  <div class="wrap">
+    <a class="back" href="index.html">&larr; Back</a>
+    <h1>The lab</h1>
+    <p class="sub">The labs I have worked through so far, across forensic investigations, detection and monitoring, and network defense. Laid out the way I would read it at work, newest at the top and severity on the left. Click a line to open it.</p>
+  </div>
+</div>
+
+<!-- 01, Lab feed. Data and logic live in the feed script block. -->
+<section class="first">
+  <div class="wrap">
+    <div class="shead"><span class="n">01</span><h2>Hands-on labs</h2><span class="fill"></span></div>
+    <p class="sdesc">Lab work from coursework and my own study. Open an entry for the setup, what I did, and what I found. This is lab experience, not production work. New entries go up as I finish rooms on TryHackMe.</p>
+
+    <div class="feed">
+      <div class="feed-top">
+        <span class="t">Lab feed &middot; self-directed work</span>
+        <span class="feed-live"><i></i>Active &middot; updated regularly</span>
+      </div>
+      <div class="feed-head">
+        <span class="fh-sev">Sev</span><span class="fh-when">Status</span>
+        <span class="fh-what">Work</span><span class="fh-tools">Stack</span>
+      </div>
+      <div class="feed-list" id="feedList"></div>
+    </div>
+  </div>
+</section>
+
+<!-- 02, Three try-it-yourself exercises, set at the fictional Flexin Watches. -->
+<section>
+  <div class="wrap">
+    <div class="shead"><span class="n">02</span><h2>Try it yourself</h2><span class="fill"></span></div>
+    <p class="sdesc">Three short exercises set at Flexin Watches, a company I made up. Work an alert queue, read a packet capture, find the red flags in a phishing email. Nothing to sign up for, nothing to install.</p>
+
+    <h3 class="ex-h">1 &middot; SIEM triage</h3>
+    <p class="ex-sub">You are the Tier-1 analyst on shift. Every alert needs a call: escalate, investigate, or close. A couple look worse than they are, and one of the quiet ones is not quiet at all.</p>
+    <div class="lab-ex siem-wrap">
+      <div class="lab-ex-top">
+        <span class="t">Flexin Watches SOC &middot; alert queue</span>
+        <span class="score" id="siemScore">TRIAGED 0 / 5</span>
+      </div>
+      <div class="siem-grid">
+        <div class="siem-queue" id="siemQueue"></div>
+        <div class="siem-detail" id="siemDetail"></div>
+      </div>
+    </div>
+
+    <h3 class="ex-h">2 &middot; Packet capture</h3>
+    <p class="ex-sub">A slice of traffic from a Flexin workstation during a suspected data theft. Read it the way you would in Wireshark. Click a packet to open it and see what made it evidence.</p>
+    <div class="lab-ex">
+      <div class="lab-ex-top">
+        <span class="t">flexin-workstation-capture.pcapng</span>
+        <span class="score">6 packets shown</span>
+      </div>
+      <div class="pcap-filter">
+        <span class="pf-label">filter</span>
+        <code>tcp.stream eq 4 || ftp-data || tcp.flags.reset == 1</code>
+      </div>
+      <div class="pcap-head">
+        <span class="c-no">No.</span><span class="c-time">Time</span>
+        <span class="c-src">Source</span><span class="c-dst">Destination</span>
+        <span class="c-proto">Proto</span><span class="c-info">Info</span>
+      </div>
+      <div class="pcap-list" id="pcapList"></div>
+      <div class="pcap-detail" id="pcapDetail"></div>
+    </div>
+
+    <h3 class="ex-h">3 &middot; Spot the phish</h3>
+    <p class="ex-sub">This email landed in a Flexin employee&rsquo;s inbox. Click anything you think is a red flag. The panel keeps score and each flag explains itself once you find it.</p>
+    <div class="lab-ex phish">
+      <div class="phish-mail">
+        <div class="phish-hd" id="phishHd"></div>
+        <div class="phish-body" id="phishBody"></div>
+      </div>
+      <div class="phish-side">
+        <span class="tag">Red flags found</span>
+        <div class="phish-prog" id="phishProg">0 / 7</div>
+        <div class="phish-prog-lbl">click the suspicious parts</div>
+        <div class="phish-found" id="phishFound"></div>
+        <div class="phish-hint" id="phishHint">Look at the sender, the links, the tone, and anything it&rsquo;s rushing you to do.</div>
+        <div class="phish-done" id="phishDone">
+          <span class="v">All flags found</span>
+          <p>That is all of them. Real phishing rarely trips this many at once, but any single one is reason enough to stop and verify before you click.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>

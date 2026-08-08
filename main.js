@@ -14,7 +14,7 @@
        animation-timeline: view() in the MOTION section of style.css
 
    Page-specific widgets (the lab feed, the project records, the interests
-   console, the casework tools) still keep their own scripts inline.
+   console, the kill chain and malware tools) still keep their own scripts inline.
 */
 
 
@@ -393,11 +393,11 @@ function makeModal(id, closeBtnId) {
           '<span class="lbl2"><span class="h">Start investigation</span>' +
           '<span class="d">Open the site</span></span><span class="arw">\u2192</span></button>' +
         '<a class="gate-opt" href="projects.html">' + ico(ARROW) +
-          '<span class="lbl2"><span class="h">Open casework</span>' +
-          '<span class="d">2 investigations &middot; 5 projects</span></span><span class="arw">\u2192</span></a>' +
+          '<span class="lbl2"><span class="h">Open projects</span>' +
+          '<span class="d">Investigations &middot; Archive</span></span><span class="arw">\u2192</span></a>' +
         '<a class="gate-opt" href="lab.html">' + ico(GLASS) +
           '<span class="lbl2"><span class="h">Open the lab</span>' +
-          '<span class="d">8 labs &middot; 3 exercises</span></span><span class="arw">\u2192</span></a>' +
+          '<span class="d">Labs &middot; Exercises</span></span><span class="arw">\u2192</span></a>' +
       '</div>' +
     '</div>' +
     '<div class="gate-foot">' +

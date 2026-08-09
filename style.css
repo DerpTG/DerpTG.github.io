@@ -252,9 +252,12 @@ section{padding:78px 0;border-top:1px solid var(--rule)}
 .role li b{color:var(--ink);font-weight:600}
 
 /* ============================================================ CAPABILITIES */
-.caps{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--rule-2);background:var(--panel)}
-.cap{padding:24px 24px 28px;border-right:1px solid var(--rule)}
-.cap:last-child{border-right:0}
+/* Six categories in a 3x2 grid. Borders are drawn per-cell by nth-child so
+   the interior rules meet cleanly at both breakpoints. */
+.caps{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--rule-2);background:var(--panel)}
+.cap{padding:24px 24px 28px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+.cap:nth-child(3n){border-right:0}
+.cap:nth-last-child(-n+3){border-bottom:0}
 .cap .lbl{display:block;margin-bottom:15px;color:var(--signal)}
 .cap ul{list-style:none;display:grid;gap:8px}
 .cap li{font-size:14.5px;color:var(--mute);line-height:1.4}
@@ -360,8 +363,10 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--signal);outline-off
   .facts div:nth-child(2){border-right:0}
   .facts div:nth-child(-n+2){border-bottom:1px solid var(--rule)}
   .caps{grid-template-columns:repeat(2,1fr)}
-  .cap:nth-child(2){border-right:0}
-  .cap:nth-child(-n+2){border-bottom:1px solid var(--rule)}
+  .cap{border-right:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+  .cap:nth-child(3n){border-right:1px solid var(--rule)}
+  .cap:nth-child(2n){border-right:0}
+  .cap:nth-last-child(-n+2){border-bottom:0}
   .navgrid{grid-template-columns:1fr}
   .role{grid-template-columns:1fr;gap:14px}
   .role-meta{flex-direction:row;align-items:center;gap:12px}
@@ -388,7 +393,7 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--signal);outline-off
   .facts div{border-right:0;border-bottom:1px solid var(--rule)}
   .facts div:last-child{border-bottom:0}
   .caps{grid-template-columns:1fr}
-  .cap{border-right:0;border-bottom:1px solid var(--rule)}
+  .cap,.cap:nth-child(3n),.cap:nth-child(2n){border-right:0;border-bottom:1px solid var(--rule)}
   .cap:last-child{border-bottom:0}
   section{padding:56px 0}
   .contact{padding:64px 0}
@@ -927,9 +932,12 @@ section.first{border-top:0}
   display:block;border:1px solid var(--rule-2);background:var(--panel-2);
   line-height:0;transition:border-color .18s,transform .18s;
 }
-.shot-thumb img{width:220px;height:165px;object-fit:cover}
+/* Square thumbs: several source photos are portrait wrist shots, and a 4:3
+   crop cut the subject out entirely. The lightbox shows the full uncropped
+   photo, so nothing is lost, only framed. */
+.shot-thumb img{width:170px;height:170px;object-fit:cover}
 .shot-thumb:hover,.shot-thumb:focus-visible{border-color:var(--signal);transform:translateY(-2px)}
-@media(max-width:520px){.shot-thumb img{width:100%;height:auto;aspect-ratio:4/3}.shot-thumb{width:100%}}
+@media(max-width:520px){.shot-thumb img{width:100%;height:auto;aspect-ratio:1}.shot-thumb{width:calc(50% - 5px)}}
 
 /* ============================================================================
    MOTION LAYER

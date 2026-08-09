@@ -47,7 +47,7 @@
   <div class="wrap">
     <a class="back" href="index.html">&larr; Back</a>
     <h1>About</h1>
-    <p class="sub">Where I came from, and what I do when I am not working.</p>
+    <p class="sub">How I got into security, and what I do outside of it.</p>
   </div>
 </div>
 
@@ -57,11 +57,11 @@
 
     <div class="bio">
       <div class="bio-main">
-        <p>I started college as a commuter with a head start and a plan to finish in three years. That meant six classes a semester pulled from across the Penn State system, and teaching myself whatever the compressed schedule skipped over.</p>
+        <p>I went through Penn State as a commuter and finished in three years. Six classes a semester, pulled from campuses across the system, and a fair amount of teaching myself whatever a compressed schedule moved past too quickly.</p>
 
-        <p>Security was not the plan at first. I came in for computer science generally, and it narrowed once I found the part I actually liked, which was working out what happened after the fact. My professors pushed me to spend summers on certifications instead of taking the time off. That habit stuck, and it is why I am working through CySA+ now.</p>
+        <p>Security was not the original plan. I came in for computer science broadly and narrowed down once I found the part I kept coming back to, which was working out what happened after the fact. My professors pushed me to spend summers on certifications rather than taking the time off, and that habit is why I am sitting for CySA+ now.</p>
 
-        <p>Alongside school I spent three years at an EdTech startup, moving from intern to specialist. Most of that job is the governance and communication side of security, which is where I learned how much of this work is people and process rather than tooling. I built this site to keep track of what I have done so far.</p>
+        <p>Alongside school I worked my way from intern to specialist at an EdTech startup. The job is mostly governance, compliance, and communication, plus the technical support that keeps everyone running day to day. It taught me that security is a people and process problem at least as often as a technical one. I built this site to keep a record of the work.</p>
       </div>
 
       <aside class="bio-facts">
@@ -121,29 +121,34 @@
 /* The interests, in the order they appear in the list. */
 var INTERESTS = [
   {
-    key: 'watchmaking', name: 'Watchmaking', tag: 'Obsession',
+    key: 'watchmaking', name: 'Watches', tag: 'Obsession',
     lines: [
-      'Watches in general, not just one kind. A mechanical movement running a few hundred parts off a wound spring is incredible, but so is solar quartz that charges off a desk lamp and holds time better than anything mechanical ever will. Every one of them has a story behind why it was built that way.',
-      'I wrote a paper on it in school, on what actually separates a normal watch from haute horlogerie. The answer turned out to be hand-finishing, most of which you need a loupe to even see.'
+      'I collect watches, mechanical and quartz both. A mechanical movement running off a wound spring is a small miracle, but solar quartz charging off a desk lamp and keeping better time than any of them is its own kind of clever. Every watch was built to solve something, and that is the part I like.',
+      'I wrote a paper in school on what separates an ordinary watch from haute horlogerie. It comes down to hand-finishing you need a loupe to see at all.'
+    ],
+    imgs: [
+      ['img/watches/watch-1', 'Glycine Airman. A 24-hour dial built for pilots crossing time zones, and the one I reach for most.'],
+      ['img/watches/watch-2', 'Tag Heuer Grand Carrera, worn on graduation day.'],
+      ['img/watches/watch-3', 'Citizen Navihawk. Solar powered, and the slide-rule bezel still works if you know how to use it.']
     ]
   },
   {
     key: 'pc-building', name: 'Building computers', tag: 'Hands-on',
     lines: [
-      'I build my own machines and put them together for other people. One of these is mine, the other two I built for family and friends.',
-      'They almost always post on the first try, which I take as a good sign that the planning is where the real work is.'
+      'I build my own machines and put them together for other people. One of these is mine, the other two went to family and friends.',
+      'They almost always post on the first try, which tells me the planning is where the actual work happens.'
     ],
     imgs: [
       ['img/builds/build-3', 'My own machine. Noctua Chromax cooler, EVGA 3080, and cabling I spent longer on than I want to admit.'],
       ['img/builds/build-2', 'A build for my younger cousin, running a 3060. Part way through cable management here.'],
-      ['img/builds/build-1', 'A build for a friend. Z690 Tomahawk board and an EVGA RTX card, first boot up on the monitor behind it.']
+      ['img/builds/build-1', 'A build for a friend. Z690 Tomahawk board and an EVGA RTX card, first boot on the monitor behind it.']
     ]
   },
   {
     key: 'food', name: 'Food', tag: 'Always',
     lines: [
-      'Finding somewhere new to eat is most of what I do with friends and family. Philly makes that easy, and I will happily drive an hour for something worth driving for.',
-      'I will try anything once, which is how most of these ended up on my phone.'
+      'Finding somewhere new to eat is most of what I do with friends and family. Philly makes that easy, and I will drive an hour for something worth the drive.',
+      'I try anything once, which is how most of these ended up on my phone.'
     ],
     imgs: [
       ['img/food/food-1', 'Escargot, and the bread situation that comes with it.'],
@@ -152,24 +157,29 @@ var INTERESTS = [
     ]
   },
   {
-    key: 'fitness', name: 'Gym and getting outside', tag: 'Active',
+    key: 'outdoors', name: 'Outdoors', tag: 'Active',
     lines: [
-      'I hit the gym a few nights a week, partly because it is quieter then and partly because that is when the same group of us are all there. It is a good way to end a day that was otherwise entirely screens.',
-      'When the weather is decent I am out on the bike or walking with family and friends. Less about training, more about being outside and actually catching up with people.'
+      'I get to the gym a few nights a week. It is quieter then, the same group of us are always there, and it is a good way to close out a day spent entirely on screens.',
+      'Good weather means biking or walking with family and friends. Less training, more being outside and catching up with people.'
+    ],
+    imgs: [
+      ['img/outdoors/out-1', 'Ocean City, New Jersey. The boardwalk we have been going to since I was a kid.'],
+      ['img/outdoors/out-2', 'Florida, out on the water.'],
+      ['img/outdoors/out-3', 'A garden near home. Good place to walk and think.']
     ]
   },
   {
     key: 'community', name: 'Around Philly', tag: 'Local',
     lines: [
-      'I commuted through school, so I never really left home. That worked out better than I expected.',
-      'I get into the city when I can. Usually food, sometimes a show, occasionally whatever is happening downtown that weekend.'
+      'Commuting through school kept me close to home, which turned out to be worth more than I expected.',
+      'I get into the city whenever I can. Usually food, sometimes a show, often whatever is going on downtown that weekend.'
     ]
   },
   {
     key: 'watching', name: 'Books and movies', tag: 'Downtime',
     lines: [
-      'Dystopian series are what I read. The Hunger Games and the Maze Runner started it, then James Dashner\u2019s Mortality Doctrine books, Marie Lu\u2019s Legend trilogy, and Victoria Aveyard\u2019s Red Queen series. Harry Potter is not dystopian and I do not care, it is still the one I reread.',
-      'Movies are a different story. Action, superhero, and comedy, basically anything with The Rock or Jason Statham in it, and I will watch an Adam Sandler movie without needing a reason.'
+      'I read a lot of dystopian fiction. The Hunger Games and the Maze Runner got me started, and I went from there to James Dashner\u2019s Mortality Doctrine books, Marie Lu\u2019s Legend trilogy, and Victoria Aveyard\u2019s Red Queen series. Harry Potter is not dystopian and I do not care, it is still the one I reread.',
+      'Movies are the opposite. Action, superhero, and comedy. Anything with The Rock or Jason Statham, and I will put on an Adam Sandler movie without needing a reason.'
     ]
   }
 ];

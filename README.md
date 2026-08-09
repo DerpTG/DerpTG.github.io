@@ -85,8 +85,11 @@ Page bodies and the widget scripts live in `parts/`. Edit those, re-run, commit 
 │   ├── og.png          Social share image
 │   ├── logo-stemuli.png
 │   ├── logo-feba.png   Employer marks, transparent PNGs
-│   ├── builds/         PC build photos (build-N.jpg + build-N-sm.jpg)
-│   └── food/           Food photos (food-N.jpg + food-N-sm.jpg)
+│   ├── builds/         PC build photos
+│   ├── food/           Food photos
+│   ├── watches/        Watch photos
+│   └── outdoors/       Outdoor photos
+│                       (each as name.jpg + name-sm.jpg)
 ├── favicon.svg         Brand mark (+ PNG/ICO fallbacks, apple-touch-icon)
 ├── sitemap.xml         + robots.txt, for search indexing
 ├── .well-known/
@@ -99,7 +102,7 @@ Photos live under `img/`. The favicon set stays at the root on purpose: browsers
 
 ### Adding photos
 
-Drop the files in `img/builds/` or `img/food/` as `name.jpg` plus a half-size `name-sm.jpg`, then add an entry to that interest's `imgs` array in `parts/interests.js.html`:
+Drop the files in the matching `img/` subfolder as `name.jpg` (the full photo, uncropped, long edge up to 1400px) plus `name-sm.jpg` (a 440x440 square crop for the thumbnail), then add an entry to that interest's `imgs` array in `parts/interests.js.html`:
 
 ```js
 imgs: [
@@ -107,7 +110,7 @@ imgs: [
 ]
 ```
 
-The path has no extension. The thumbnail uses `-sm.jpg` and the lightbox uses the full file. Re-run `python3 build.py`. No other changes needed: the lightbox binds to whatever is on the page.
+The path has no extension. The thumbnail uses `-sm.jpg` and the lightbox uses the full file. Thumbnails are square and full images are never cropped, because several source photos are portrait and a landscape crop cut the subject out entirely. Re-run `python3 build.py`. No other changes needed: the lightbox binds to whatever is on the page.
 
 
 ## Contact

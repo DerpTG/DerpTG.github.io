@@ -246,8 +246,7 @@ function makeModal(id, closeBtnId) {
     var sel = [
       '.shead', '.sdesc', '.org', '.caps', '.certs', '.ncard',
       '.kc', '.term', '.feed', '.rec', '.lab-ex', '.ex-h', '.ex-sub',
-      '.bio-main', '.bio-facts', '.contact h2', '.contact p', '.contact .cta',
-      '.factband'
+      '.bio-main', '.bio-facts', '.factband'
     ].join(',');
     var targets = document.querySelectorAll(sel);
     var counts = new Map();                    // parent -> sibling index

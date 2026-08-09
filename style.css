@@ -15,9 +15,6 @@
                                       the redaction bars. Nothing else.
      --sev-hi / --sev-md / --sev-lo   severity, kept from the old palette but
                                       darkened to hold contrast on a light ground
-     --live                           the status dot in the brand mark. Green,
-                                      darkened from the original lime so it
-                                      still reads on a light background.
 
    Every text color here clears WCAG AA (4.5:1) against --ground.
 
@@ -40,7 +37,6 @@
   --sev-hi:#C8102E;
   --sev-md:#8A6100;
   --sev-lo:#2E6A4C;
-  --live:#2C9257;
 
   --display:'Archivo','Helvetica Neue',Arial,sans-serif;
   --mono:'IBM Plex Mono',ui-monospace,monospace;
@@ -89,11 +85,14 @@ img{display:block;max-width:100%}
   display:flex;align-items:center;gap:10px;text-decoration:none;
   font-weight:700;font-size:15px;letter-spacing:-.01em;flex-shrink:0;
 }
+/* Blinking block caret rather than a status dot. The pulsing green dot is
+   everywhere on developer portfolios, and this matches the terminal panes
+   the rest of the site already uses. */
 .brand i{
-  width:9px;height:9px;border-radius:50%;background:var(--live);flex-shrink:0;
-  box-shadow:0 0 0 3px rgba(44,146,87,.18);animation:livedot 2.4s infinite;
+  width:7px;height:15px;background:var(--signal);flex-shrink:0;
+  animation:caret 1.15s step-end infinite;
 }
-@keyframes livedot{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes caret{0%,100%{opacity:1}50%{opacity:0}}
 .nav nav{display:flex;gap:22px;margin-left:auto}
 .nav nav a{
   font-size:14px;font-weight:500;text-decoration:none;color:var(--mute);
@@ -125,8 +124,12 @@ img{display:block;max-width:100%}
   display:flex;flex-direction:column;justify-content:center;
   padding:64px 0 96px;
 }
+/* minmax(0,1fr), not 1fr: a bare 1fr floors at min-content, and the surname
+   set at 104px is wider than the track should be, so the grid overflowed its
+   own content box and pushed the portrait past every other right edge on the
+   page. minmax(0,...) lets the track shrink and guarantees that cannot recur. */
 .hero-grid{
-  display:grid;grid-template-columns:1fr 420px;gap:72px;align-items:center;
+  display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:64px;align-items:center;
 }
 .hero .lbl{display:block;margin-bottom:26px;color:var(--signal)}
 
@@ -135,7 +138,7 @@ img{display:block;max-width:100%}
    letters. The text is real text underneath, so it is selectable, indexable,
    and readable with animation off. */
 .hero h1{
-  font-size:clamp(46px,8.4vw,104px);
+  font-size:clamp(44px,7vw,96px);
   font-weight:800;line-height:.92;letter-spacing:-.04em;
   text-transform:uppercase;
 }
@@ -370,8 +373,8 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--signal);outline-off
 
 /* ============================================================ RESPONSIVE */
 @media(max-width:1000px){
-  .hero-grid{grid-template-columns:1fr;gap:44px}
-  .shot{max-width:330px}
+  .hero-grid{grid-template-columns:1fr;gap:40px}
+  .shot{max-width:380px;margin:0 auto}
   .facts{grid-template-columns:repeat(2,1fr)}
   .facts div:nth-child(2){border-right:0}
   .facts div:nth-child(-n+2){border-bottom:1px solid var(--rule)}
@@ -1107,14 +1110,36 @@ html.gating .gate[hidden]{display:flex}
 .gate{
   position:fixed;inset:0;z-index:400;background:var(--ground);
   display:flex;flex-direction:column;
-  animation:gateIn .34s cubic-bezier(.22,.68,.28,1) both;
+  animation:gateIn .3s ease both;
 }
 @keyframes gateIn{from{opacity:0}to{opacity:1}}
+
+/* Entrance sequence. The screen used to arrive almost fully formed, which
+   made it read as a static page rather than something opening. Now the bars
+   slide in from the edges, a load line sweeps under the title bar, and the
+   brand and options arrive in order behind it. */
+.gate-bar{animation:barDown .42s cubic-bezier(.22,.68,.28,1) both}
+@keyframes barDown{from{opacity:0;transform:translateY(-100%)}to{opacity:1;transform:none}}
+.gate-foot{animation:barUp .42s .06s cubic-bezier(.22,.68,.28,1) both}
+@keyframes barUp{from{opacity:0;transform:translateY(100%)}to{opacity:1;transform:none}}
+
+/* A load line that sweeps once, the way a tool reports it is ready. */
+.gate-bar::after{
+  content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;
+  background:var(--signal);transform-origin:left;
+  animation:loadSweep .9s .3s cubic-bezier(.4,0,.2,1) both;
+}
+@keyframes loadSweep{
+  0%{transform:scaleX(0);opacity:1}
+  70%{transform:scaleX(1);opacity:1}
+  100%{transform:scaleX(1);opacity:0}
+}
 .gate.closing{animation:gateOut .46s cubic-bezier(.5,0,.75,0) both}
 @keyframes gateOut{to{opacity:0;transform:translateY(-2%) scale(1.015)}}
 
 /* Title bar across the top of the screen. */
 .gate-bar{
+  position:relative;
   display:flex;align-items:center;justify-content:space-between;gap:14px;
   padding:0 24px;height:56px;flex-shrink:0;
   border-bottom:1px solid var(--rule-2);background:var(--panel);
@@ -1123,7 +1148,7 @@ html.gating .gate[hidden]{display:flex}
   font-family:var(--mono);font-size:11px;letter-spacing:.18em;
   text-transform:uppercase;font-weight:600;display:flex;align-items:center;gap:10px;
 }
-.gate-bar .t i{width:8px;height:8px;border-radius:50%;background:var(--live);flex-shrink:0}
+.gate-bar .t i{width:7px;height:14px;background:var(--signal);flex-shrink:0;animation:caret 1.15s step-end infinite}
 .gate-x{
   background:none;border:1px solid transparent;color:var(--mute);cursor:pointer;
   font-family:var(--mono);font-size:15px;line-height:1;padding:7px 11px;transition:.15s;
@@ -1135,7 +1160,12 @@ html.gating .gate[hidden]{display:flex}
   flex:1;display:grid;grid-template-columns:1fr 1fr;
   max-width:1180px;width:100%;margin:0 auto;padding:0 28px;align-items:center;gap:64px;
 }
-.gate-brand{display:flex;flex-direction:column;gap:22px;animation:gateRise .55s .1s cubic-bezier(.22,.68,.28,1) both}
+.gate-brand{display:flex;flex-direction:column;gap:22px}
+.gate-logo{animation:logoIn .6s .34s cubic-bezier(.22,.68,.28,1) both}
+@keyframes logoIn{from{opacity:0;transform:translateY(14px) scale(.9)}to{opacity:1;transform:none}}
+.gate-brand .nm{animation:gateRise .55s .44s cubic-bezier(.22,.68,.28,1) both}
+.gate-brand .rl{animation:gateRise .55s .54s cubic-bezier(.22,.68,.28,1) both}
+.gate-brand .sub{animation:gateRise .55s .62s cubic-bezier(.22,.68,.28,1) both}
 @keyframes gateRise{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
 .gate-logo{width:118px;height:118px;border-radius:22px}
 .gate-brand .nm{font-size:clamp(38px,4.6vw,62px);font-weight:800;letter-spacing:-.038em;line-height:.94;text-transform:uppercase}
@@ -1151,11 +1181,12 @@ html.gating .gate[hidden]{display:flex}
   background:var(--panel);border:1px solid var(--rule-2);padding:20px 22px;cursor:pointer;
   color:inherit;font:inherit;text-decoration:none;position:relative;
   transition:background .2s,border-color .2s,transform .2s,box-shadow .2s;
-  animation:gateRise .5s both;
+  animation:optIn .52s cubic-bezier(.22,.68,.28,1) both;
 }
-.gate-opt:nth-child(1){animation-delay:.24s}
-.gate-opt:nth-child(2){animation-delay:.32s}
-.gate-opt:nth-child(3){animation-delay:.40s}
+@keyframes optIn{from{opacity:0;transform:translateX(26px)}to{opacity:1;transform:none}}
+.gate-opt:nth-child(1){animation-delay:.56s}
+.gate-opt:nth-child(2){animation-delay:.66s}
+.gate-opt:nth-child(3){animation-delay:.76s}
 .gate-opt:hover,.gate-opt:focus-visible{
   border-color:var(--signal);transform:translateX(5px);
   box-shadow:0 14px 30px -20px rgba(20,23,26,.5);
@@ -1199,7 +1230,8 @@ html.gating .scroll-cue{animation-play-state:paused}
   .gate-ico{width:36px;height:36px}
 }
 @media(prefers-reduced-motion:reduce){
-  .gate,.gate.closing,.gate-brand,.gate-opt{animation:none}
+  .gate,.gate.closing,.gate-brand,.gate-opt,.gate-bar,.gate-foot,
+  .gate-bar::after,.gate-logo,.gate-brand .nm,.gate-brand .rl,.gate-brand .sub{animation:none}
   html.gating .hero *{animation-play-state:running}
 }
 
@@ -1332,3 +1364,27 @@ button.shot-thumb{padding:0;font:inherit;color:inherit;cursor:zoom-in}
 .phish-done.show{animation:swapIn .42s cubic-bezier(.22,.68,.28,1) both}
 .phish-done.show .v{animation:cascadeIn .42s .1s cubic-bezier(.22,.68,.28,1) both}
 .phish-done.show p{animation:cascadeIn .42s .2s cubic-bezier(.22,.68,.28,1) both}
+
+/* ============================================================================
+   TOUCH TARGETS
+
+   On a touch device several controls were well under the 44px that both Apple
+   and Google recommend: the menu toggle sat at 27px, the back link at 18px,
+   and the nav links at 32px. Padding is added rather than font size, so
+   nothing about the visual weight changes on desktop.
+   ========================================================================= */
+@media(pointer:coarse){
+  .brand{min-height:44px}
+  .navtog{min-height:44px;padding:11px 13px}
+  .nav-act a,.nav-act button{min-height:44px;display:inline-flex;align-items:center}
+  .nav nav a{min-height:44px;display:flex;align-items:center}
+  .back{min-height:44px;display:inline-flex;align-items:center;padding:11px 0;margin-bottom:14px}
+  .wip-link{min-height:38px;display:inline-flex;align-items:center}
+  .cta a,.cta button{min-height:46px;display:inline-flex;align-items:center;justify-content:center}
+  .cta .plain{padding:13px 4px}
+  .gh{min-height:40px;display:inline-flex;align-items:center}
+  .cert{min-height:44px}
+  .modal-hd a,.modal-hd button{min-height:40px;display:inline-flex;align-items:center}
+  footer a,footer span{min-height:38px;display:inline-flex;align-items:center}
+  .ico-link{width:44px;height:44px}
+}

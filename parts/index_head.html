@@ -1,0 +1,20 @@
+<script>
+/* Runs before first paint. If the gate is due this session, tag <html> now so
+   the CSS can show it the instant its markup is parsed. Doing this from
+   main.js at the end of <body> meant the whole page painted first and the
+   gate dropped on top a frame later, which read as a flash of the site. */
+(function(){try{if(!sessionStorage.getItem('fn.gate.seen'))document.documentElement.className+=' gating';}catch(e){}})();
+</script>
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org","@type":"Person",
+  "name":"Felix Naroditskiy",
+  "url":"https://felixnaroditskiy.com/",
+  "image":"https://felixnaroditskiy.com/img/felix.jpg",
+  "jobTitle":"Cybersecurity Specialist",
+  "alumniOf":"Pennsylvania State University",
+  "email":"mailto:fnaroditskiy@gmail.com",
+  "address":{"@type":"PostalAddress","addressLocality":"Warminster","addressRegion":"PA","addressCountry":"US"},
+  "sameAs":["https://www.linkedin.com/in/felix-naroditskiy","https://github.com/DerpTG"]
+}
+</script>

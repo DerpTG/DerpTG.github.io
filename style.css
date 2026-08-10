@@ -425,10 +425,11 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--signal);outline-off
 
    1. Page load. Hairlines draw, content rises, and the redaction bars
       retract off the name. One orchestrated sequence, not scattered effects.
-   2. Scroll. Native scroll-driven animations via animation-timeline: view().
-      Firefox still has this behind a flag, so the finished state is the
-      default and the animation is layered on top inside @supports, so an
-      unsupporting browser simply shows the content. */
+   2. Scroll. main.js tags blocks with .reveal via IntersectionObserver and
+      flips them to .in as they enter the viewport. Not animation-timeline:
+      Firefox still has scroll-driven animations behind a flag. The class is
+      added by JS, so with JS off nothing is ever hidden. The rules live in
+      the MOTION LAYER section further down. */
 
 @keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
 @keyframes unredact{from{transform:scaleX(1)}to{transform:scaleX(0)}}

@@ -22,7 +22,7 @@ Direction is **"evidence room"**: a cool gray-green ground rather than paper, ne
 - **Type:** Archivo for display and prose, IBM Plex Mono for data only. If it isn't machine-readable (a date, a count, a hash, an identifier) it isn't mono.
 - Every text color clears WCAG AA (4.5:1) against both surface colors. Verified, not assumed.
 
-**Entry gate:** a full-page case-open screen offering Start investigation, Open projects, and Open the lab. It is opaque rather than an overlay, so the home page is never sitting blurred behind it. Built by `main.js` rather than written into the markup, so the site is never behind it: with JavaScript off it never renders and crawlers reach the page directly. Home page only, once per browser session (`sessionStorage`), dismissed by Escape, the X, or any option. While it is up, `<html>` carries `.gating`, which pauses the hero's load sequence so the intro plays when the visitor arrives rather than behind the screen. Focus is trapped while it is open.
+**Entry gate:** a full-page case-open screen offering Start investigation, Open projects, and Open the lab. It is opaque rather than an overlay, so the home page is never sitting blurred behind it. The markup ships in the page (`parts/gate.html`) carrying `hidden`, and a small script in `<head>` adds `.gating` to `<html>` before first paint, which is what reveals it. Building it from `main.js` instead meant the page painted first and the gate dropped on top a frame later, which read as a flash of the site. With JavaScript off the head script never runs, so `hidden` stands, the gate never appears, and crawlers reach the page directly. Home page only, once per browser session (`sessionStorage`), dismissed by Escape, the X, or any option. While it is up, `.gating` also pauses the hero's load sequence so the intro plays when the visitor arrives rather than behind the screen. Focus is trapped while it is open.
 
 **Scrollable panes:** the kill-chain rail, malware sample list, SIEM queue, and interests list overflow at phone width, where mobile browsers use overlay scrollbars that stay invisible until you are already scrolling. Each gets a permanent scrollbar (`-webkit-appearance:none` is what stops iOS treating it as transient) plus a `mask-image` edge fade. `main.js` toggles `.at-start` / `.at-end` so the fade only shows on a side with content left, and clears entirely once the pane fits. A `.scroll-hint` label in each pane header appears only under `@media(pointer:coarse)`. Without the JS the panes still scroll, they just lose the affordance.
 
@@ -63,7 +63,11 @@ The nav, `<head>`, and footer are identical on every page, and hand-maintaining 
 python3 build.py
 ```
 
-Page bodies and the widget scripts live in `parts/`. Edit those, re-run, commit the generated HTML. `index.html` is maintained by hand, since it's the only page with a unique layout.
+Page bodies and the widget scripts live in `parts/`. **Edit those, re-run, commit the generated HTML.** Every `.html` at the root is generated and carries a "do not edit" banner; editing one directly means losing the change on the next build.
+
+All five pages go through the build, `index.html` included. Its layout is unique, so it passes a few extra slots to `head()` (a preloaded portrait, the pre-paint gate script and JSON-LD, `<body id="top">`, the gate markup, the certification modal), but its chrome comes from the same template as everywhere else.
+
+You only need to re-run the build after editing something in `parts/`. Changes to `style.css`, `main.js`, or images need nothing.
 
 > Nothing here is required to *serve* the site. GitHub Pages just publishes the HTML. The build step exists so the shared chrome has one source of truth.
 
@@ -71,15 +75,16 @@ Page bodies and the widget scripts live in `parts/`. Edit those, re-run, commit 
 
 ```
 .
-├── index.html          Home (hand-maintained)
-├── projects.html       Casework + archive     ┐
+├── index.html          Home                   ┐
+├── projects.html       Casework + archive     │
 ├── lab.html            Lab feed + exercises   │ generated
 ├── about.html          Bio and interests      │ by build.py
-├── 404.html            Not-found page         ┘
+├── 404.html            Not-found page         ┘ do not edit
 ├── style.css           One stylesheet, tokens in :root
 ├── main.js             Nav, modals, gate, lightbox, motion
 ├── build.py            Page assembler
-├── parts/              Page bodies + widget scripts
+├── parts/              Page bodies + widget scripts, and the
+│                       index-only gate, head extras, and body
 ├── img/
 │   ├── felix.jpg       Portrait (+ felix-sm.jpg for 1x)
 │   ├── og.png          Social share image

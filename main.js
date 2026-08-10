@@ -1,17 +1,20 @@
 /*
    main.js, shared behavior, loaded on every page.
 
-   Three pieces, each checking for its own elements first so the file is safe
+   Eight pieces, each checking for its own elements first so the file is safe
    on pages that don't use a given feature:
 
-     1. Mobile nav    toggles the collapsed nav on narrow screens
-     2. Resume modal  opens the PDF in an overlay
-     3. Cert modal    shows a certification's detail and verification link
+     1. Mobile nav       toggles the collapsed nav on narrow screens
+     2. Modal helper     shared open/close/focus behaviour for the overlays
+     3. Resume modal     opens the PDF in an overlay
+     4. Cert modal       shows a certification's detail and verification link
+     5. Motion           scroll reveals, widget swaps, animated pane heights
+     6. Entry gate       wires the home page's welcome screen
+     7. Photo lightbox   full-size photo overlay, built at runtime
+     8. Scrollable panes edge fades for panes that overflow at phone width
 
-   Two things that used to live here are gone:
-     - the experience accordions, because experience is now always open
-     - the IntersectionObserver scroll reveal, replaced by CSS
-       animation-timeline: view() in the MOTION section of style.css
+   The experience accordions used to live here and are gone, because the
+   experience section is now always open.
 
    Page-specific widgets (the lab feed, the project records, the interests
    console, the kill chain and malware tools) still keep their own scripts inline.
@@ -42,6 +45,29 @@
 })();
 
 
+/* ---------- Focusable children ----------
+   Visible focusable descendants, in tab order, for the overlay tab traps.
+
+   Two things this deliberately gets right:
+
+     Hidden elements are skipped. The resume modal's .pdf-fallback link is
+     display:none until the browser turns out not to preview PDFs, and the
+     lightbox hides its arrows when there is only one photo. Treating one of
+     those as the last stop guards an element Tab never reaches, and focus
+     walks straight out into the page behind.
+
+     The <iframe> is skipped too, so Close is the last stop. Once focus moves
+     into the PDF viewer the keydown fires in *its* document, the trap here
+     never sees it, and focus escapes on the next Tab. Keyboard users reach
+     the PDF through Download or Open in tab, which is the better route
+     anyway: a PDF viewer is its own tab-order maze to get back out of. */
+function focusablesIn(el) {
+  return [].filter.call(
+    el.querySelectorAll('button, a[href], [tabindex]:not([tabindex="-1"])'),
+    function (n) { return !n.hidden && n.getClientRects().length > 0; });
+}
+
+
 /* ---------- Shared modal helper ----------
    Both overlays behave the same way: remember what was focused, move focus
    into the dialog, lock background scroll, and restore everything on close.
@@ -55,7 +81,7 @@ function makeModal(id, closeBtnId) {
     last = document.activeElement;
     modal.classList.add('show');
     document.body.style.overflow = 'hidden';
-    var first = modal.querySelector('button, a[href]');
+    var first = focusablesIn(modal)[0];
     if (first) first.focus();
   }
 
@@ -70,7 +96,17 @@ function makeModal(id, closeBtnId) {
   // Clicking the backdrop (but not the box) closes.
   modal.addEventListener('click', function (e) { if (e.target === modal) close(); });
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && modal.classList.contains('show')) close();
+    if (!modal.classList.contains('show')) return;
+    if (e.key === 'Escape') { close(); return; }
+    if (e.key !== 'Tab') return;
+    /* These carry aria-modal="true", which tells a screen reader the rest of
+       the page is inert, but that is only a promise: Tab still walks out into
+       the page behind unless it is held here. The gate already does this. */
+    var f = focusablesIn(modal);
+    if (!f.length) return;
+    var a = f[0], z = f[f.length - 1];
+    if (e.shiftKey && document.activeElement === a) { e.preventDefault(); z.focus(); }
+    else if (!e.shiftKey && document.activeElement === z) { e.preventDefault(); a.focus(); }
   });
 
   return { open: open, close: close };
@@ -538,9 +574,17 @@ function makeModal(id, closeBtnId) {
 
   document.addEventListener('keydown', function (e) {
     if (!box.classList.contains('show')) return;
-    if (e.key === 'Escape') close();
-    else if (e.key === 'ArrowLeft') show(i - 1);
-    else if (e.key === 'ArrowRight') show(i + 1);
+    if (e.key === 'Escape') { close(); return; }
+    if (e.key === 'ArrowLeft') { show(i - 1); return; }
+    if (e.key === 'ArrowRight') { show(i + 1); return; }
+    if (e.key !== 'Tab') return;
+    // Same trap as the other overlays. With one photo the arrows are hidden,
+    // so the visible set is just Close and Tab simply holds there.
+    var f = focusablesIn(box);
+    if (!f.length) return;
+    var a = f[0], z = f[f.length - 1];
+    if (e.shiftKey && document.activeElement === a) { e.preventDefault(); z.focus(); }
+    else if (!e.shiftKey && document.activeElement === z) { e.preventDefault(); a.focus(); }
   });
 })();
 

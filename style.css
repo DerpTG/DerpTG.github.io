@@ -1672,23 +1672,34 @@ body>header,body>main,body>footer{position:relative;z-index:1}
 /* Alphas are low on purpose. These read as atmosphere on the dark hero, but
    most of the page is paper, and the same values that look like light on
    near-black look like a pink wash on white. */
+/* Both layers drift by transform, never by regenerating what they paint.
+
+   The first version put --sp inside the gradient positions and the grid's
+   background-position. That looks identical and is enormously more expensive:
+   a custom property inside a background forces the whole image to be redrawn
+   whenever it changes, so every scroll frame repainted three full-viewport
+   radial gradients on a fixed layer. It made scrolling feel heavy on a
+   desktop and cost real frames on a phone.
+
+   Painted once and moved on the compositor instead. Each layer is oversized
+   so translating it never drags its own edge into view. */
 .sb-bloom{
-  inset:-25%;
+  inset:-30%;
   background:
-    radial-gradient(46vw 38vw at calc(12% + var(--sp,0) * 26%) calc(6% + var(--sp,0) * 34%),
-      rgba(200,16,46,.055),transparent 62%),
-    radial-gradient(54vw 44vw at calc(90% - var(--sp,0) * 30%) calc(74% - var(--sp,0) * 46%),
-      rgba(72,122,142,.06),transparent 66%),
-    radial-gradient(40vw 34vw at calc(50% + var(--sp,0) * 18%) calc(112% - var(--sp,0) * 62%),
-      rgba(138,97,0,.035),transparent 64%);
+    radial-gradient(46vw 38vw at 18% 14%,rgba(200,16,46,.055),transparent 62%),
+    radial-gradient(54vw 44vw at 82% 60%,rgba(72,122,142,.06),transparent 66%),
+    radial-gradient(40vw 34vw at 56% 96%,rgba(138,97,0,.035),transparent 64%);
+  transform:translate3d(calc(var(--sp,0) * -6vw),calc(var(--sp,0) * -13vh),0);
+  will-change:transform;
 }
 .sb-grid{
-  inset:0;
+  inset:-90px 0;
   background-image:
     linear-gradient(to right,rgba(20,23,26,.045) 1px,transparent 1px),
     linear-gradient(to bottom,rgba(20,23,26,.045) 1px,transparent 1px);
   background-size:78px 78px;
-  background-position:0 calc(var(--sp,0) * -60px);
+  transform:translate3d(0,calc(var(--sp,0) * -60px),0);
+  will-change:transform;
   -webkit-mask-image:radial-gradient(ellipse 92% 76% at 50% 50%,#000 34%,transparent 82%);
   mask-image:radial-gradient(ellipse 92% 76% at 50% 50%,#000 34%,transparent 82%);
 }
@@ -1744,7 +1755,7 @@ body>header,body>main,body>footer{position:relative;z-index:1}
 
 @media(prefers-reduced-motion:reduce){
   .stag>*{opacity:1!important;transform:none!important}
-  .sb-bloom,.sb-grid{background-position:0 0}
+  .sb-bloom,.sb-grid{transform:none;will-change:auto}
 }
 
 /* ============================================================================

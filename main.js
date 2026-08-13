@@ -1,7 +1,7 @@
 /*
    main.js, shared behavior, loaded on every page.
 
-   Eleven pieces, each checking for its own elements first so the file is safe
+   Ten pieces, each checking for its own elements first so the file is safe
    on pages that don't use a given feature:
 
      1. Mobile nav       toggles the collapsed nav on narrow screens
@@ -14,7 +14,6 @@
      8. V3 engine        nav plate, entrances, the scroll channel, tilt
      9. Node field       the hero's canvas background
     10. Case-open intro  the home page's opening animation
-    11. Smooth scroll    eased wheel scrolling on pointer devices
 
    The experience accordions used to live here and are gone, because the
    experience section is now always open. The v2 entry gate is gone too: it
@@ -771,37 +770,59 @@ function makeModal(id, closeBtnId) {
     pars.push({ el: el, k: isNaN(k) ? 0.06 : k });
   });
 
+  var lastSp = '';
+
+  /* Every read happens before any write.
+
+     The first version set --sp and then measured each scene and parallax layer
+     in turn. Writing a style and then reading a rect in the same frame makes
+     the browser lay the page out again to answer the read, so a frame with
+     five measured elements could force five extra layouts. Batched this way it
+     costs one.
+
+     --sp is also only written when it actually changes. It sits on <html>, so
+     every write invalidates style for the whole document. */
   function frame() {
     queued = false;
+
+    // ---- reads ----
     var vh = window.innerHeight;
-
-    /* Page scroll progress, 0 to 1, onto <html>. .sitebg positions its blooms
-       from this, so the fixed background drifts for the whole length of the
-       page instead of resetting per section. */
+    var y = window.pageYOffset || root.scrollTop;
     var maxY = root.scrollHeight - vh;
-    root.style.setProperty('--sp',
-      maxY > 0 ? ((window.pageYOffset || root.scrollTop) / maxY).toFixed(4) : '0');
+    var i, sceneP = [], parV = [];
 
-    for (var i = 0; i < scenes.length; i++) {
+    for (i = 0; i < scenes.length; i++) {
       var s = scenes[i];
       var r = s.el.getBoundingClientRect();
       var span = s.el.offsetHeight - (s.stage ? s.stage.offsetHeight : vh);
       var p = span > 0 ? (-r.top) / span : 0;
-      s.el.style.setProperty('--p', (p < 0 ? 0 : p > 1 ? 1 : p).toFixed(4));
+      sceneP.push(p < 0 ? 0 : p > 1 ? 1 : p);
+    }
+    for (i = 0; i < pars.length; i++) {
+      var pr = pars[i].el.getBoundingClientRect();
+      parV.push({
+        vis: !(pr.bottom < -240 || pr.top > vh + 240),
+        mid: pr.top + pr.height / 2 - vh / 2
+      });
     }
 
-    for (var j = 0; j < pars.length; j++) {
-      var o = pars[j];
-      var pr = o.el.getBoundingClientRect();
+    // ---- writes ----
+    var sp = maxY > 0 ? (y / maxY).toFixed(3) : '0';
+    if (sp !== lastSp) { lastSp = sp; root.style.setProperty('--sp', sp); }
+
+    for (i = 0; i < scenes.length; i++) {
+      scenes[i].el.style.setProperty('--p', sceneP[i].toFixed(4));
+    }
+    for (i = 0; i < pars.length; i++) {
+      var o = pars[i], v = parV[i];
       // Off-screen layers keep their last offset and drop will-change, so a
       // long page is not holding a compositor layer per parallax element.
-      if (pr.bottom < -240 || pr.top > vh + 240) {
+      if (!v.vis) {
         if (o.live) { o.el.style.willChange = ''; o.live = false; }
         continue;
       }
       if (!o.live) { o.el.style.willChange = 'transform'; o.live = true; }
-      var mid = pr.top + pr.height / 2 - vh / 2;
-      o.el.style.setProperty('--py', (-mid * o.k).toFixed(1) + 'px');
+      o.el.style.setProperty('--py', (-v.mid * o.k).toFixed(1) + 'px');
     }
   }
 
@@ -1145,93 +1166,4 @@ function makeModal(id, closeBtnId) {
     play();
   }
   window.setTimeout(finish, 9000);
-})();
-
-
-/* ============================================================================
-   SMOOTH SCROLL
-
-   Eases the wheel instead of jumping by its raw delta, which is what makes a
-   long page feel like one continuous movement rather than a series of steps.
-
-   It drives the real scroll position with window.scrollTo rather than
-   translating a wrapper element. Transforming a wrapper is the other common
-   way to do this and it breaks position:sticky, IntersectionObserver and
-   native find-in-page, all three of which this site depends on.
-
-   Deliberately narrow:
-     - pointer:fine only. Touch devices already do momentum in hardware, and
-       overriding it costs CPU to produce something worse.
-     - off under prefers-reduced-motion.
-     - the wheel is left alone over anything that scrolls on its own (the
-       widget panes, an open modal), so those still scroll normally.
-     - keyboard, scrollbar dragging and in-page anchors stay native. The
-       target resyncs from any scroll this did not cause, so nothing fights it.
-   ========================================================================= */
-(function () {
-  var mm = window.matchMedia;
-  if (!mm || !mm('(pointer: fine)').matches) return;
-  if (mm('(prefers-reduced-motion: reduce)').matches) return;
-
-  var root = document.documentElement;
-  var EASE = 0.115;            // per frame; lower is smoother and laggier
-  var target = window.pageYOffset || root.scrollTop;
-  var raf = 0, driving = false;
-
-  // CSS smooth scrolling and this would each try to own the same position.
-  root.style.scrollBehavior = 'auto';
-
-  function maxY() { return root.scrollHeight - window.innerHeight; }
-
-  function step() {
-    raf = 0;
-    var cur = window.pageYOffset || root.scrollTop;
-    var d = target - cur;
-    if (Math.abs(d) < 0.5) { window.scrollTo(0, target); driving = false; return; }
-    driving = true;
-    window.scrollTo(0, cur + d * EASE);
-    raf = requestAnimationFrame(step);
-  }
-
-  /* Panes that scroll on their own keep the native wheel. Without this the
-     malware sample list and the SIEM queue would scroll the page instead of
-     themselves. */
-  function ownScroll(node) {
-    for (var el = node; el && el !== document.body; el = el.parentNode) {
-      if (el.nodeType !== 1) continue;
-      if (el.classList && el.classList.contains('modal')) return true;
-      var cs = getComputedStyle(el);
-      if ((cs.overflowY === 'auto' || cs.overflowY === 'scroll') &&
-          el.scrollHeight > el.clientHeight + 1) return true;
-      if ((cs.overflowX === 'auto' || cs.overflowX === 'scroll') &&
-          el.scrollWidth > el.clientWidth + 1) return true;
-    }
-    return false;
-  }
-
-  window.addEventListener('wheel', function (e) {
-    if (e.ctrlKey) return;                                   // pinch zoom
-    if (document.body.style.overflow === 'hidden') return;   // a modal is up
-    if (ownScroll(e.target)) return;
-
-    // deltaMode 1 is lines, 2 is pages. Normalise both to pixels.
-    var d = e.deltaY;
-    if (e.deltaMode === 1) d *= 18;
-    else if (e.deltaMode === 2) d *= window.innerHeight;
-
-    e.preventDefault();
-    if (!driving) target = window.pageYOffset || root.scrollTop;
-    target = Math.max(0, Math.min(maxY(), target + d));
-    if (!raf) raf = requestAnimationFrame(step);
-  }, { passive: false });
-
-  /* Resync from anything that moved the page itself: keyboard, anchor jumps,
-     scrollbar drags, the browser restoring a position. */
-  window.addEventListener('scroll', function () {
-    if (!driving) target = window.pageYOffset || root.scrollTop;
-  }, { passive: true });
-
-  window.addEventListener('resize', function () {
-    target = Math.max(0, Math.min(maxY(), target));
-  });
 })();

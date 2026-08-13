@@ -18,11 +18,12 @@ My personal cybersecurity portfolio. Digital forensics, malware analysis, and in
 Direction is **"evidence room"**: a cool gray-green ground rather than paper, near-black ink, and one saturated crimson used strictly as an index marker, never as decoration.
 
 - `--ground #E7E9E4` · `--panel #F4F5F2` · `--ink #14171A` · `--signal #C8102E`
-- A near-black counter-surface (`--void`) with tokens mirroring the light ones one for one. `--signal-d` is the lifted crimson, because the brand red only reaches 3.2:1 on near-black and can't be text there.
-- **Dark is full-bleed in page headers only.** Below them it appears boxed — `.darkbox` panels inset on the paper, so nothing bands across the page. Getting there took two wrong turns; both are written up in the `V3.2 · BOXED DARK` comment in `style.css`.
-- **On the subpages the contrast comes from title bars, not whole panels.** Every widget already has one — the terminal path, `projects.log`, the lab feed header, each exercise header, the kill chain — so they all go near-black with a crimson block starting the title, and the panel takes a near-black outline to match. The content underneath stays on paper, where dense technical text reads best. Making the whole widgets dark was tried first and turned three pages into one long screen. The severity trio has `-d` twins for the few coloured readouts that sit in these bars, since the paper values are far too dim on near-black.
 - **Type:** Archivo for display and prose, IBM Plex Mono for data only. If it isn't machine-readable (a date, a count, a hash, an identifier) it isn't mono.
-- Every text colour clears WCAG AA (4.5:1) against both surfaces. Verified, not assumed.
+- Every text colour clears WCAG AA (4.5:1) against both surfaces.
+
+**Two surfaces.** The evidence room is the resting state. A near-black counter-surface (`--void`) carries tokens mirroring the light ones one for one, so a component moves between them by swapping tokens rather than being rewritten. `--signal-d` is the lifted crimson for dark backgrounds, and the severity trio has `-d` twins, because the paper values are too dim on near-black.
+
+**Where the dark goes.** Full-bleed in page headers. Below them it appears boxed — `.darkbox` panels inset on the paper, so nothing bands across the page. On the subpages the contrast comes from title bars: the terminal path, `projects.log`, the lab feed header, each exercise header, the kill chain. Each bar is near-black with a crimson block starting the title and a matching outline on the panel, while the content underneath stays on paper where dense technical text reads best.
 
 **Signature:** the hero name is revealed by retracting redaction bars. Pure CSS, over ordinary markup, so it stays selectable, indexable, and readable with animation off.
 
@@ -30,7 +31,7 @@ Direction is **"evidence room"**: a cool gray-green ground rather than paper, ne
 
 Each widget is a data array plus a render function, kept simple so the code stays readable:
 
-- **Case-open intro** (`index.html`) — the old entry gate played as an animation rather than a dialog you dismiss. Home page only, once per session, ended by any input.
+- **Case-open intro** (`index.html`) — a case panel opens itself on screen. Home page only, once per session, ended by any input, skipped under reduced motion.
 - **Capabilities** (`index.html`) — sticky heading and live index on the left, cards tilting in on the right
 - **Kill-chain map** (`projects.html`) — a seven-stage MITRE ATT&CK timeline from a capstone ransomware investigation
 - **Malware triage terminal** (`projects.html`) — static and dynamic analysis records for 12 detonated samples
@@ -41,11 +42,11 @@ Each widget is a data array plus a render function, kept simple so the code stay
 
 ## Tech
 
-HTML, CSS, and vanilla JavaScript. No libraries, no frameworks, no build step for the browser. GitHub Pages, automatic deploy on every push.
+HTML, CSS, and vanilla JavaScript. No libraries, no frameworks, no build step for the browser. Scrolling is native. GitHub Pages, automatic deploy on every push.
 
-The motion layer runs from JS rather than CSS `animation-timeline`, because **Firefox still keeps scroll-driven animations behind a flag** (~84% global support as of mid-2026). Every animation class is added by JS and never ships in the markup, so with JavaScript off nothing is hidden. The whole layer is disabled under `prefers-reduced-motion`.
+Motion runs from JavaScript rather than CSS `animation-timeline`, since Firefox still keeps scroll-driven animations behind a flag. Every animation class is added by JS and never ships in the markup, so with JavaScript off nothing is hidden, and the whole layer is disabled under `prefers-reduced-motion`.
 
-Sections in the source, each with its own notes:
+Named sections in the source, each carrying its own notes:
 
 | Where | What |
 |-------|------|
@@ -53,12 +54,6 @@ Sections in the source, each with its own notes:
 | `V3 MOTION ENGINE` (js) | nav plate, directional entrances, the scroll channel |
 | `HERO NODE FIELD` (js) | the canvas background on every page header |
 | `CASE-OPEN INTRO` (js) | the opening animation |
-| `SMOOTH SCROLL` (js) | eased wheel scrolling, pointer devices only |
-
-Two traps worth knowing before editing:
-
-- `IntersectionObserver` needs `threshold: 0` for clip-path reveals — an element's own `clip-path` zeroes its `intersectionRect`, so a higher threshold can never be met.
-- Dark scenes use `overflow: clip`, not `hidden`, because `hidden` creates a scroll container and breaks `position: sticky` inside it.
 
 ## Build
 
@@ -95,7 +90,7 @@ Page bodies and the widget scripts live in `parts/`. **Edit those, re-run, commi
 └── NaroditskiyFelixResume.pdf
 ```
 
-The favicon set stays at the root on purpose: browsers request `/favicon.ico` and `apple-touch-icon.png` from there by default. The resume stays at the root so it has a clean shareable URL.
+The favicon set stays at the root because browsers request `/favicon.ico` and `apple-touch-icon.png` from there by default. The resume stays at the root so it has a clean shareable URL.
 
 ### Adding photos
 

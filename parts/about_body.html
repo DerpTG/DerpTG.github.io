@@ -1,6 +1,10 @@
 <main>
 
-<div class="phead">
+<div class="phead scene-dark">
+  <canvas class="bgl hero-net" id="heroNet" aria-hidden="true"></canvas>
+  <div class="bgl bgl-grid bgl-par" data-par="0.07" aria-hidden="true"></div>
+  <div class="bgl bgl-glow" aria-hidden="true"></div>
+  <div class="bgl bgl-noise" aria-hidden="true"></div>
   <div class="wrap">
     <a class="back" href="index.html">&larr; Back</a>
     <h1>About</h1>
@@ -10,10 +14,10 @@
 
 <section class="first">
   <div class="wrap">
-    <div class="shead"><span class="n">01</span><h2>Who I am</h2><span class="fill"></span></div>
+    <div class="shead" data-rv="clip"><span class="n">01</span><h2>Who I am</h2><span class="fill"></span></div>
 
     <div class="bio">
-      <div class="bio-main">
+      <div class="bio-main" data-rv="left">
         <p>I went through Penn State as a commuter and finished in three years. Six classes a semester, pulled from campuses across the system, and a fair amount of teaching myself whatever a compressed schedule moved past too quickly.</p>
 
         <p>Security was not the original plan. I came in for computer science broadly and narrowed down once I found the part I kept coming back to, which was working out what happened after the fact. My professors pushed me to spend summers on certifications rather than taking the time off, and that habit is why I am sitting for CySA+ now.</p>
@@ -21,7 +25,7 @@
         <p>Alongside school I worked my way from intern to specialist at an EdTech startup. The job is mostly governance, compliance, and communication, plus the technical support that keeps everyone running day to day. It taught me that security is a people and process problem at least as often as a technical one. I built this site to keep a record of the work.</p>
       </div>
 
-      <aside class="bio-facts">
+      <aside class="bio-facts" data-rv="right">
         <div class="fact"><span class="k">Based in</span><span class="v">Warminster, PA</span></div>
         <div class="fact"><span class="k">Open to</span><span class="v">Remote &middot; Hybrid (Philly metro)</span></div>
         <div class="fact"><span class="k">Interested in</span><span class="v">Security analysis &middot; IR / DFIR &middot; GRC &middot; Cloud security</span></div>
@@ -36,10 +40,10 @@
 <!-- Interests console. Data and logic live in the interests script block. -->
 <section>
   <div class="wrap">
-    <div class="shead"><span class="n">02</span><h2>Off the clock</h2><span class="fill"></span></div>
-    <p class="sdesc">Pick one to read more.</p>
+    <div class="shead" data-rv="clip"><span class="n">02</span><h2>Off the clock</h2><span class="fill"></span></div>
+    <p class="sdesc" data-rv="up">Pick one to read more.</p>
 
-    <div class="term">
+    <div class="term" data-rv="rise">
       <div class="term-top">
         <span class="path">felix@home:~/interests</span><span class="scroll-hint">swipe list &rarr;</span>
       </div>

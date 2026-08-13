@@ -8,24 +8,34 @@
   felixnaroditskiy.com/ resolves here. The nav label is what readers see.
 
   Structure:
-    1. Nav          sticky. One action button: Contact me.
-    2. Hero         full viewport height. Name, line, portrait, actions.
-    3. Facts        four-cell strip, its own band below the hero
+    1. Nav          sticky. Starts with no plate over the dark hero and fades
+                    its background in once the page scrolls (body.dark-top).
+    2. Hero         full bleed on the dark surface, pulled up under the nav.
+                    Canvas node field, name, portrait, actions, counter strip.
+    3. Facts        four-cell strip. First cut back to paper.
     4. Experience   fully open. Stemuli's two roles share one employer block.
-    5. Capabilities skills grid + clickable certifications
-    6. The work     three cards into Projects, Lab, About
-    7. Contact
+    5. Capabilities the pinned scene. Several viewports tall; the six cards
+                    track sideways as it scrolls. Falls back to a plain grid.
+    6. Certs        clickable certification badges, on paper
+    7. The work     three cards into Projects, Lab, About, on the dark surface
     8. Modals       resume and certification overlays
-    9. Gate         welcome dialog. The markup ships in the page and is shown
-                    by CSS the moment the pre-paint head script sets .gating;
-                    main.js only wires the behaviour. Once per session.
+
+  The v2 entry gate is gone. It existed to give the site an opening, and the
+  hero does that itself now.
 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Marks the document as scripted, before first paint. The nav only drops
+     its background over a dark page header while this is set, so with
+     JavaScript off it keeps its plate and stays legible over the light
+     sections instead of being transparent the whole way down. Inline and in
+     <head> because doing it from main.js would paint a solid nav over the
+     hero for a frame first. -->
+<script>document.documentElement.classList.add('js')</script>
 <title>Felix Naroditskiy · Cybersecurity</title>
-<meta name="description" content="Felix Naroditskiy works in digital forensics, malware analysis, and incident response. Ransomware casework, malware triage, hands-on labs, and security governance projects.">
+<meta name="description" content="Felix Naroditskiy works in digital forensics, malware analysis, and incident response, with the security governance and IT systems work alongside it. Ransomware casework, malware triage, hands-on labs, and privacy compliance.">
 <link rel="canonical" href="https://felixnaroditskiy.com/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Felix Naroditskiy">
@@ -46,11 +56,20 @@
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 <script>
-/* Runs before first paint. If the gate is due this session, tag <html> now so
-   the CSS can show it the instant its markup is parsed. Doing this from
-   main.js at the end of <body> meant the whole page painted first and the
-   gate dropped on top a frame later, which read as a flash of the site. */
-(function(){try{if(!sessionStorage.getItem('fn.gate.seen'))document.documentElement.className+=' gating';}catch(e){}})();
+/* Pre-paint. If the case-open intro is due this session, tag <html> now, so
+   the hero's load sequence is already paused when the first frame paints and
+   main.js has something to build over. Doing this from main.js alone meant the
+   hero painted first and the panel dropped on top a frame later, which read as
+   a flash of the site: the exact problem the v2 gate had.
+
+   Bailing here on prefers-reduced-motion or on a second view this session is
+   what makes the intro a once-per-session flourish rather than a gate. */
+(function(){try{
+  var r=document.documentElement, m=window.matchMedia;
+  if(sessionStorage.getItem('fn.intro.seen'))return;
+  if(m&&m('(prefers-reduced-motion: reduce)').matches)return;
+  r.className+=' intro';
+}catch(e){}})();
 </script>
 <script type="application/ld+json">
 {
@@ -61,39 +80,18 @@
   "jobTitle":"Cybersecurity Specialist",
   "alumniOf":"Pennsylvania State University",
   "email":"mailto:fnaroditskiy@gmail.com",
+  "knowsAbout":["Digital forensics","Malware analysis","Incident response","SIEM and log analysis","Security governance","Privacy compliance","IT support","Active Directory","Microsoft 365"],
   "address":{"@type":"PostalAddress","addressLocality":"Warminster","addressRegion":"PA","addressCountry":"US"},
   "sameAs":["https://www.linkedin.com/in/felix-naroditskiy","https://github.com/DerpTG"]
 }
 </script>
 </head>
-<body id="top">
-
-<!-- Entry gate. Written into the markup so it paints with the first frame
-     rather than being built after load, which caused a flash of the site.
-     hidden by default: it only shows when the head script has added .gating,
-     so with JavaScript off it never appears and the site is never behind it.
-     main.js only wires the behaviour. -->
-<div class="gate" id="gate" hidden>
-  <div class="gate-bar">
-    <span class="t"><i></i>Welcome</span>
-    <button class="gate-x" data-gate-close aria-label="Close and enter the site">&#10005;</button>
-  </div>
-  <div class="gate-body" role="dialog" aria-modal="true" aria-labelledby="gateName">
-    <div class="gate-brand">
-      <img class="gate-logo" src="favicon.svg" alt="" width="118" height="118">
-      <span class="nm" id="gateName">Felix<br>Naroditskiy</span>
-      <span class="rl">Digital forensics, malware analysis, and incident response. Pick where you want to start.</span>
-      <span class="sub">Analyze &middot; Document &middot; Report</span>
-    </div>
-    <div class="gate-opts">
-      <button class="gate-opt primary" data-gate-close><svg class="gate-ico" viewBox="0 0 44 44" aria-hidden="true"><path d="M8 3h16l10 10v27a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z" fill="#F4F5F2" stroke="#A9AEA6" stroke-width="1.5"/><path d="M24 3v10h10" fill="none" stroke="#A9AEA6" stroke-width="1.5"/><circle cx="31" cy="31" r="9.5" fill="#C8102E"/><path d="M31 26.5v9M26.5 31h9" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg><span class="lbl2"><span class="h">Start investigation</span><span class="d">Open the site</span></span><span class="arw">&rarr;</span></button>
-      <a class="gate-opt" href="projects.html"><svg class="gate-ico" viewBox="0 0 44 44" aria-hidden="true"><path d="M8 3h16l10 10v27a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z" fill="#F4F5F2" stroke="#A9AEA6" stroke-width="1.5"/><path d="M24 3v10h10" fill="none" stroke="#A9AEA6" stroke-width="1.5"/><circle cx="31" cy="31" r="9.5" fill="#C8102E"/><path d="M26.8 31h7.6m-3.2-3.4 3.4 3.4-3.4 3.4" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="lbl2"><span class="h">Open projects</span><span class="d">Investigations &middot; Archive</span></span><span class="arw">&rarr;</span></a>
-      <a class="gate-opt" href="lab.html"><svg class="gate-ico" viewBox="0 0 44 44" aria-hidden="true"><path d="M8 3h16l10 10v27a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z" fill="#F4F5F2" stroke="#A9AEA6" stroke-width="1.5"/><path d="M24 3v10h10" fill="none" stroke="#A9AEA6" stroke-width="1.5"/><circle cx="31" cy="31" r="9.5" fill="#C8102E"/><circle cx="29.4" cy="29.4" r="3.8" fill="none" stroke="#fff" stroke-width="2.2"/><path d="M32.2 32.2 35.4 35.4" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg><span class="lbl2"><span class="h">Open the lab</span><span class="d">Labs &middot; Exercises</span></span><span class="arw">&rarr;</span></a>
-    </div>
-  </div>
-  <div class="gate-foot"><span class="hint">Esc to skip</span></div>
-</div>
-
+<body id="top" class="dark-top">
+<!-- One fixed background behind the whole document, on every page. The light
+     sections paint no background of their own, so it shows through them; the
+     dark scenes are opaque and cover it. Its blooms drift from --sp, the page
+     scroll progress main.js writes onto <html>. Decorative only. -->
+<div class="sitebg" aria-hidden="true"><i class="sb-bloom"></i><i class="sb-grid"></i><i class="sb-noise"></i></div>
 <header class="nav">
   <div class="wrap">
     <a class="brand" href="index.html"><i aria-hidden="true"></i>F. NARODITSKIY</a>
@@ -111,21 +109,38 @@
 </header>
 <main>
 
-<!-- Hero. Fills the viewport. The name sits under solid bars in CSS that
-     retract on load; the text underneath is ordinary markup, so it stays
-     selectable and readable with animation off. -->
-<div class="hero">
+<!-- ===================================================================== HERO
+     The one full-bleed dark surface on the page. Everything below it is paper,
+     and where the dark comes back it comes back boxed: a panel sitting on the
+     table, not a band running edge to edge.
+
+     Background layers stack under the content: the node field on canvas, a
+     technical grid, the bloom, a slow scan, and grain.
+
+     The name is still revealed by retracting redaction bars. The text under
+     them is ordinary markup, so it stays selectable, indexable, and readable
+     with animation off.
+
+     main.js builds the case-open intro over this on first visit of a session.
+     None of that ships in the markup, so with JavaScript off the hero is just
+     the hero. -->
+<div class="hero scene-dark" id="hero">
+  <canvas class="bgl hero-net" id="heroNet" aria-hidden="true"></canvas>
+  <div class="bgl bgl-grid" aria-hidden="true"></div>
+  <div class="bgl bgl-glow" aria-hidden="true"></div>
+  <div class="bgl bgl-scan" aria-hidden="true"></div>
+  <div class="bgl bgl-noise" aria-hidden="true"></div>
+
   <div class="wrap hero-grid">
     <div class="hero-main">
       <span class="lbl">Cybersecurity &middot; Forensics &middot; Incident response</span>
-      <!-- tabindex="-1": not in the tab order, but focusable by script. The
-           gate hands focus here on dismiss, which was silently a no-op. -->
+      <!-- tabindex="-1": not in the tab order, but focusable by script. -->
       <h1 tabindex="-1">
         <span class="red">Felix</span>
         <span class="red">Naroditskiy</span>
       </h1>
       <p class="tagline">Protecting data, and finding the <b>weak points</b> before someone else does.</p>
-      <p class="lede">Cybersecurity graduate working in digital forensics, malware analysis, and incident response. I also run privacy compliance and security program work at an EdTech startup, and I have been the hands-on IT support there and at the job before it.</p>
+      <p class="lede">Cybersecurity graduate working in digital forensics, malware analysis, and incident response. I run privacy compliance and security program work at an EdTech startup, and I keep the systems, accounts, and hardware behind it running day to day.</p>
       <div class="cta">
         <a class="solid" href="mailto:fnaroditskiy@gmail.com">fnaroditskiy@gmail.com</a>
         <a href="NaroditskiyFelixResume.pdf" data-resume>Read my resume</a>
@@ -149,11 +164,11 @@
   <a class="scroll-cue" href="#facts" aria-label="Scroll to details"><span></span>Scroll</a>
 </div>
 
-<!-- Facts strip. Its own band so the hero can hold the viewport. -->
+<!-- Facts strip. Back on paper, flush under the hero on a clean edge. -->
 <div class="factband" id="facts">
   <div class="wrap">
-    <dl class="facts">
-      <div><dt class="lbl">Focus</dt><dd>Security analysis, SOC work, incident response, and GRC</dd></div>
+    <dl class="facts" data-stagger>
+      <div><dt class="lbl">Focus</dt><dd>Security analysis, incident response, and GRC, with the systems work alongside it</dd></div>
       <div><dt class="lbl">Based in</dt><dd>Warminster, PA. Remote, or hybrid near Philadelphia.</dd></div>
       <div><dt class="lbl">Degree</dt><dd>B.S. Cybersecurity Analytics and Operations, Penn State</dd></div>
       <div><dt class="lbl">Studying</dt><dd><button class="wip-link" data-cert="cysa">CompTIA CySA+</button></dd></div>
@@ -161,15 +176,16 @@
   </div>
 </div>
 
-<!-- Experience. Open by default. Stemuli's two roles share one block. -->
-<section>
+<!-- ============================================================== EXPERIENCE -->
+<section class="lit">
+  <div class="bgl bgl-grid on-light bgl-par" data-par="0.035" aria-hidden="true"></div>
   <div class="wrap">
-    <div class="shead"><span class="n">01</span><h2>Experience</h2><span class="fill"></span></div>
-    <p class="sdesc">Security program work at an EdTech startup, and the IT support role I held through school before it.</p>
+    <div class="shead" data-rv="clip"><span class="n">01</span><h2>Experience</h2><span class="fill"></span></div>
+    <p class="sdesc" data-rv="up">Security program work at an EdTech startup, and the IT support role I held through school before it.</p>
 
     <div class="roles">
 
-      <article class="org">
+      <article class="org" data-rv="rise">
         <div class="org-hd">
           <span class="org-mark"><img src="img/logo-stemuli.png" alt="" width="34" height="34" loading="lazy"></span>
           <span class="org-meta">
@@ -185,8 +201,8 @@
           </div>
           <div>
             <h3 class="role-ttl">Cybersecurity Specialist</h3>
-            <span class="role-tools">GRC &middot; Privacy compliance &middot; Cloud security</span>
-            <ul>
+            <span class="role-tools">GRC &middot; Privacy compliance &middot; Cloud security &middot; End-user support</span>
+            <ul data-stagger>
               <li>Drive <b>COPPA and FERPA compliance</b> for a K-12 platform and build out the wider security program, starting from a NIST CSF gap assessment. Translate regulatory changes into policy, consent workflows, and tracked remediation.</li>
               <li>Assess security controls and tooling across <b>15+ cloud and SaaS platforms</b> on a recurring basis, write the resulting hardening recommendations, and deliver weekly security awareness briefings and new-hire orientation.</li>
               <li>Built a paid cohort of <b>55+ student research testers</b> from zero and designed its segmented access model, covering role-based permissions, identity verification, and moderation controls that keep student data separated.</li>
@@ -204,7 +220,7 @@
           <div>
             <h3 class="role-ttl">Cybersecurity and Technology Intern</h3>
             <span class="role-tools">Data governance &middot; Cloud security research</span>
-            <ul>
+            <ul data-stagger>
               <li>Led data compliance initiatives, researching and proposing governance procedures aligned to <b>CIS, NIST, COPPA, and FERPA</b> under Zero Trust principles.</li>
               <li>Reviewed vendor and partner security questionnaires and audited tooling across <b>AWS RDS, GCP, Azure</b>, and other SaaS platforms, assessing encryption, IAM, and policy compliance.</li>
               <li>Wrote four team-specific onboarding handbooks and a nine-domain security training handbook for all employees.</li>
@@ -213,7 +229,7 @@
         </div>
       </article>
 
-      <article class="org">
+      <article class="org" data-rv="rise">
         <div class="org-hd">
           <span class="org-mark"><img src="img/logo-feba.png" alt="" width="34" height="34" loading="lazy"></span>
           <span class="org-meta">
@@ -229,8 +245,8 @@
           </div>
           <div>
             <h3 class="role-ttl">Technology and Computer Hardware Intern</h3>
-            <span class="role-tools">End-user support &middot; Windows &middot; Hardware</span>
-            <ul>
+            <span class="role-tools">End-user support &middot; Windows &middot; Hardware &middot; VoIP</span>
+            <ul data-stagger>
               <li>Provided direct end-user support at a small business, diagnosing hardware and software problems and minimizing downtime.</li>
               <li>Supported and configured Windows systems and VoIP phone service; installed, updated, and troubleshot software.</li>
               <li>Repaired and replaced hardware components, and set up printers and other peripherals.</li>
@@ -243,34 +259,68 @@
   </div>
 </section>
 
-<!-- Capabilities. Static grid + clickable certification badges. -->
-<section>
-  <div class="wrap">
-    <div class="shead"><span class="n">02</span><h2>Capabilities</h2><span class="fill"></span></div>
-    <p class="sdesc">What I work with, on both the security and the systems side. Click a certification to see what it covers.</p>
+<!-- ============================================================ CAPABILITIES
+     Sticky heading on the left, six cards travelling up past it on the right,
+     each tilting flat as it arrives. Nothing pins the page and nothing scrolls
+     sideways, so the section reads as part of the scroll rather than as a
+     widget that has taken the page over.
 
-    <div class="caps">
-      <div class="cap"><span class="lbl">IT support</span>
-        <ul><li>Help desk and end-user support</li><li>Windows 10/11 install and setup</li><li>PC building and assembly</li><li>Hardware troubleshooting and repair</li><li>Printer and peripheral setup</li><li>User onboarding and offboarding</li></ul>
+     The cards are the boxed dark: near-black panels sitting on the paper,
+     each carrying its own grid and bloom, rather than the page cutting to
+     black edge to edge. Below 900px the split collapses and the heading stops
+     sticking, which leaves an ordinary stack of cards. -->
+<section class="lit">
+  <div class="bgl bgl-grid on-light bgl-par" data-par="0.05" aria-hidden="true"></div>
+  <div class="wrap">
+    <div class="capsplit">
+      <div class="capsplit-hd">
+        <div class="shead" data-rv="clip"><span class="n">02</span><h2>Capabilities</h2><span class="fill"></span></div>
+        <p class="sdesc" data-rv="up">What I work with, on the security side and the systems side. Six areas, most used first.</p>
+
+        <!-- Live index. main.js marks the entry whose card is currently in
+             front of the heading. Ordinary list markup, so it still reads as
+             a contents list with JavaScript off; aria-hidden because it
+             duplicates the headings on the cards themselves. -->
+        <ol class="capnav" aria-hidden="true">
+          <li>Security analysis</li>
+          <li>Security tooling</li>
+          <li>Governance</li>
+          <li>Systems and networking</li>
+          <li>IT support</li>
+          <li>Code</li>
+        </ol>
       </div>
-      <div class="cap"><span class="lbl">Systems and networking</span>
-        <ul><li>Active Directory: users, OUs, GPOs</li><li>Microsoft 365</li><li>MFA, 2FA, and VPN</li><li>VoIP and telephony</li><li>Routers, Wi-Fi, and cabling</li><li>Ticketing systems</li></ul>
-      </div>
-      <div class="cap"><span class="lbl">Security analysis</span>
-        <ul><li>Digital forensics</li><li>Malware analysis</li><li>Incident response</li><li>SIEM and log analysis</li><li>Packet analysis</li><li>Vulnerability assessment</li></ul>
-      </div>
-      <div class="cap"><span class="lbl">Security tooling</span>
-        <ul><li>Wireshark, tcpdump</li><li>Volatility, Autopsy, FTK</li><li>Splunk, Elastic (ELK)</li><li>PeStudio, ProcMon, Regshot</li><li>Nmap, Snort, Linux</li><li>Cisco Packet Tracer</li></ul>
-      </div>
-      <div class="cap"><span class="lbl">Governance</span>
-        <ul><li>GRC</li><li>COPPA and FERPA</li><li>Vendor and third-party risk</li><li>CIS, NIST, ISO 27000</li><li>Control assessments</li><li>IAM and Zero Trust</li></ul>
-      </div>
-      <div class="cap"><span class="lbl">Code</span>
-        <ul><li>Python</li><li>Java</li><li>JavaScript</li><li>SQL</li><li>HTML</li><li>Git</li></ul>
+
+      <div class="capsplit-list">
+        <div class="cap darkbox scene-dark" data-tilt><span class="idx">01</span><span class="lbl">Security analysis</span>
+          <ul><li>Digital forensics</li><li>Malware analysis</li><li>Incident response</li><li>SIEM and log analysis</li><li>Packet analysis</li><li>Vulnerability assessment</li></ul>
+        </div>
+        <div class="cap darkbox scene-dark" data-tilt><span class="idx">02</span><span class="lbl">Security tooling</span>
+          <ul><li>Wireshark, tcpdump</li><li>Volatility, Autopsy, FTK</li><li>Splunk, Elastic (ELK)</li><li>PeStudio, ProcMon, Regshot</li><li>Nmap, Snort, Linux</li><li>Cisco Packet Tracer</li></ul>
+        </div>
+        <div class="cap darkbox scene-dark" data-tilt><span class="idx">03</span><span class="lbl">Governance</span>
+          <ul><li>GRC</li><li>COPPA and FERPA</li><li>Vendor and third-party risk</li><li>CIS, NIST, ISO 27000</li><li>Control assessments</li><li>IAM and Zero Trust</li></ul>
+        </div>
+        <div class="cap darkbox scene-dark" data-tilt><span class="idx">04</span><span class="lbl">Systems and networking</span>
+          <ul><li>Active Directory: users, OUs, GPOs</li><li>Microsoft 365</li><li>MFA, 2FA, and VPN</li><li>VoIP and telephony</li><li>Routers, Wi-Fi, and cabling</li><li>Ticketing systems</li></ul>
+        </div>
+        <div class="cap darkbox scene-dark" data-tilt><span class="idx">05</span><span class="lbl">IT support</span>
+          <ul><li>Help desk and end-user support</li><li>Windows 10/11 install and setup</li><li>PC building and assembly</li><li>Hardware troubleshooting and repair</li><li>Printer and peripheral setup</li><li>User onboarding and offboarding</li></ul>
+        </div>
+        <div class="cap darkbox scene-dark" data-tilt><span class="idx">06</span><span class="lbl">Code</span>
+          <ul><li>Python</li><li>Java</li><li>JavaScript</li><li>SQL</li><li>HTML</li><li>Git</li></ul>
+        </div>
       </div>
     </div>
+  </div>
+</section>
 
-    <div class="certs">
+<!-- ========================================================= CERTIFICATIONS -->
+<section class="lit">
+  <div class="wrap">
+    <div class="shead" data-rv="clip"><span class="n">03</span><h2>Certifications</h2><span class="fill"></span></div>
+    <p class="sdesc" data-rv="up">Click one to see what it covers.</p>
+    <div class="certs" data-stagger>
       <button class="cert" data-cert="secplus">CompTIA Security+</button>
       <button class="cert" data-cert="sc900">Microsoft SC-900</button>
       <button class="cert" data-cert="az900">Microsoft AZ-900</button>
@@ -280,33 +330,40 @@
   </div>
 </section>
 
-<!-- The work. Three cards. Casework lives inside Projects. -->
-<section>
+<!-- ================================================================ THE WORK
+     The second boxed dark: one panel holding the three index cards, inset on
+     the paper with the page's margins still showing either side. Same idea as
+     the capability cards, at a larger size, so the dark reads as an object on
+     the page both times it appears. -->
+<section class="lit">
+  <div class="bgl bgl-grid on-light bgl-par" data-par="0.03" aria-hidden="true"></div>
   <div class="wrap">
-    <div class="shead"><span class="n">03</span><h2>The work</h2><span class="fill"></span></div>
-    <p class="sdesc">Everything here opens up. Start wherever is most relevant.</p>
+    <div class="shead" data-rv="clip"><span class="n">04</span><h2>The work</h2><span class="fill"></span></div>
+    <p class="sdesc" data-rv="up">Everything here opens up. Start wherever is most relevant.</p>
 
-    <div class="navgrid">
-      <a class="ncard" href="projects.html">
-        <span class="lbl">Casework and archive</span>
-        <h3>Projects</h3>
-        <p>A ransomware attack rebuilt stage by stage from disk, memory, network, and log evidence. Twelve malware samples pulled apart in an isolated lab. Below those sit my response playbooks, networking labs, risk analysis, and code.</p>
-        <span class="go"><span>Open projects <span class="arw">&rarr;</span></span><span class="ct">Investigations &middot; Archive</span></span>
-      </a>
+    <div class="workbox darkbox scene-dark" data-rv="rise">
+      <div class="navgrid hinge-row" data-hinge>
+        <a class="ncard" href="projects.html">
+          <span class="lbl">Casework and archive</span>
+          <h3>Projects</h3>
+          <p>A ransomware attack rebuilt stage by stage from disk, memory, network, and log evidence. Twelve malware samples pulled apart in an isolated lab. Below those sit my response playbooks, networking labs, risk analysis, and code.</p>
+          <span class="go"><span>Open projects <span class="arw">&rarr;</span></span><span class="ct">Investigations &middot; Archive</span></span>
+        </a>
 
-      <a class="ncard" href="lab.html">
-        <span class="lbl">Hands-on</span>
-        <h3>Lab</h3>
-        <p>Labs I worked through in forensics, detection, and network defense, written up the way I would read them at work. Three exercises at the bottom you can try yourself.</p>
-        <span class="go"><span>Enter the lab <span class="arw">&rarr;</span></span><span class="ct">Labs &middot; Exercises</span></span>
-      </a>
+        <a class="ncard" href="lab.html">
+          <span class="lbl">Hands-on</span>
+          <h3>Lab</h3>
+          <p>Labs I worked through in forensics, detection, and network defense, written up the way I would read them at work. Three exercises at the bottom you can try yourself.</p>
+          <span class="go"><span>Enter the lab <span class="arw">&rarr;</span></span><span class="ct">Labs &middot; Exercises</span></span>
+        </a>
 
-      <a class="ncard" href="about.html">
-        <span class="lbl">Background</span>
-        <h3>About</h3>
-        <p>How I got into security, and what I do outside of it.</p>
-        <span class="go"><span>Read about me <span class="arw">&rarr;</span></span><span class="ct">Bio &middot; Interests</span></span>
-      </a>
+        <a class="ncard" href="about.html">
+          <span class="lbl">Background</span>
+          <h3>About</h3>
+          <p>How I got into security, and what I do outside of it.</p>
+          <span class="go"><span>Read about me <span class="arw">&rarr;</span></span><span class="ct">Bio &middot; Interests</span></span>
+        </a>
+      </div>
     </div>
   </div>
 </section>

@@ -27,7 +27,7 @@ def part(name):
 
 
 def head(page, title, desc, canon, og_desc=None, tw_desc=None,
-         doc='', preload='', extra='', body_attr='', body_top=''):
+         doc='', preload='', extra='', body_attr=''):
     """Render everything from <!DOCTYPE> down to </header>.
 
     The optional slots exist only because index.html needs them; every other
@@ -38,9 +38,10 @@ def head(page, title, desc, canon, og_desc=None, tw_desc=None,
                  Both default to desc.
       doc        comment block between the doctype and <html>
       preload    extra <link rel="preload">, kept ahead of the font stylesheet
-      extra      extra <head> content (inline script, JSON-LD)
-      body_attr  attributes on <body>, e.g. ' id="top"'
-      body_top   markup between <body> and the nav, e.g. the entry gate
+      extra      extra <head> content (JSON-LD)
+      body_attr  attributes on <body>. The home page passes id="top" plus
+                 class="dark-top", which is what tells the nav it opens over a
+                 dark hero and should start with no plate behind it.
     """
     if og_desc is None:
         og_desc = desc
@@ -56,6 +57,13 @@ def head(page, title, desc, canon, og_desc=None, tw_desc=None,
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Marks the document as scripted, before first paint. The nav only drops
+     its background over a dark page header while this is set, so with
+     JavaScript off it keeps its plate and stays legible over the light
+     sections instead of being transparent the whole way down. Inline and in
+     <head> because doing it from main.js would paint a solid nav over the
+     hero for a frame first. -->
+<script>document.documentElement.classList.add('js')</script>
 <title>{title}</title>
 <meta name="description" content="{desc}">
 <link rel="canonical" href="https://felixnaroditskiy.com/{canon}">
@@ -78,7 +86,11 @@ def head(page, title, desc, canon, og_desc=None, tw_desc=None,
 <link rel="stylesheet" href="style.css">
 {extra}</head>
 <body{body_attr}>
-{body_top}
+<!-- One fixed background behind the whole document, on every page. The light
+     sections paint no background of their own, so it shows through them; the
+     dark scenes are opaque and cover it. Its blooms drift from --sp, the page
+     scroll progress main.js writes onto <html>. Decorative only. -->
+<div class="sitebg" aria-hidden="true"><i class="sb-bloom"></i><i class="sb-grid"></i><i class="sb-noise"></i></div>
 <header class="nav">
   <div class="wrap">
     <a class="brand" href="index.html"><i aria-hidden="true"></i>F. NARODITSKIY</a>
@@ -93,7 +105,7 @@ def head(page, title, desc, canon, og_desc=None, tw_desc=None,
 </header>
 """.format(title=title, desc=desc, og_desc=og_desc, tw_desc=tw_desc,
            canon=canon, nav=nav, doc=doc, preload=preload, extra=extra,
-           body_attr=body_attr, body_top=body_top)
+           body_attr=body_attr)
 
 
 # Index only. The only [data-resume] trigger on the site is in the home page
@@ -141,17 +153,20 @@ INDEX_DOC = """<!--
   felixnaroditskiy.com/ resolves here. The nav label is what readers see.
 
   Structure:
-    1. Nav          sticky. One action button: Contact me.
-    2. Hero         full viewport height. Name, line, portrait, actions.
-    3. Facts        four-cell strip, its own band below the hero
+    1. Nav          sticky. Starts with no plate over the dark hero and fades
+                    its background in once the page scrolls (body.dark-top).
+    2. Hero         full bleed on the dark surface, pulled up under the nav.
+                    Canvas node field, name, portrait, actions, counter strip.
+    3. Facts        four-cell strip. First cut back to paper.
     4. Experience   fully open. Stemuli's two roles share one employer block.
-    5. Capabilities skills grid + clickable certifications
-    6. The work     three cards into Projects, Lab, About
-    7. Contact
+    5. Capabilities the pinned scene. Several viewports tall; the six cards
+                    track sideways as it scrolls. Falls back to a plain grid.
+    6. Certs        clickable certification badges, on paper
+    7. The work     three cards into Projects, Lab, About, on the dark surface
     8. Modals       resume and certification overlays
-    9. Gate         welcome dialog. The markup ships in the page and is shown
-                    by CSS the moment the pre-paint head script sets .gating;
-                    main.js only wires the behaviour. Once per session.
+
+  The v2 entry gate is gone. It existed to give the site an opening, and the
+  hero does that itself now.
 -->
 """
 
@@ -182,19 +197,18 @@ def build():
     # ---- index.html (home) ----
     # The only page with a unique layout, but its nav, <head> and footer are the
     # same shared chrome as everywhere else, so it is built here too. The parts
-    # unique to it: a preloaded portrait, the pre-paint gate script and JSON-LD,
-    # <body id="top">, the gate markup, and both modals.
+    # unique to it: a preloaded portrait, the JSON-LD, <body id="top"
+    # class="dark-top">, and both modals.
     write('index.html',
           head('index.html', 'Felix Naroditskiy · Cybersecurity',
-               'Felix Naroditskiy works in digital forensics, malware analysis, and incident response. Ransomware casework, malware triage, hands-on labs, and security governance projects.',
+               'Felix Naroditskiy works in digital forensics, malware analysis, and incident response, with the security governance and IT systems work alongside it. Ransomware casework, malware triage, hands-on labs, and privacy compliance.',
                '',
                og_desc='Digital forensics, malware analysis, and incident response. Ransomware casework, malware triage, and hands-on labs.',
                tw_desc='Digital forensics, malware analysis, and incident response.',
                doc=INDEX_DOC,
                preload='<link rel="preload" as="image" href="img/felix.jpg" imagesrcset="img/felix-sm.jpg 450w, img/felix.jpg 900w" imagesizes="380px">\n',
                extra=part('index_head.html'),
-               body_attr=' id="top"',
-               body_top='\n' + part('gate.html'))
+               body_attr=' id="top" class="dark-top"')
           + part('index_body.html')
           + RESUME_MODAL
           + CERT_MODAL
@@ -204,8 +218,9 @@ def build():
     # ---- projects.html (casework + archive, merged) ----
     write('projects.html',
           head('projects.html', 'Projects &middot; Felix Naroditskiy',
-               'Ransomware kill chain reconstruction, malware analysis casework, IR playbooks, risk analysis, and code.',
-               'projects.html')
+               'Ransomware kill chain reconstruction, malware analysis casework, IR playbooks, networking labs, risk analysis, and code.',
+               'projects.html',
+               body_attr=' class="dark-top"')
           + part('projects_body.html')
           + footer('lab.html', 'Next: the lab')
           + part('kc.js.html') + '\n' + part('malware.js.html') + '\n'
@@ -216,7 +231,8 @@ def build():
     write('lab.html',
           head('lab.html', 'Lab &middot; Felix Naroditskiy',
                'A running log of self-directed security work, laid out as a live alert feed, plus three exercises you can try yourself.',
-               'lab.html')
+               'lab.html',
+               body_attr=' class="dark-top"')
           + part('lab_body.html')
           + footer('about.html', 'Next: about')
           + part('feed.js.html') + '\n' + part('siem.js.html') + '\n'
@@ -227,7 +243,8 @@ def build():
     write('about.html',
           head('about.html', 'About &middot; Felix Naroditskiy',
                'About Felix Naroditskiy: background, approach, and what I do off the clock.',
-               'about.html')
+               'about.html',
+               body_attr=' class="dark-top"')
           + part('about_body.html')
           + footer('index.html', 'Get in touch')
           + part('interests.js.html')
@@ -236,7 +253,8 @@ def build():
     # ---- 404.html ----
     write('404.html',
           head('404.html', '404 &middot; Felix Naroditskiy',
-               'Page not found.', '404.html').replace(
+               'Page not found.', '404.html',
+               body_attr=' class="dark-top"').replace(
               '<link rel="canonical" href="https://felixnaroditskiy.com/404.html">',
               '<meta name="robots" content="noindex">')
           + part('404_body.html')

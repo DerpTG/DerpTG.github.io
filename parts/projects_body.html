@@ -1,6 +1,10 @@
 <main>
 
-<div class="phead">
+<div class="phead scene-dark">
+  <canvas class="bgl hero-net" id="heroNet" aria-hidden="true"></canvas>
+  <div class="bgl bgl-grid bgl-par" data-par="0.07" aria-hidden="true"></div>
+  <div class="bgl bgl-glow" aria-hidden="true"></div>
+  <div class="bgl bgl-noise" aria-hidden="true"></div>
   <div class="wrap">
     <a class="back" href="index.html">&larr; Back</a>
     <h1>Projects</h1>
@@ -11,10 +15,10 @@
 <!-- 01, Kill chain. Data and logic live in the kill chain script block. -->
 <section class="first">
   <div class="wrap">
-    <div class="shead"><span class="n">01</span><h2>Kill chain reconstruction</h2><span class="fill"></span></div>
-    <p class="sdesc">My capstone investigation: a simulated ransomware attack on a municipal network, reconstructed from six disk images, seven memory captures, 12.7M packets, and more than 90,000 log entries. Each stage covers one part of the attack and the evidence that established it.</p>
+    <div class="shead" data-rv="clip"><span class="n">01</span><h2>Kill chain reconstruction</h2><span class="fill"></span></div>
+    <p class="sdesc" data-rv="up">My capstone investigation: a simulated ransomware attack on a municipal network, reconstructed from six disk images, seven memory captures, 12.7M packets, and more than 90,000 log entries. Each stage covers one part of the attack and the evidence that established it.</p>
 
-    <div class="kc">
+    <div class="kc" data-rv="rise">
       <div class="kc-top">
         <span class="t">Municipal ransomware, case reconstruction</span>
         <span class="s">Dwell time: 4 days &middot; Time-to-DC: 1h 44m <span class="scroll-hint">&middot; swipe stages &rarr;</span></span>
@@ -47,10 +51,10 @@
 <!-- 02, Malware lab. Data and logic live in the malware script block. -->
 <section>
   <div class="wrap">
-    <div class="shead"><span class="n">02</span><h2>Malware lab</h2><span class="fill"></span></div>
-    <p class="sdesc">Twelve public malware samples analyzed in an isolated FlareVM environment. Each sample followed the same workflow: verify the PE header, hash it, check against VirusTotal, identify the family, test for packing and obfuscation, pull strings, then detonate and observe behavior. Static triage used HxD, HashMyFiles, Exe Info PE, and PeStudio; dynamic analysis used Process Monitor, Regshot, System Informer, Wireshark, and FakeNet-NG to simulate the network for C2. Pick a sample to see its full triage record.</p>
+    <div class="shead" data-rv="clip"><span class="n">02</span><h2>Malware lab</h2><span class="fill"></span></div>
+    <p class="sdesc" data-rv="up">Twelve public malware samples analyzed in an isolated FlareVM environment. Each sample followed the same workflow: verify the PE header, hash it, check against VirusTotal, identify the family, test for packing and obfuscation, pull strings, then detonate and observe behavior. Static triage used HxD, HashMyFiles, Exe Info PE, and PeStudio; dynamic analysis used Process Monitor, Regshot, System Informer, Wireshark, and FakeNet-NG to simulate the network for C2. Pick a sample to see its full triage record.</p>
 
-    <div class="term">
+    <div class="term" data-rv="rise">
       <div class="term-top">
         <span class="path">flarevm@win10-x64-malware:~/samples</span><span class="scroll-hint">swipe samples &rarr;</span>
       </div>
@@ -65,10 +69,10 @@
 <!-- 03, The wider archive. Data and logic live in the projects script block. -->
 <section>
   <div class="wrap">
-    <div class="shead"><span class="n">03</span><h2>The archive</h2><span class="fill"></span></div>
-    <p class="sdesc">Networking labs, response playbooks, risk analysis, and code. Click a record to open it.</p>
+    <div class="shead" data-rv="clip"><span class="n">03</span><h2>The archive</h2><span class="fill"></span></div>
+    <p class="sdesc" data-rv="up">Networking labs, response playbooks, risk analysis, and code. Click a record to open it.</p>
 
-    <div class="rec">
+    <div class="rec" data-rv="rise">
       <div class="rec-top">
         <span class="t">projects.log &middot; 6 records</span>
       </div>

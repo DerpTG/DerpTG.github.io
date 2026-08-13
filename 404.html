@@ -5,6 +5,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Marks the document as scripted, before first paint. The nav only drops
+     its background over a dark page header while this is set, so with
+     JavaScript off it keeps its plate and stays legible over the light
+     sections instead of being transparent the whole way down. Inline and in
+     <head> because doing it from main.js would paint a solid nav over the
+     hero for a frame first. -->
+<script>document.documentElement.classList.add('js')</script>
 <title>404 &middot; Felix Naroditskiy</title>
 <meta name="description" content="Page not found.">
 <meta name="robots" content="noindex">
@@ -26,8 +33,12 @@
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
-<body>
-
+<body class="dark-top">
+<!-- One fixed background behind the whole document, on every page. The light
+     sections paint no background of their own, so it shows through them; the
+     dark scenes are opaque and cover it. Its blooms drift from --sp, the page
+     scroll progress main.js writes onto <html>. Decorative only. -->
+<div class="sitebg" aria-hidden="true"><i class="sb-bloom"></i><i class="sb-grid"></i><i class="sb-noise"></i></div>
 <header class="nav">
   <div class="wrap">
     <a class="brand" href="index.html"><i aria-hidden="true"></i>F. NARODITSKIY</a>
@@ -45,7 +56,11 @@
 </header>
 <main>
 
-<div class="phead">
+<div class="phead scene-dark">
+  <canvas class="bgl hero-net" id="heroNet" aria-hidden="true"></canvas>
+  <div class="bgl bgl-grid" aria-hidden="true"></div>
+  <div class="bgl bgl-glow" aria-hidden="true"></div>
+  <div class="bgl bgl-noise" aria-hidden="true"></div>
   <div class="wrap">
     <a class="back" href="index.html">&larr; Back home</a>
     <h1>404</h1>

@@ -1,7 +1,7 @@
 /*
    main.js, shared behavior, loaded on every page.
 
-   Eight pieces, each checking for its own elements first so the file is safe
+   Eleven pieces, each checking for its own elements first so the file is safe
    on pages that don't use a given feature:
 
      1. Mobile nav       toggles the collapsed nav on narrow screens
@@ -9,12 +9,17 @@
      3. Resume modal     opens the PDF in an overlay
      4. Cert modal       shows a certification's detail and verification link
      5. Motion           scroll reveals, widget swaps, animated pane heights
-     6. Entry gate       wires the home page's welcome screen
-     7. Photo lightbox   full-size photo overlay, built at runtime
-     8. Scrollable panes edge fades for panes that overflow at phone width
+     6. Photo lightbox   full-size photo overlay, built at runtime
+     7. Scrollable panes edge fades for panes that overflow at phone width
+     8. V3 engine        nav plate, entrances, the scroll channel, tilt
+     9. Node field       the hero's canvas background
+    10. Case-open intro  the home page's opening animation
+    11. Smooth scroll    eased wheel scrolling on pointer devices
 
    The experience accordions used to live here and are gone, because the
-   experience section is now always open.
+   experience section is now always open. The v2 entry gate is gone too: it
+   was a screen you had to dismiss, and piece 10 is the same idea played as
+   an animation you simply watch.
 
    Page-specific widgets (the lab feed, the project records, the interests
    console, the kill chain and malware tools) still keep their own scripts inline.
@@ -284,7 +289,18 @@ function makeModal(id, closeBtnId) {
       '.kc', '.term', '.feed', '.rec', '.lab-ex', '.ex-h', '.ex-sub',
       '.bio-main', '.bio-facts', '.factband'
     ].join(',');
-    var targets = document.querySelectorAll(sel);
+    /* v3 manages its own entrances for anything carrying data-rv or
+       data-stagger, and for the children of a data-hinge row. Those elements
+       match the selectors above too, and letting both systems claim one
+       element means .reveal and .rv fight over transform: the element fades
+       but never travels. */
+    var targets = Array.prototype.filter.call(
+      document.querySelectorAll(sel),
+      function (el) {
+        return !el.hasAttribute('data-rv') &&
+               !el.hasAttribute('data-stagger') &&
+               !el.closest('[data-hinge]');
+      });
     var counts = new Map();                    // parent -> sibling index
     targets.forEach(function (el) {
       var n = counts.get(el.parentNode) || 0;
@@ -432,65 +448,6 @@ function makeModal(id, closeBtnId) {
 
 
 /* ============================================================================
-   ENTRY GATE
-
-   The markup lives in index.html and is shown by CSS the moment the head
-   script adds .gating to <html>, which happens before first paint. This file
-   only wires the behaviour, so nothing here affects when the gate appears.
-
-   With JavaScript off the head script never runs, .gating is never added, the
-   gate stays hidden, and the site loads normally.
-   ========================================================================= */
-(function () {
-  var host = document.getElementById('gate');
-  var root = document.documentElement;
-  if (!host || !root.classList.contains('gating')) return;
-
-  var KEY = 'fn.gate.seen';
-  function seen() { try { sessionStorage.setItem(KEY, '1'); } catch (e) {} }
-
-  /* The markup ships with hidden so the gate never appears without JS. CSS
-     overrides it under .gating for an instant first paint, but the attribute
-     is still set, which would make every host.hidden check below read true.
-     Clear it now that we know the gate is genuinely up. */
-  host.hidden = false;
-
-  var first = host.querySelector('.gate-opt');
-  if (first) first.focus();
-
-  function dismiss() {
-    seen();
-    host.classList.add('closing');
-    // Release the hero sequence as the screen clears, so the two overlap.
-    window.setTimeout(function () { root.classList.remove('gating'); }, 200);
-    window.setTimeout(function () {
-      host.hidden = true;
-      host.classList.remove('closing');
-      var h1 = document.querySelector('.hero h1');
-      if (h1) h1.focus({ preventScroll: true });
-    }, 470);
-  }
-
-  host.addEventListener('click', function (e) {
-    if (e.target.closest('[data-gate-close]')) { e.preventDefault(); dismiss(); return; }
-    if (e.target.closest('a.gate-opt')) seen();   // leaving via a link still counts
-  });
-
-  document.addEventListener('keydown', function (e) {
-    if (host.hidden) return;
-    if (e.key === 'Escape') { dismiss(); return; }
-    if (e.key !== 'Tab') return;
-    // Keep focus inside the screen while it is up.
-    var f = host.querySelectorAll('button, a[href]');
-    if (!f.length) return;
-    var a = f[0], z = f[f.length - 1];
-    if (e.shiftKey && document.activeElement === a) { e.preventDefault(); z.focus(); }
-    else if (!e.shiftKey && document.activeElement === z) { e.preventDefault(); a.focus(); }
-  });
-})();
-
-
-/* ============================================================================
    PHOTO LIGHTBOX
 
    Any [data-lightbox] thumbnail opens full size in an overlay, with the same
@@ -603,7 +560,7 @@ function makeModal(id, closeBtnId) {
    ========================================================================= */
 (function () {
   var panes = [].slice.call(document.querySelectorAll(
-    '.rail, .samples, .siem-queue, .out, .gate-body'
+    '.rail, .samples, .siem-queue, .out'
   ));
   if (!panes.length) return;
 
@@ -654,4 +611,608 @@ function makeModal(id, closeBtnId) {
   // Webfonts landing changes text metrics, and images change pane height.
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(updateAll);
   window.addEventListener('load', updateAll);
+})();
+
+
+/* ============================================================================
+   V3 MOTION ENGINE
+
+   Four pieces. The nav plate runs always, because it is a state change rather
+   than an animation; the other three are skipped entirely under
+   prefers-reduced-motion, which leaves the markup in its resting state.
+
+     1. Nav plate    <html>.scrolled once past the fold threshold, which is
+                     what fades the nav's background in over the dark hero.
+     2. Entrances    data-rv="up|left|right|scale|rise|clip|blur" picks a
+                     direction per element instead of v2's single fade-up;
+                     data-stagger hands the entrance down to a block's
+                     children so a list arrives line by line; data-hinge rows
+                     swing their children in from the left edge. All added
+                     here, never in the markup.
+     3. Scroll       one rAF loop writes --sp (page progress) onto <html>,
+                     --p (0 to 1 across a scene) onto every [data-scene], and
+                     --py onto every [data-par]. CSS does the rest, so adding
+                     a scroll-linked effect usually needs no new JS.
+     4. Tilt         [data-tilt] cards stand up from their bottom edge as
+                     they arrive, which is what the capabilities column uses.
+
+   One rAF loop and one passive scroll listener serve all of it. Per-effect
+   listeners were the alternative and they compound badly: six effects meant
+   six handlers doing six layout reads per frame.
+   ========================================================================= */
+(function () {
+  var root = document.documentElement;
+  var reduce = window.matchMedia &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---- 1. Nav plate ---- */
+  var navOn = null;
+  function navCheck() {
+    var on = (window.pageYOffset || root.scrollTop) > 40;
+    if (on === navOn) return;
+    navOn = on;
+    root.classList.toggle('scrolled', on);
+  }
+  navCheck();
+  window.addEventListener('scroll', navCheck, { passive: true });
+
+  if (reduce) return;
+
+  /* ---- 2. Entrances ---- */
+  var RV = { up: 'rv-up', down: 'rv-down', left: 'rv-left', right: 'rv-right',
+             scale: 'rv-scale', rise: 'rv-rise', clip: 'rv-clip', blur: 'rv-blur' };
+
+  if ('IntersectionObserver' in window) {
+    var entering = [];
+
+    document.querySelectorAll('[data-rv]').forEach(function (el) {
+      var cls = RV[el.getAttribute('data-rv')] || RV.up;
+      el.classList.add('rv', cls);
+      entering.push(el);
+    });
+
+    /* Stagger boxes hand the entrance down to their children, so a list
+       arrives line by line instead of the whole block fading at once. The
+       box itself is what gets observed and what carries .in; the children
+       only carry their own delay. */
+    document.querySelectorAll('[data-stagger]').forEach(function (box) {
+      box.classList.add('stag');
+      Array.prototype.forEach.call(box.children, function (kid, i) {
+        kid.style.setProperty('--rd', Math.min(i * 70, 420) + 'ms');
+      });
+      entering.push(box);
+    });
+
+    /* Capability cards stand up from their bottom edge as they come up the
+       screen. One class, no stagger: they arrive one at a time already. */
+    document.querySelectorAll('[data-tilt]').forEach(function (el) {
+      el.classList.add('tilt');
+      entering.push(el);
+    });
+
+    /* Live index in the sticky column. A second observer rather than a scroll
+       handler, with the root inset to a band across the middle of the screen,
+       so "current" means the card sitting level with the heading rather than
+       merely the topmost one still on screen. */
+    var navItems = document.querySelectorAll('.capnav li');
+    var cards = document.querySelectorAll('.capsplit-list > .cap');
+    if (navItems.length && navItems.length === cards.length) {
+      var nio = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) {
+          if (!en.isIntersecting) return;
+          var i = Array.prototype.indexOf.call(cards, en.target);
+          if (i < 0) return;
+          for (var k = 0; k < navItems.length; k++) {
+            navItems[k].classList.toggle('on', k === i);
+          }
+        });
+      }, { rootMargin: '-42% 0px -42% 0px', threshold: 0 });
+      cards.forEach(function (c) { nio.observe(c); });
+    }
+
+    // Hinge rows stagger their own children; the row itself never animates.
+    document.querySelectorAll('[data-hinge]').forEach(function (row) {
+      Array.prototype.forEach.call(row.children, function (kid, i) {
+        kid.classList.add('hinge');
+        kid.style.setProperty('--rd', (i * 110) + 'ms');
+        entering.push(kid);
+      });
+    });
+
+    /* threshold must be 0, not a fraction.
+
+       An element's own clip-path is applied when the intersection rect is
+       computed, and .rv-clip starts at inset(0 0 102% 0), which clips it to
+       zero height. So a clipped heading reports isIntersecting:true with
+       intersectionRatio:0 forever, and any threshold above zero is never met:
+       the section headings sat at opacity 0 permanently while their sibling
+       paragraphs revealed normally.
+
+       rootMargin does the waiting instead. Pulling the bottom edge in by 8%
+       means an element still has to clear the fold before it fires, which is
+       what the threshold was there for. */
+    var eio = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        en.target.classList.add('in');
+        eio.unobserve(en.target);
+      });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0 });
+    entering.forEach(function (el) { eio.observe(el); });
+  }
+
+  /* ---- 3 + 4. Scroll channel and pinning ---- */
+  var scenes = [], pars = [], queued = false;
+
+  document.querySelectorAll('[data-scene]').forEach(function (el) {
+    scenes.push({ el: el, stage: null });
+  });
+  document.querySelectorAll('[data-par]').forEach(function (el) {
+    var k = parseFloat(el.getAttribute('data-par'));
+    pars.push({ el: el, k: isNaN(k) ? 0.06 : k });
+  });
+
+  function frame() {
+    queued = false;
+    var vh = window.innerHeight;
+
+    /* Page scroll progress, 0 to 1, onto <html>. .sitebg positions its blooms
+       from this, so the fixed background drifts for the whole length of the
+       page instead of resetting per section. */
+    var maxY = root.scrollHeight - vh;
+    root.style.setProperty('--sp',
+      maxY > 0 ? ((window.pageYOffset || root.scrollTop) / maxY).toFixed(4) : '0');
+
+    for (var i = 0; i < scenes.length; i++) {
+      var s = scenes[i];
+      var r = s.el.getBoundingClientRect();
+      var span = s.el.offsetHeight - (s.stage ? s.stage.offsetHeight : vh);
+      var p = span > 0 ? (-r.top) / span : 0;
+      s.el.style.setProperty('--p', (p < 0 ? 0 : p > 1 ? 1 : p).toFixed(4));
+    }
+
+    for (var j = 0; j < pars.length; j++) {
+      var o = pars[j];
+      var pr = o.el.getBoundingClientRect();
+      // Off-screen layers keep their last offset and drop will-change, so a
+      // long page is not holding a compositor layer per parallax element.
+      if (pr.bottom < -240 || pr.top > vh + 240) {
+        if (o.live) { o.el.style.willChange = ''; o.live = false; }
+        continue;
+      }
+      if (!o.live) { o.el.style.willChange = 'transform'; o.live = true; }
+      var mid = pr.top + pr.height / 2 - vh / 2;
+      o.el.style.setProperty('--py', (-mid * o.k).toFixed(1) + 'px');
+    }
+  }
+
+  function onScroll() {
+    if (queued) return;
+    queued = true;
+    requestAnimationFrame(frame);
+  }
+
+  // Always listening now: --sp is written on every page, whether or not the
+  // page has a scene or a parallax layer on it.
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  var rt;
+  window.addEventListener('resize', function () {
+    clearTimeout(rt);
+    rt = setTimeout(frame, 140);
+  });
+
+  frame();
+  // Webfonts and the portrait both change measurements the pin maths depends on.
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(frame);
+  }
+  window.addEventListener('load', frame);
+
+})();
+
+
+/* ============================================================================
+   HERO NODE FIELD
+
+   The hero's canvas background: a slow drift of nodes linked when they come
+   within range, with occasional packets running along a link. It reads as
+   both network topology and monitored traffic, which is the pair of things
+   the page is actually about.
+
+   It carries no information, so it is aria-hidden in the markup and nothing
+   is lost when it does not run. Under prefers-reduced-motion a single static
+   frame is drawn instead of animating, which keeps the composition without
+   the movement. Painting stops whenever the hero scrolls out of view or the
+   tab is hidden, so an idle background tab costs nothing.
+   ========================================================================= */
+(function () {
+  var cv = document.getElementById('heroNet');
+  if (!cv || !cv.getContext) return;
+
+  var ctx = cv.getContext('2d');
+  var reduce = window.matchMedia &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var nodes = [], packets = [], w = 0, h = 0, dpr = 1;
+  var raf = 0, visible = true;
+  var LINK = 150;                    // px within which two nodes are joined
+  var pointer = { x: -1e4, y: -1e4 };
+
+  function size() {
+    var r = cv.getBoundingClientRect();
+    w = r.width; h = r.height;
+    dpr = Math.min(window.devicePixelRatio || 1, 2);   // 2 is plenty; 3 costs
+    cv.width = Math.round(w * dpr);
+    cv.height = Math.round(h * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+
+  function build() {
+    // Density by area, capped. A phone gets a sparser field than a desktop
+    // rather than the same count crammed into a quarter of the space.
+    var n = Math.round(Math.min(Math.max((w * h) / 20000, 26), 78));
+    nodes = [];
+    for (var i = 0; i < n; i++) {
+      nodes.push({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        vx: (Math.random() - 0.5) * 0.16,
+        vy: (Math.random() - 0.5) * 0.16,
+        r: Math.random() * 1.5 + 0.9
+      });
+    }
+    packets = [];
+  }
+
+  function spawn() {
+    if (packets.length > 5) return;
+    var a = (Math.random() * nodes.length) | 0;
+    for (var b = 0; b < nodes.length; b++) {
+      if (b === a) continue;
+      var dx = nodes[a].x - nodes[b].x, dy = nodes[a].y - nodes[b].y;
+      if (dx * dx + dy * dy < LINK * LINK) {
+        packets.push({ a: a, b: b, t: 0, v: 0.006 + Math.random() * 0.008 });
+        return;
+      }
+    }
+  }
+
+  function draw(step) {
+    ctx.clearRect(0, 0, w, h);
+    var i, j, a, b, dx, dy, d2;
+
+    if (step) {
+      for (i = 0; i < nodes.length; i++) {
+        a = nodes[i];
+        a.x += a.vx; a.y += a.vy;
+        // Wrap rather than bounce: a bounce puts a visible hard edge on the
+        // field, and the mask already fades the boundary out.
+        if (a.x < -20) a.x = w + 20; else if (a.x > w + 20) a.x = -20;
+        if (a.y < -20) a.y = h + 20; else if (a.y > h + 20) a.y = -20;
+      }
+    }
+
+    // Links, drawn first so nodes sit on top of them.
+    ctx.lineWidth = 1;
+    for (i = 0; i < nodes.length; i++) {
+      a = nodes[i];
+      for (j = i + 1; j < nodes.length; j++) {
+        b = nodes[j];
+        dx = a.x - b.x; dy = a.y - b.y; d2 = dx * dx + dy * dy;
+        if (d2 > LINK * LINK) continue;
+        ctx.strokeStyle = 'rgba(237,240,235,' +
+          (0.13 * (1 - Math.sqrt(d2) / LINK)).toFixed(3) + ')';
+        ctx.beginPath();
+        ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y);
+        ctx.stroke();
+      }
+    }
+
+    // Pointer tether. Only the nearest few, so it stays a hint.
+    if (pointer.x > -1e3) {
+      for (i = 0; i < nodes.length; i++) {
+        a = nodes[i];
+        dx = a.x - pointer.x; dy = a.y - pointer.y; d2 = dx * dx + dy * dy;
+        if (d2 > 34000) continue;
+        ctx.strokeStyle = 'rgba(255,74,97,' +
+          (0.30 * (1 - Math.sqrt(d2) / 184)).toFixed(3) + ')';
+        ctx.beginPath();
+        ctx.moveTo(a.x, a.y); ctx.lineTo(pointer.x, pointer.y);
+        ctx.stroke();
+      }
+    }
+
+    // Packets in transit.
+    for (i = packets.length - 1; i >= 0; i--) {
+      var p = packets[i];
+      if (step) p.t += p.v;
+      if (p.t >= 1) { packets.splice(i, 1); continue; }
+      a = nodes[p.a]; b = nodes[p.b];
+      if (!a || !b) { packets.splice(i, 1); continue; }
+      var px = a.x + (b.x - a.x) * p.t, py = a.y + (b.y - a.y) * p.t;
+      ctx.fillStyle = 'rgba(255,74,97,' + (0.9 * Math.sin(p.t * Math.PI)).toFixed(3) + ')';
+      ctx.beginPath(); ctx.arc(px, py, 2.1, 0, 6.2832); ctx.fill();
+    }
+
+    // Nodes.
+    for (i = 0; i < nodes.length; i++) {
+      a = nodes[i];
+      ctx.fillStyle = 'rgba(237,240,235,.5)';
+      ctx.beginPath(); ctx.arc(a.x, a.y, a.r, 0, 6.2832); ctx.fill();
+    }
+  }
+
+  var since = 0;
+  function loop() {
+    raf = 0;
+    if (!visible || document.hidden) return;
+    if (++since > 42) { since = 0; spawn(); }
+    draw(true);
+    raf = requestAnimationFrame(loop);
+  }
+
+  function start() {
+    if (reduce || raf || !visible || document.hidden) return;
+    raf = requestAnimationFrame(loop);
+  }
+  function stop() {
+    if (raf) { cancelAnimationFrame(raf); raf = 0; }
+  }
+
+  function reset() {
+    size();
+    build();
+    if (reduce) draw(false); else { stop(); start(); }
+  }
+
+  var st;
+  window.addEventListener('resize', function () {
+    clearTimeout(st); st = setTimeout(reset, 180);
+  });
+
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) stop(); else start();
+  });
+
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(function (entries) {
+      visible = entries[0].isIntersecting;
+      if (visible) start(); else stop();
+    }, { threshold: 0 }).observe(cv);
+  }
+
+  // Pointer tether is a nicety on a mouse and meaningless on touch, where the
+  // finger is where you are already looking. Left off there.
+  if (window.matchMedia && window.matchMedia('(pointer: fine)').matches) {
+    cv.parentNode.addEventListener('pointermove', function (e) {
+      var r = cv.getBoundingClientRect();
+      pointer.x = e.clientX - r.left;
+      pointer.y = e.clientY - r.top;
+    });
+    cv.parentNode.addEventListener('pointerleave', function () {
+      pointer.x = pointer.y = -1e4;
+    });
+  }
+
+  reset();
+})();
+
+
+/* ============================================================================
+   CASE-OPEN INTRO
+
+   v2 opened on a gate you had to dismiss. This is the same screen played as a
+   short animation instead: the case panel drops in, a cursor crosses to
+   "Start investigation", clicks it, and the panel leaves as the hero's own
+   load sequence starts. Nothing to click, nothing to get past.
+
+   Two things keep it from being an obstacle. It is skipped entirely under
+   prefers-reduced-motion and after the first view of a session, and any input
+   ends it immediately: a key, a click, a wheel, a touch.
+
+   The pre-paint half lives in parts/index_head.html, which sets html.intro
+   before the first frame. That class pauses the hero's load sequence, so the
+   hero is already sitting in its pre-animation state when this runs. Building
+   the whole thing from here without that flag is what made v2's gate flash
+   the site for a frame before covering it.
+
+   It is aria-hidden and carries no information: the hero underneath is in the
+   DOM and readable the whole time, so a screen reader never sees any of it.
+   ========================================================================= */
+(function () {
+  var root = document.documentElement;
+  if (!root.classList.contains('intro')) return;
+
+  try { sessionStorage.setItem('fn.intro.seen', '1'); } catch (e) {}
+
+  var scr = document.createElement('div');
+  scr.className = 'intro-scr';
+  scr.setAttribute('aria-hidden', 'true');
+  scr.innerHTML =
+    '<div class="intro-panel">' +
+      '<div class="intro-bar"><span class="t"><i></i>case.open</span></div>' +
+      '<div class="intro-body">' +
+        '<span class="intro-k">Case file</span>' +
+        '<span class="intro-nm">F. Naroditskiy</span>' +
+        '<span class="intro-sub">Cybersecurity &middot; Forensics &middot; Incident response</span>' +
+        '<span class="intro-go"><span class="h">Start investigation</span>' +
+          '<span class="d">Open the site</span><span class="arw">&rarr;</span></span>' +
+      '</div>' +
+    '</div>' +
+    '<i class="intro-cur"></i>';
+  document.body.insertBefore(scr, document.body.firstChild);
+
+  var go = scr.querySelector('.intro-go');
+  var cur = scr.querySelector('.intro-cur');
+  var timers = [];
+  var done = false;
+
+  function at(ms, fn) { timers.push(window.setTimeout(fn, ms)); }
+
+  /* The cursor travels between measured points rather than percentages: the
+     panel is centred, so its button lands somewhere different at every
+     viewport size. */
+  function aim() {
+    var b = go.getBoundingClientRect();
+    cur.style.setProperty('--tx', Math.round(b.left + b.width * 0.34) + 'px');
+    cur.style.setProperty('--ty', Math.round(b.top + b.height * 0.56) + 'px');
+  }
+
+  function off() {
+    document.removeEventListener('keydown', skip);
+    window.removeEventListener('wheel', skip);
+    window.removeEventListener('touchstart', skip);
+    scr.removeEventListener('click', skip);
+  }
+
+  function finish() {
+    if (done) return;
+    done = true;
+    timers.forEach(clearTimeout);
+    scr.classList.add('out');
+    /* Release the hero sequence as the panel leaves, so the two overlap
+       rather than the page sitting still between them. */
+    window.setTimeout(function () { root.classList.remove('intro'); }, 150);
+    window.setTimeout(function () {
+      if (scr.parentNode) scr.parentNode.removeChild(scr);
+    }, 620);
+    off();
+  }
+
+  function skip(e) {
+    // A modifier-only keypress is not an attempt to skip anything.
+    if (e && e.type === 'keydown' &&
+        (e.key === 'Shift' || e.key === 'Control' ||
+         e.key === 'Alt' || e.key === 'Meta')) return;
+    finish();
+  }
+
+  document.addEventListener('keydown', skip);
+  window.addEventListener('wheel', skip, { passive: true });
+  window.addEventListener('touchstart', skip, { passive: true });
+  scr.addEventListener('click', skip);
+
+  function play() {
+    // Measured after a frame, so the panel has been laid out before we aim.
+    requestAnimationFrame(function () {
+      /* Beats, in ms from the panel landing. Each gap is doing something:
+         the panel gets a moment to settle before anything moves, the cursor
+         glide is the longest single step, the button holds its hover state
+         long enough to register as a hover, and the click is allowed to land
+         before the panel leaves. Shortening any of them makes the sequence
+         read as hurried rather than as a thing being operated. */
+      aim();
+      scr.classList.add('in');
+      at(900,  function () { aim(); cur.classList.add('move'); });   // glide, .95s
+      at(2000, function () { go.classList.add('hot'); });            // arrives, hovers
+      at(2380, function () { cur.classList.add('press'); go.classList.add('hit'); });
+      at(2900, finish);                                              // + .44s exit
+    });
+  }
+
+  /* A page opened in a background tab gets no animation frames, so starting
+     the sequence there would leave the panel sitting on a black screen until
+     the tab came forward. Wait for the tab instead, and keep a timer as a
+     backstop: setTimeout is throttled in a hidden tab but still fires, so the
+     intro can never end up stuck no matter what happens to rAF. */
+  if (document.hidden) {
+    document.addEventListener('visibilitychange', function once() {
+      if (document.hidden) return;
+      document.removeEventListener('visibilitychange', once);
+      play();
+    });
+  } else {
+    play();
+  }
+  window.setTimeout(finish, 9000);
+})();
+
+
+/* ============================================================================
+   SMOOTH SCROLL
+
+   Eases the wheel instead of jumping by its raw delta, which is what makes a
+   long page feel like one continuous movement rather than a series of steps.
+
+   It drives the real scroll position with window.scrollTo rather than
+   translating a wrapper element. Transforming a wrapper is the other common
+   way to do this and it breaks position:sticky, IntersectionObserver and
+   native find-in-page, all three of which this site depends on.
+
+   Deliberately narrow:
+     - pointer:fine only. Touch devices already do momentum in hardware, and
+       overriding it costs CPU to produce something worse.
+     - off under prefers-reduced-motion.
+     - the wheel is left alone over anything that scrolls on its own (the
+       widget panes, an open modal), so those still scroll normally.
+     - keyboard, scrollbar dragging and in-page anchors stay native. The
+       target resyncs from any scroll this did not cause, so nothing fights it.
+   ========================================================================= */
+(function () {
+  var mm = window.matchMedia;
+  if (!mm || !mm('(pointer: fine)').matches) return;
+  if (mm('(prefers-reduced-motion: reduce)').matches) return;
+
+  var root = document.documentElement;
+  var EASE = 0.115;            // per frame; lower is smoother and laggier
+  var target = window.pageYOffset || root.scrollTop;
+  var raf = 0, driving = false;
+
+  // CSS smooth scrolling and this would each try to own the same position.
+  root.style.scrollBehavior = 'auto';
+
+  function maxY() { return root.scrollHeight - window.innerHeight; }
+
+  function step() {
+    raf = 0;
+    var cur = window.pageYOffset || root.scrollTop;
+    var d = target - cur;
+    if (Math.abs(d) < 0.5) { window.scrollTo(0, target); driving = false; return; }
+    driving = true;
+    window.scrollTo(0, cur + d * EASE);
+    raf = requestAnimationFrame(step);
+  }
+
+  /* Panes that scroll on their own keep the native wheel. Without this the
+     malware sample list and the SIEM queue would scroll the page instead of
+     themselves. */
+  function ownScroll(node) {
+    for (var el = node; el && el !== document.body; el = el.parentNode) {
+      if (el.nodeType !== 1) continue;
+      if (el.classList && el.classList.contains('modal')) return true;
+      var cs = getComputedStyle(el);
+      if ((cs.overflowY === 'auto' || cs.overflowY === 'scroll') &&
+          el.scrollHeight > el.clientHeight + 1) return true;
+      if ((cs.overflowX === 'auto' || cs.overflowX === 'scroll') &&
+          el.scrollWidth > el.clientWidth + 1) return true;
+    }
+    return false;
+  }
+
+  window.addEventListener('wheel', function (e) {
+    if (e.ctrlKey) return;                                   // pinch zoom
+    if (document.body.style.overflow === 'hidden') return;   // a modal is up
+    if (ownScroll(e.target)) return;
+
+    // deltaMode 1 is lines, 2 is pages. Normalise both to pixels.
+    var d = e.deltaY;
+    if (e.deltaMode === 1) d *= 18;
+    else if (e.deltaMode === 2) d *= window.innerHeight;
+
+    e.preventDefault();
+    if (!driving) target = window.pageYOffset || root.scrollTop;
+    target = Math.max(0, Math.min(maxY(), target + d));
+    if (!raf) raf = requestAnimationFrame(step);
+  }, { passive: false });
+
+  /* Resync from anything that moved the page itself: keyboard, anchor jumps,
+     scrollbar drags, the browser restoring a position. */
+  window.addEventListener('scroll', function () {
+    if (!driving) target = window.pageYOffset || root.scrollTop;
+  }, { passive: true });
+
+  window.addEventListener('resize', function () {
+    target = Math.max(0, Math.min(maxY(), target));
+  });
 })();

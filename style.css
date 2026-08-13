@@ -1092,151 +1092,6 @@ section.first{border-top:0}
 }
 
 /* ============================================================================
-   ENTRY GATE
-
-   A full-page case-open screen modelled on a forensics tool's welcome window.
-   Opaque, not an overlay: the home page is never sitting blurred behind it.
-
-   It is built by main.js, not the markup, so the site is never behind it. With
-   JavaScript off it never renders and crawlers reach the page directly. Home
-   page only, once per browser session.
-
-   While the gate is up, html.gating pauses the hero's load sequence so the
-   intro plays when the visitor actually arrives rather than behind the screen.
-   ========================================================================= */
-/* Hidden unless the head script has flagged this session. That flag is set
-   before first paint, so the gate covers the page from the first frame. */
-.gate[hidden]{display:none}
-html.gating .gate[hidden]{display:flex}
-.gate{
-  position:fixed;inset:0;z-index:400;background:var(--ground);
-  display:flex;flex-direction:column;
-  animation:gateIn .3s ease both;
-}
-@keyframes gateIn{from{opacity:0}to{opacity:1}}
-
-/* Entrance sequence. The screen used to arrive almost fully formed, which
-   made it read as a static page rather than something opening. Now the bars
-   slide in from the edges, a load line sweeps under the title bar, and the
-   brand and options arrive in order behind it. */
-.gate-bar{animation:barDown .42s cubic-bezier(.22,.68,.28,1) both}
-@keyframes barDown{from{opacity:0;transform:translateY(-100%)}to{opacity:1;transform:none}}
-.gate-foot{animation:barUp .42s .06s cubic-bezier(.22,.68,.28,1) both}
-@keyframes barUp{from{opacity:0;transform:translateY(100%)}to{opacity:1;transform:none}}
-
-/* A load line that sweeps once, the way a tool reports it is ready. */
-.gate-bar::after{
-  content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;
-  background:var(--signal);transform-origin:left;
-  animation:loadSweep .9s .3s cubic-bezier(.4,0,.2,1) both;
-}
-@keyframes loadSweep{
-  0%{transform:scaleX(0);opacity:1}
-  70%{transform:scaleX(1);opacity:1}
-  100%{transform:scaleX(1);opacity:0}
-}
-.gate.closing{animation:gateOut .46s cubic-bezier(.5,0,.75,0) both}
-@keyframes gateOut{to{opacity:0;transform:translateY(-2%) scale(1.015)}}
-
-/* Title bar across the top of the screen. */
-.gate-bar{
-  position:relative;
-  display:flex;align-items:center;justify-content:space-between;gap:14px;
-  padding:0 24px;height:56px;flex-shrink:0;
-  border-bottom:1px solid var(--rule-2);background:var(--panel);
-}
-.gate-bar .t{
-  font-family:var(--mono);font-size:11px;letter-spacing:.18em;
-  text-transform:uppercase;font-weight:600;display:flex;align-items:center;gap:10px;
-}
-.gate-bar .t i{width:7px;height:14px;background:var(--signal);flex-shrink:0;animation:caret 1.15s step-end infinite}
-.gate-x{
-  background:none;border:1px solid transparent;color:var(--mute);cursor:pointer;
-  font-family:var(--mono);font-size:15px;line-height:1;padding:7px 11px;transition:.15s;
-}
-.gate-x:hover,.gate-x:focus-visible{background:var(--signal);border-color:var(--signal);color:#fff}
-
-/* The screen itself: brand on the left, case actions on the right. */
-.gate-body{
-  flex:1;display:grid;grid-template-columns:1fr 1fr;
-  max-width:1180px;width:100%;margin:0 auto;padding:0 28px;align-items:center;gap:64px;
-}
-.gate-brand{display:flex;flex-direction:column;gap:22px}
-.gate-logo{animation:logoIn .6s .34s cubic-bezier(.22,.68,.28,1) both}
-@keyframes logoIn{from{opacity:0;transform:translateY(14px) scale(.9)}to{opacity:1;transform:none}}
-.gate-brand .nm{animation:gateRise .55s .44s cubic-bezier(.22,.68,.28,1) both}
-.gate-brand .rl{animation:gateRise .55s .54s cubic-bezier(.22,.68,.28,1) both}
-.gate-brand .sub{animation:gateRise .55s .62s cubic-bezier(.22,.68,.28,1) both}
-@keyframes gateRise{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
-.gate-logo{width:118px;height:118px;border-radius:22px}
-.gate-brand .nm{font-size:clamp(38px,4.6vw,62px);font-weight:800;letter-spacing:-.038em;line-height:.94;text-transform:uppercase}
-.gate-brand .rl{font-size:17px;color:var(--mute);max-width:34ch;line-height:1.5}
-.gate-brand .sub{
-  font-family:var(--mono);font-size:10px;letter-spacing:.24em;text-transform:uppercase;
-  color:var(--faint);border-top:1px solid var(--rule);padding-top:15px;
-}
-
-.gate-opts{display:flex;flex-direction:column;gap:12px}
-.gate-opt{
-  display:flex;align-items:center;gap:18px;width:100%;text-align:left;
-  background:var(--panel);border:1px solid var(--rule-2);padding:20px 22px;cursor:pointer;
-  color:inherit;font:inherit;text-decoration:none;position:relative;
-  transition:background .2s,border-color .2s,transform .2s,box-shadow .2s;
-  animation:optIn .52s cubic-bezier(.22,.68,.28,1) both;
-}
-@keyframes optIn{from{opacity:0;transform:translateX(26px)}to{opacity:1;transform:none}}
-.gate-opt:nth-child(1){animation-delay:.56s}
-.gate-opt:nth-child(2){animation-delay:.66s}
-.gate-opt:nth-child(3){animation-delay:.76s}
-.gate-opt:hover,.gate-opt:focus-visible{
-  border-color:var(--signal);transform:translateX(5px);
-  box-shadow:0 14px 30px -20px rgba(20,23,26,.5);
-}
-.gate-opt.primary{background:var(--panel-2);border-style:dashed}
-.gate-opt.primary:hover,.gate-opt.primary:focus-visible{border-style:solid}
-.gate-ico{width:44px;height:44px;flex-shrink:0}
-.gate-opt .lbl2{display:flex;flex-direction:column;gap:5px;min-width:0;flex:1}
-.gate-opt .h{font-size:19px;font-weight:700;letter-spacing:-.02em}
-.gate-opt .d{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint)}
-.gate-opt .arw{color:var(--signal);font-size:18px;transition:transform .2s;flex-shrink:0}
-.gate-opt:hover .arw,.gate-opt:focus-visible .arw{transform:translateX(4px)}
-
-/* Status bar. The X in the title bar and the options themselves are the ways
-   out, so this only carries the keyboard hint. */
-.gate-foot{
-  display:flex;align-items:center;flex-shrink:0;
-  padding:0 24px;height:54px;border-top:1px solid var(--rule-2);background:var(--panel);
-}
-.gate-foot .hint{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
-/* No Esc key on a touch device, so the hint would be noise there. */
-@media(pointer:coarse){.gate-foot .hint{display:none}}
-
-/* Hold the hero's load sequence until the visitor is actually looking at it. */
-html.gating{overflow:hidden}
-html.gating .hero .lbl,
-html.gating .hero h1 .red::after,
-html.gating .tagline,
-html.gating .lede,
-html.gating .cta,
-html.gating .shot,
-html.gating .scroll-cue{animation-play-state:paused}
-
-@media(max-width:900px){
-  .gate-body{grid-template-columns:1fr;gap:30px;align-items:start;padding:34px 22px;overflow-y:auto}
-  .gate-logo{width:78px;height:78px;border-radius:15px}
-  .gate-brand{gap:16px}
-  .gate-brand .rl{font-size:15.5px}
-  .gate-opt{padding:16px 18px;gap:14px}
-  .gate-opt .h{font-size:17px}
-  .gate-ico{width:36px;height:36px}
-}
-@media(prefers-reduced-motion:reduce){
-  .gate,.gate.closing,.gate-brand,.gate-opt,.gate-bar,.gate-foot,
-  .gate-bar::after,.gate-logo,.gate-brand .nm,.gate-brand .rl,.gate-brand .sub{animation:none}
-  html.gating .hero *{animation-play-state:running}
-}
-
-/* ============================================================================
    PHOTO LIGHTBOX
    Reuses the resume modal shell. The stage sizes to the image rather than
    the other way round, so tall and wide photos both fit.
@@ -1388,4 +1243,773 @@ button.shot-thumb{padding:0;font:inherit;color:inherit;cursor:zoom-in}
   .modal-hd a,.modal-hd button{min-height:40px;display:inline-flex;align-items:center}
   footer a,footer span{min-height:38px;display:inline-flex;align-items:center}
   .ico-link{width:44px;height:44px}
+}
+
+/* ============================================================================
+   V3 · SURFACES, DEPTH, SCENES
+
+   v2 was one surface. Ground and panel sat four points of lightness apart, so
+   a panel never read as raised, only as slightly different paper, and the page
+   became a stack of equal-weight bands.
+
+   v3 keeps the evidence room as the resting state and adds a second surface
+   underneath it: --void, a near-black the page cuts to for specific sections.
+   The concept holds. Light is the paper on the table; dark is the screen you
+   read it on. Sections that are about live systems (the hero, the operating
+   picture, the work index) sit on the dark surface. Sections that are about
+   record (experience, certifications) stay on paper.
+
+   The value gap between the two surfaces is what produces depth. Shadows and
+   layered backgrounds sharpen it; they do not carry it alone.
+
+   Dark tokens mirror the light ones one for one, so a component can move
+   between surfaces by swapping tokens rather than being rewritten:
+
+     --void / --void-2 / --void-3     surfaces, base to raised
+     --void-ink / -mute / -faint      text, primary to tertiary
+     --void-rule / --void-rule-2      hairlines, subtle then structural
+     --signal-d                       crimson lifted to clear AA on near-black.
+                                      #C8102E only reaches 3.2:1 there, so the
+                                      brand red cannot be used for text on the
+                                      dark surface. Same role, brighter value.
+
+   Every dark-surface text colour clears WCAG AA (4.5:1) against --void:
+   --void-ink 15.8:1, --void-mute 7.6:1, --void-faint 5.1:1, --signal-d 6.0:1.
+   ========================================================================= */
+:root{
+  --void:#0B0F11;
+  --void-2:#141B1F;
+  --void-3:#1E272C;
+  --void-ink:#EDF0EB;
+  --void-mute:#9DAAA7;
+  --void-faint:#7C8A87;
+  --void-rule:#273338;
+  --void-rule-2:#3A484E;
+  --signal-d:#FF4A61;
+
+  /* A raised paper, lighter than --panel, for cards that need to lift off the
+     ground rather than sit in it. */
+  --panel-hi:#FBFCFA;
+
+  /* Elevation. Ink-tinted rather than black on the light surface, because a
+     neutral black shadow on a gray-green ground reads as dirt. */
+  --e1:0 1px 2px rgba(20,23,26,.04),0 3px 10px -6px rgba(20,23,26,.18);
+  --e2:0 2px 4px rgba(20,23,26,.05),0 14px 30px -16px rgba(20,23,26,.30);
+  --e3:0 4px 8px rgba(20,23,26,.06),0 30px 64px -30px rgba(20,23,26,.42);
+  --e-d1:0 2px 14px -6px rgba(0,0,0,.7);
+  --e-d2:0 24px 56px -26px rgba(0,0,0,.85);
+
+  /* One easing vocabulary. --ease for state changes that start from rest,
+     --ease-out for entrances, which want to arrive rather than settle. */
+  --ease:cubic-bezier(.22,.68,.28,1);
+  --ease-out:cubic-bezier(.16,1,.3,1);
+
+  --navh:62px;
+}
+
+/* ---- The dark surface ---------------------------------------------------
+   isolation:isolate gives the background layers their own stacking context,
+   so mix-blend-mode on the noise layer composites against the scene and not
+   against whatever happens to be painted behind the section. */
+/* overflow:clip, not hidden.
+
+   The background layers bleed past the section box and have to be trimmed,
+   but overflow:hidden makes the section a scroll container, and a scroll
+   container is what position:sticky sticks to. The pinned capabilities stage
+   sits inside one of these, so with overflow:hidden it had nothing to stick
+   against and simply scrolled away with the page.
+
+   overflow:clip trims the same way without creating a scroll container, so
+   the stage still sticks to the viewport. */
+.scene-dark{
+  position:relative;isolation:isolate;overflow:clip;
+  background:var(--void);color:var(--void-ink);
+  border-top:0;
+}
+.scene-dark>.wrap,.scene-dark>.pin{position:relative;z-index:2}
+
+.scene-dark .lbl{color:var(--void-faint)}
+.scene-dark .sdesc{color:var(--void-mute)}
+.scene-dark .shead .n{color:var(--signal-d)}
+.scene-dark .shead .fill{background:var(--void-rule)}
+.scene-dark h2,.scene-dark h3{color:var(--void-ink)}
+.scene-dark a{color:inherit}
+.scene-dark ::selection{background:var(--signal-d);color:var(--void)}
+
+/* ============================================================================
+   V3 · BACKGROUND LAYERS
+
+   Four stackable layers, each an absolutely positioned child of a scene. They
+   are separate elements rather than pseudo-elements because a scene routinely
+   needs three at once and an element only has two pseudo-elements.
+
+   All are pointer-events:none and aria-hidden in the markup: they carry no
+   information, so nothing is lost when they are not rendered.
+   ========================================================================= */
+.bgl{position:absolute;inset:0;pointer-events:none;z-index:0}
+
+/* Technical grid. Masked to a soft ellipse so it fades out at the edges
+   instead of stopping at a hard line against the section boundary. */
+.bgl-grid{
+  background-image:
+    linear-gradient(to right,var(--grid-c,rgba(237,240,235,.055)) 1px,transparent 1px),
+    linear-gradient(to bottom,var(--grid-c,rgba(237,240,235,.055)) 1px,transparent 1px);
+  background-size:var(--grid-s,74px) var(--grid-s,74px);
+  -webkit-mask-image:radial-gradient(ellipse 78% 72% at 50% 42%,#000 28%,transparent 76%);
+  mask-image:radial-gradient(ellipse 78% 72% at 50% 42%,#000 28%,transparent 76%);
+}
+/* Light-surface variant, for the few scenes that stay on paper. */
+.bgl-grid.on-light{--grid-c:rgba(20,23,26,.05)}
+
+/* Bloom. Two soft radials: crimson for the brand, and a cool steel that reads
+   as monitor light. The cool value is the one deliberate departure from the
+   crimson-only rule, and it is confined to the dark surface, never used on
+   text, and desaturated far enough that it registers as light rather than as
+   a second brand colour. */
+.bgl-glow{
+  background:
+    radial-gradient(640px 440px at 16% 20%,rgba(255,74,97,.15),transparent 68%),
+    radial-gradient(760px 540px at 84% 76%,rgba(96,152,172,.11),transparent 72%);
+}
+
+/* Film grain. Breaks up the flat fills so large dark areas do not band on
+   cheap panels. Overlay keeps it from lightening the blacks. */
+.bgl-noise{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity:.05;mix-blend-mode:overlay;
+}
+
+/* Slow sweep, like a refresh passing down a monitor. Deliberately almost
+   subliminal: at .05 alpha it registers as the surface being alive rather
+   than as an animation playing. */
+.bgl-scan{
+  height:38%;top:-38%;
+  background:linear-gradient(180deg,transparent,rgba(237,240,235,.05),transparent);
+  animation:scanSweep 11s linear infinite;
+}
+@keyframes scanSweep{
+  0%{transform:translateY(0)}
+  100%{transform:translateY(calc(100vh + 100%))}
+}
+
+/* A layer that will be parallaxed needs slack above and below, or translating
+   it drags its own edge into frame and leaves a bare strip at the boundary. */
+.bgl-par{inset:-16% 0}
+
+/* The hero's node field is painted to a canvas by main.js. Sized in CSS,
+   resolution handled in JS against devicePixelRatio. */
+.hero-net{width:100%;height:100%;opacity:.9}
+
+/* ============================================================================
+   V3 · MOTION, SECOND LAYER
+
+   v2 had one entrance: fade up 20px, same distance, same easing, on every
+   element on the page. Uniform motion reads as a single mechanical effect
+   rather than as choreography.
+
+   v3 keeps that observer and adds direction, scale, clip and depth variants,
+   plus a scroll-progress channel for set pieces. Everything is still driven
+   from JS: Firefox keeps scroll-driven CSS animations behind a flag as of
+   mid-2026, so animation-timeline would leave a large minority of visitors
+   with no motion at all. position:sticky does the pinning, which is
+   universally supported, and main.js writes a 0-to-1 --p onto each scene.
+
+   As in v2 the classes are added by JS and never ship in the markup, so with
+   JavaScript off nothing is hidden and the page reads as plain documents.
+   ========================================================================= */
+.rv{
+  opacity:0;
+  transition:opacity .68s var(--ease-out),transform .68s var(--ease-out),
+             clip-path .78s var(--ease-out),filter .68s var(--ease-out);
+  transition-delay:var(--rd,0ms);
+}
+.rv-up{transform:translateY(30px)}
+.rv-down{transform:translateY(-24px)}
+.rv-left{transform:translateX(-34px)}
+.rv-right{transform:translateX(34px)}
+.rv-scale{transform:scale(.93)}
+.rv-rise{transform:translateY(42px) scale(.97)}
+.rv-blur{filter:blur(9px)}
+/* Wipes up from its own bottom edge. Right for headings, where a fade reads
+   as weak and a slide reads as busy. */
+.rv-clip{clip-path:inset(0 0 102% 0)}
+.rv.in{opacity:1;transform:none;filter:none;clip-path:inset(0 0 0 0)}
+
+/* Cards that hinge in from their leading edge. The perspective lives on the
+   parent so every card in a row shares one vanishing point; per-card
+   perspective makes each one hinge to its own centre and the row splays. */
+.hinge-row{perspective:1600px;perspective-origin:50% 40%}
+.hinge{
+  transform:rotateY(-72deg);opacity:0;transform-origin:left center;
+  transform-style:preserve-3d;backface-visibility:hidden;
+  transition:transform .9s var(--ease-out),opacity .5s linear;
+  transition-delay:var(--rd,0ms);
+}
+.hinge.in{transform:none;opacity:1}
+
+/* Depth parallax. main.js writes --py from scroll position. translate3d keeps
+   it on the compositor; will-change is set by JS only while a layer is in
+   view, because a permanent will-change on several layers costs more memory
+   than it saves. */
+[data-par]{transform:translate3d(0,var(--py,0px),0)}
+
+/* Scroll-progress channel. --p runs 0 to 1 across a scene's scroll range. */
+[data-scene]{--p:0}
+
+/* Counters. main.js animates the number; this only keeps the digits from
+   reflowing the layout as the value changes width. */
+.tick{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
+
+@media(prefers-reduced-motion:reduce){
+  .rv{opacity:1!important;transform:none!important;filter:none!important;clip-path:none!important}
+  .hinge{opacity:1!important;transform:none!important}
+  [data-par]{transform:none!important}
+  .bgl-scan{animation:none;display:none}
+}
+
+/* ============================================================================
+   V3 · NAV OVER A DARK HERO
+
+   Every page opens on the dark surface now, so build.py puts .dark-top on
+   each <body>. While the page is at the top the nav has no plate at all and
+   sits directly on the hero or page header; main.js adds .scrolled to <html>
+   past the first threshold and the ordinary light nav fades back in.
+
+   Scoping every override under :not(.scrolled) means the scrolled state needs
+   no counter-rules: the overrides simply stop matching.
+
+   The .js half matters just as much. Without it a visitor with JavaScript
+   disabled never gets .scrolled either, so the nav would stay transparent all
+   the way down and its dark text would sit invisibly on the light sections.
+   .js is set by an inline head script, which makes the plateless nav strictly
+   an enhancement and the legible one the default.
+   ========================================================================= */
+.dark-top .nav{transition:background .32s var(--ease),border-color .32s var(--ease)}
+
+html.js:not(.scrolled) .dark-top .nav{
+  background:transparent;backdrop-filter:none;border-bottom-color:transparent;
+}
+html.js:not(.scrolled) .dark-top .brand{color:var(--void-ink)}
+html.js:not(.scrolled) .dark-top .brand i{background:var(--signal-d)}
+html.js:not(.scrolled) .dark-top .nav nav a{color:var(--void-mute)}
+html.js:not(.scrolled) .dark-top .nav nav a:hover,
+html.js:not(.scrolled) .dark-top .nav nav a:focus-visible{color:var(--void-ink)}
+html.js:not(.scrolled) .dark-top .nav nav a.here{color:var(--void-ink);border-bottom-color:var(--signal-d)}
+html.js:not(.scrolled) .dark-top .nav nav a::after{background:var(--signal-d)}
+html.js:not(.scrolled) .dark-top .nav-act a{border-color:var(--void-rule-2);color:var(--void-ink)}
+html.js:not(.scrolled) .dark-top .nav-act .solid{background:var(--signal-d);border-color:var(--signal-d);color:var(--void)}
+html.js:not(.scrolled) .dark-top .nav-act a:hover,
+html.js:not(.scrolled) .dark-top .nav-act a:focus-visible{
+  background:var(--void-ink);border-color:var(--void-ink);color:var(--void);
+}
+html.js:not(.scrolled) .dark-top .navtog{color:var(--void-ink);border-color:var(--void-rule-2)}
+
+/* ============================================================================
+   V3 · HERO
+
+   Full bleed. The nav is sticky and therefore still in flow, so the hero is
+   pulled up under it by exactly its height and pads that height back on the
+   inside. The nav's z-index:60 keeps it painted on top.
+
+   Four background layers stack under the content: the node field on canvas,
+   the technical grid, the bloom, then grain. The signature redaction-bar
+   reveal is unchanged from v2 apart from its colours; it was the strongest
+   thing on the page and v3 had no reason to touch it.
+   ========================================================================= */
+.hero.scene-dark{
+  margin-top:calc(-1 * var(--navh));
+  min-height:100svh;
+  padding:calc(var(--navh) + 58px) 0 0;
+  justify-content:center;
+}
+.hero.scene-dark .hero-grid{padding-bottom:56px}
+
+.scene-dark .hero-net{z-index:1}
+.scene-dark .bgl-glow{z-index:1}
+.scene-dark .bgl-noise{z-index:2}
+
+.scene-dark .hero .lbl,.hero.scene-dark .lbl{color:var(--signal-d)}
+.scene-dark .hero h1 .red::after,.hero.scene-dark h1 .red::after{background:var(--void-ink)}
+.scene-dark .hero h1 .red:nth-child(2)::after,.hero.scene-dark h1 .red:nth-child(2)::after{background:var(--signal-d)}
+.hero.scene-dark .tagline{color:var(--void-ink)}
+.hero.scene-dark .tagline b{border-bottom-color:var(--signal-d)}
+.hero.scene-dark .lede{color:var(--void-mute)}
+
+.hero.scene-dark .cta a,.hero.scene-dark .cta button{
+  border-color:var(--void-rule-2);color:var(--void-ink);
+  background:rgba(237,240,235,.03);backdrop-filter:blur(2px);
+}
+.hero.scene-dark .cta a:hover,.hero.scene-dark .cta button:hover,
+.hero.scene-dark .cta a:focus-visible,.hero.scene-dark .cta button:focus-visible{
+  background:var(--void-ink);border-color:var(--void-ink);color:var(--void);
+}
+.hero.scene-dark .cta .solid{background:var(--signal-d);border-color:var(--signal-d);color:var(--void)}
+.hero.scene-dark .cta .solid:hover,.hero.scene-dark .cta .solid:focus-visible{
+  background:var(--void-ink);border-color:var(--void-ink);color:var(--void);
+}
+
+/* Portrait. Raised off the dark surface by shadow, with a hairline inner
+   highlight along the top edge so the card has a lit side. */
+.hero.scene-dark .shot{
+  border-color:var(--void-rule-2);background:var(--void-2);
+  box-shadow:var(--e-d2);position:relative;
+}
+.hero.scene-dark .shot::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  box-shadow:inset 0 1px 0 rgba(237,240,235,.10);
+}
+.hero.scene-dark .shot img{filter:saturate(.96) contrast(1.05) brightness(.97)}
+.hero.scene-dark .shot-tag{background:var(--void-2);border-top-color:var(--void-rule-2)}
+.hero.scene-dark .shot-tag .k{color:var(--void-faint)}
+.hero.scene-dark .shot-tag .v{color:var(--void-ink)}
+.hero.scene-dark .shot-tag .v.sig{color:var(--signal-d)}
+
+.hero.scene-dark .scroll-cue{color:var(--void-faint)}
+.hero.scene-dark .scroll-cue:hover{color:var(--signal-d)}
+.hero.scene-dark .scroll-cue span{background:linear-gradient(var(--void-rule-2),var(--signal-d))}
+
+/* Capability cards on the dark surface. */
+.scene-dark .cap{background:var(--void-2);border-color:var(--void-rule);position:relative}
+.scene-dark .cap:hover{background:var(--void-3)}
+.scene-dark .cap .lbl{color:var(--signal-d)}
+.scene-dark .cap li{color:var(--void-mute)}
+.cap .idx{
+  position:absolute;top:20px;right:22px;
+  font-family:var(--mono);font-size:10px;letter-spacing:.14em;
+  color:var(--void-faint);opacity:.7;
+}
+
+/* Certifications on the dark surface. */
+.scene-dark .cert{background:var(--void-2);border-color:var(--void-rule-2);color:var(--void-ink)}
+.scene-dark .cert:hover,.scene-dark .cert:focus-visible{border-color:var(--void-ink);background:var(--void-3)}
+.scene-dark .cert.prog{color:#E0A93B}
+.scene-dark .cert.prog::before{background:#E0A93B}
+
+/* ============================================================================
+   V3 · WORK CARDS ON THE DARK SURFACE
+
+   The three index cards close the page on dark, mirroring the hero, so the
+   light middle of the page sits between two dark ends rather than trailing
+   off. Each card carries its own parallax offset, set by main.js, so the row
+   separates into three planes as it passes.
+   ========================================================================= */
+/* Real gaps rather than the light version's 1px hairline grid. The cards
+   hinge in from their left edges, and a card rotating away from a shared
+   background line exposes a bare coloured block behind it. */
+.scene-dark .navgrid{background:none;border:0;gap:20px}
+.scene-dark .ncard{background:var(--void-2);color:var(--void-ink)}
+.scene-dark .ncard:hover,.scene-dark .ncard:focus-visible{background:var(--void-3)}
+.scene-dark .ncard .lbl{color:var(--signal-d)}
+.scene-dark .ncard p{color:var(--void-mute)}
+.scene-dark .ncard .go .ct{color:var(--void-faint)}
+.scene-dark .ncard .arw{color:var(--signal-d)}
+.scene-dark .ncard:hover{box-shadow:0 18px 40px -22px rgba(0,0,0,.9)}
+.scene-dark .ncard:hover::after,.scene-dark .ncard:focus-visible::after{box-shadow:inset 0 0 0 2px var(--signal-d)}
+
+/* ============================================================================
+   V3 · SUBPAGE HEADERS
+
+   The four subpages opened on a hairline-ruled band that looked like the top
+   of a document and gave the page no arrival at all. Each now opens on the
+   dark surface, pulled up under the nav the same way the home hero is, so
+   every page in the site starts dark and cuts to paper at its first section.
+
+   Every page carries body.dark-top now, not just the home page, which is what
+   lets the nav sit plateless over these headers too.
+   ========================================================================= */
+.phead.scene-dark{
+  margin-top:calc(-1 * var(--navh));
+  padding:calc(var(--navh) + 86px) 0 82px;
+  border-bottom:0;
+}
+.phead.scene-dark .back{color:var(--void-faint)}
+.phead.scene-dark .back:hover,.phead.scene-dark .back:focus-visible{color:var(--signal-d)}
+.phead.scene-dark h1{color:var(--void-ink)}
+.phead.scene-dark .sub{color:var(--void-mute)}
+
+/* ============================================================================
+   V3 · DEPTH ON THE LIGHT SURFACE
+
+   The paper sections keep their hairline construction, but the blocks that
+   are meant to read as objects on the table now actually lift off it.
+   ========================================================================= */
+.org{background:var(--panel-hi);box-shadow:var(--e1);transition:box-shadow .3s var(--ease),transform .3s var(--ease)}
+.org:hover{box-shadow:var(--e2);transform:translateY(-2px)}
+.factband{background:var(--panel-hi);box-shadow:var(--e1)}
+.navgrid{box-shadow:var(--e2)}
+.ncard:hover,.ncard:focus-visible{box-shadow:var(--e3)}
+
+/* ============================================================================
+   V3.1 · A CONTINUOUS BACKGROUND
+
+   The first cut of v3 put background layers only inside the dark scenes, so
+   the middle of every page was bare paper with nothing behind it and the
+   texture appeared and disappeared as you scrolled.
+
+   .sitebg is one fixed layer behind the whole document, present on every page
+   and every section. Because the light sections paint no background of their
+   own, it shows straight through them; the dark scenes are opaque and cover
+   it, which is correct, since they carry their own layers.
+
+   Its blooms are positioned from --sp, the page scroll progress that main.js
+   writes onto <html>. So the background drifts continuously for the length of
+   the page rather than repeating per section, which is what makes the scroll
+   read as one movement instead of a series of bands.
+   ========================================================================= */
+.sitebg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.sitebg i{position:absolute;display:block}
+
+/* Everything in the document sits above it. */
+body>header,body>main,body>footer{position:relative;z-index:1}
+
+/* Alphas are low on purpose. These read as atmosphere on the dark hero, but
+   most of the page is paper, and the same values that look like light on
+   near-black look like a pink wash on white. */
+.sb-bloom{
+  inset:-25%;
+  background:
+    radial-gradient(46vw 38vw at calc(12% + var(--sp,0) * 26%) calc(6% + var(--sp,0) * 34%),
+      rgba(200,16,46,.055),transparent 62%),
+    radial-gradient(54vw 44vw at calc(90% - var(--sp,0) * 30%) calc(74% - var(--sp,0) * 46%),
+      rgba(72,122,142,.06),transparent 66%),
+    radial-gradient(40vw 34vw at calc(50% + var(--sp,0) * 18%) calc(112% - var(--sp,0) * 62%),
+      rgba(138,97,0,.035),transparent 64%);
+}
+.sb-grid{
+  inset:0;
+  background-image:
+    linear-gradient(to right,rgba(20,23,26,.045) 1px,transparent 1px),
+    linear-gradient(to bottom,rgba(20,23,26,.045) 1px,transparent 1px);
+  background-size:78px 78px;
+  background-position:0 calc(var(--sp,0) * -60px);
+  -webkit-mask-image:radial-gradient(ellipse 92% 76% at 50% 50%,#000 34%,transparent 82%);
+  mask-image:radial-gradient(ellipse 92% 76% at 50% 50%,#000 34%,transparent 82%);
+}
+.sb-noise{
+  inset:0;opacity:.035;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Light sections need a stacking context of their own so their background
+   layers sit under their content but over .sitebg. */
+.lit{position:relative;isolation:isolate}
+.lit>.wrap,.lit>.pin{position:relative;z-index:2}
+
+/* Light-surface variants of the scene layers. Far lower alpha than the dark
+   ones: the same values that read as atmosphere on near-black read as dirt
+   on paper. */
+.bgl-glow.on-light{
+  background:
+    radial-gradient(600px 420px at 10% 16%,rgba(200,16,46,.07),transparent 66%),
+    radial-gradient(680px 500px at 90% 84%,rgba(72,122,142,.08),transparent 70%);
+}
+
+/* ---- The facts strip, now closing the dark opening run ---------------- */
+.factband.scene-dark{
+  background:var(--void);box-shadow:none;
+  border-top:1px solid var(--void-rule);border-bottom:0;
+}
+.factband.scene-dark .facts div{border-right-color:var(--void-rule)}
+.factband.scene-dark .lbl{color:var(--void-faint)}
+.factband.scene-dark dd{color:var(--void-ink)}
+.factband.scene-dark .wip-link{color:var(--signal-d)}
+.factband.scene-dark .wip-link:hover{background:rgba(255,74,97,.14)}
+@media(max-width:1000px){
+  .factband.scene-dark .facts div{border-bottom-color:var(--void-rule)}
+}
+
+/* ============================================================================
+   V3.1 · ITEM-LEVEL STAGGER
+
+   Block-level entrances stop being interesting once you have seen three of
+   them. [data-stagger] hands the entrance down to the children instead, so a
+   capability list, a facts row, or a set of role bullets arrives line by line.
+
+   As everywhere else the class is added by main.js, never in the markup, so
+   with JavaScript off none of this applies and nothing is hidden.
+   ========================================================================= */
+.stag>*{
+  opacity:0;transform:translateY(15px);
+  transition:opacity .5s var(--ease-out),transform .5s var(--ease-out);
+  transition-delay:var(--rd,0ms);
+}
+.stag.in>*{opacity:1;transform:none}
+
+@media(prefers-reduced-motion:reduce){
+  .stag>*{opacity:1!important;transform:none!important}
+  .sb-bloom,.sb-grid{background-position:0 0}
+}
+
+/* ============================================================================
+   V3.2 · BOXED DARK
+
+   Two earlier attempts got the dark surface wrong. First it ran edge to edge
+   and the page banded, black then white then black. Then the bands were
+   blended and the 260px ramp between near-black and paper was visible as a
+   ramp, which is worse: you could see where it started and stopped.
+
+   The dark is now an object rather than a band. Below the hero it only ever
+   appears boxed, inset on the paper with the page margins still showing on
+   both sides, so there is no edge to blend and nothing to cut across. The
+   evidence-room reading is better for it: a screen sitting on the table.
+
+   .darkbox pairs with .scene-dark, which still supplies the surface tokens.
+   .darkbox adds only the frame, the lift, and its own texture, so anything
+   that already knows how to sit on the dark surface works inside one.
+   ========================================================================= */
+.darkbox{
+  position:relative;isolation:isolate;overflow:clip;
+  border:1px solid var(--void-rule-2);
+  box-shadow:var(--e3);
+}
+/* Texture from pseudo-elements rather than .bgl children, because these are
+   repeated six times and markup for it would be six times the noise. */
+.darkbox::before{
+  content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+  background-image:
+    linear-gradient(to right,rgba(237,240,235,.05) 1px,transparent 1px),
+    linear-gradient(to bottom,rgba(237,240,235,.05) 1px,transparent 1px);
+  background-size:46px 46px;
+  -webkit-mask-image:radial-gradient(ellipse 84% 88% at 78% 6%,#000 4%,transparent 74%);
+  mask-image:radial-gradient(ellipse 84% 88% at 78% 6%,#000 4%,transparent 74%);
+}
+.darkbox::after{
+  content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(420px 300px at 92% -6%,rgba(255,74,97,.16),transparent 68%),
+    radial-gradient(460px 340px at 4% 104%,rgba(96,152,172,.12),transparent 70%);
+}
+.darkbox>*{position:relative;z-index:1}
+
+/* ============================================================================
+   V3.2 · CAPABILITIES, STICKY SPLIT
+
+   The heading holds still on the left while the six cards travel up past it
+   on the right, each tilting flat as it arrives. Nothing pins the page and
+   nothing moves sideways, so it reads as part of the scroll instead of as a
+   widget that has taken the page over. That was the real problem with the
+   horizontal track: it stopped the page to run an effect, and the effect had
+   more empty stage than content in it.
+
+   Below 900px the split collapses and the heading stops sticking, which
+   leaves a plain stack of cards. That is also what a visitor with JavaScript
+   off gets at any width, since the tilt class is added by main.js.
+   ========================================================================= */
+.capsplit{
+  display:grid;grid-template-columns:minmax(0,320px) minmax(0,1fr);
+  gap:56px;align-items:start;
+}
+.capsplit-hd{position:sticky;top:calc(var(--navh) + 54px)}
+.capsplit-hd .sdesc{margin-bottom:0}
+.capsplit-list{display:grid;gap:20px}
+
+.capsplit .cap{
+  padding:30px 32px 32px;border:0;background:var(--void);
+  transition:transform .3s var(--ease),box-shadow .3s var(--ease),border-color .3s var(--ease);
+}
+.capsplit .cap:hover{
+  background:var(--void);transform:translateY(-3px);
+  border-color:var(--signal-d);box-shadow:0 26px 56px -28px rgba(0,0,0,.9);
+}
+.capsplit .cap .idx{
+  position:absolute;top:28px;right:32px;
+  font-family:var(--mono);font-size:11px;letter-spacing:.16em;
+  color:var(--void-faint);opacity:.85;
+}
+.capsplit .cap .lbl{display:block;margin-bottom:18px;color:var(--signal-d)}
+/* Two columns inside each card keeps them wide and short, so a card is one
+   glance rather than a list you read down. */
+.capsplit .cap ul{list-style:none;display:grid;grid-template-columns:repeat(2,1fr);gap:10px 28px}
+.capsplit .cap li{font-size:14.5px;color:var(--void-mute);line-height:1.4}
+
+/* Cards hinge flat from their bottom edge as they come up the screen. The
+   origin is the bottom, so the card looks like it is standing up into place
+   rather than rotating around its own middle. */
+.tilt{
+  opacity:0;
+  transform:perspective(1100px) rotateX(11deg) translateY(52px) scale(.985);
+  transform-origin:50% 100%;
+  transition:opacity .66s var(--ease-out),transform .9s var(--ease-out);
+  transition-delay:var(--rd,0ms);
+}
+.tilt.in{opacity:1;transform:none}
+
+/* ---- The work panel ---------------------------------------------------- */
+.workbox{padding:30px}
+.workbox .navgrid{background:none;border:0;gap:18px;box-shadow:none}
+
+@media(max-width:900px){
+  .capsplit{grid-template-columns:1fr;gap:34px}
+  .capsplit-hd{position:static}
+}
+@media(max-width:620px){
+  .capsplit .cap{padding:24px 22px 26px}
+  .capsplit .cap ul{grid-template-columns:1fr}
+  .workbox{padding:18px}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .tilt{opacity:1!important;transform:none!important}
+}
+
+
+/* ============================================================================
+   V3.2 · CASE-OPEN INTRO
+
+   The v2 gate, played rather than operated. A case panel drops in, a cursor
+   crosses to "Start investigation", clicks it, and the panel leaves as the
+   hero's own load sequence starts. About 1.6 seconds, once per session, and
+   any input at all cuts it short.
+
+   html.intro is set by the pre-paint script in parts/index_head.html, not by
+   main.js, so the hero is already sitting in its pre-animation state on the
+   first frame. It pauses the hero's load sequence exactly the way the v2 gate
+   did, which is what stops the intro playing to an empty room and the hero
+   then replaying once it is gone.
+   ========================================================================= */
+html.intro,html.intro body{overflow:hidden}
+html.intro .hero .lbl,
+html.intro .hero h1 .red::after,
+html.intro .tagline,
+html.intro .lede,
+html.intro .cta,
+html.intro .shot,
+html.intro .scroll-cue{animation-play-state:paused}
+
+.intro-scr{
+  position:fixed;inset:0;z-index:200;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--void);
+  transition:opacity .44s var(--ease),transform .44s var(--ease);
+}
+.intro-scr.out{opacity:0;transform:scale(1.025);pointer-events:none}
+
+.intro-panel{
+  width:min(560px,calc(100vw - 44px));
+  border:1px solid var(--void-rule-2);background:var(--void-2);
+  box-shadow:var(--e-d2);
+  opacity:0;transform:translateY(18px) scale(.985);
+  transition:opacity .52s var(--ease-out),transform .64s var(--ease-out);
+}
+.intro-scr.in .intro-panel{opacity:1;transform:none}
+
+.intro-bar{
+  display:flex;align-items:center;height:40px;padding:0 15px;
+  border-bottom:1px solid var(--void-rule);background:var(--void-3);
+}
+.intro-bar .t{
+  display:flex;align-items:center;gap:9px;
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--void-mute);
+}
+.intro-bar .t i{width:6px;height:13px;background:var(--signal-d);animation:caret 1.15s step-end infinite}
+
+.intro-body{padding:34px 32px 30px;display:flex;flex-direction:column}
+.intro-k{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--void-faint)}
+.intro-nm{
+  margin-top:10px;font-size:clamp(28px,4vw,40px);font-weight:800;
+  letter-spacing:-.035em;line-height:1;text-transform:uppercase;color:var(--void-ink);
+}
+.intro-sub{
+  margin-top:10px;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--signal-d);
+}
+
+/* Dashed until the cursor reaches it, solid once it does, so the "hover" is
+   legible as a state change rather than just a tint. */
+.intro-go{
+  margin-top:28px;display:flex;align-items:center;gap:16px;
+  border:1px dashed var(--void-rule-2);background:rgba(237,240,235,.03);
+  padding:18px 20px;
+  transition:background .18s,border-color .18s,transform .12s;
+}
+.intro-go .h{font-size:18px;font-weight:700;letter-spacing:-.02em;color:var(--void-ink)}
+.intro-go .d{
+  font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--void-faint);margin-left:auto;
+}
+.intro-go .arw{color:var(--signal-d);font-size:18px;transition:transform .2s}
+.intro-go.hot{background:rgba(237,240,235,.07);border-style:solid;border-color:var(--signal-d)}
+.intro-go.hot .arw{transform:translateX(5px)}
+.intro-go.hit{background:rgba(255,74,97,.18)}
+
+/* The cursor. Starts down and to the right of its target and glides in; the
+   offsets are relative to the measured target, so it always approaches from
+   the same angle whatever the viewport does to the panel. */
+.intro-cur{
+  position:fixed;left:0;top:0;width:22px;height:22px;z-index:210;
+  pointer-events:none;opacity:0;
+  transform:translate(calc(var(--tx,50vw) + 210px),calc(var(--ty,50vh) + 170px));
+  transition:opacity .34s ease,transform .95s cubic-bezier(.32,.72,.24,1);
+}
+.intro-cur::before{
+  content:"";position:absolute;inset:0;background:#fff;
+  clip-path:polygon(0 0,0 78%,26% 60%,44% 96%,62% 88%,44% 52%,74% 48%);
+  filter:drop-shadow(0 2px 5px rgba(0,0,0,.65));
+}
+.intro-cur.move{opacity:1;transform:translate(var(--tx,50vw),var(--ty,50vh))}
+/* Declared after .move so it wins at equal specificity while pressing. */
+.intro-cur.press{transform:translate(var(--tx,50vw),var(--ty,50vh)) scale(.88)}
+.intro-cur.press::after{
+  content:"";position:absolute;left:-7px;top:-7px;width:36px;height:36px;
+  border:2px solid var(--signal-d);border-radius:50%;
+  animation:curPing .45s var(--ease-out) both;
+}
+@keyframes curPing{
+  from{transform:scale(.3);opacity:.9}
+  to{transform:scale(1.3);opacity:0}
+}
+
+@media(max-width:560px){
+  .intro-body{padding:26px 22px 24px}
+  .intro-go{padding:15px 16px;gap:12px}
+  .intro-go .d{display:none}
+}
+
+/* The intro never runs under reduced motion, because the head script bails
+   before setting the class. These are here so that if it is ever forced on,
+   nothing moves and nothing is left hidden. */
+@media(prefers-reduced-motion:reduce){
+  html.intro,html.intro body{overflow:auto}
+  html.intro .hero *{animation-play-state:running}
+  .intro-scr{display:none}
+}
+
+
+/* ---- Capabilities live index -------------------------------------------
+   The sticky column was a heading and two lines in a tall empty space. This
+   fills it with something that earns the room: a contents list that tracks
+   which card is currently in front of it, so the column has motion of its own
+   while the cards travel past. */
+.capnav{
+  list-style:none;margin-top:30px;padding-top:22px;
+  border-top:1px solid var(--rule);
+  display:grid;gap:2px;counter-reset:capnav;
+}
+.capnav li{
+  counter-increment:capnav;
+  position:relative;display:flex;align-items:baseline;gap:12px;
+  padding:7px 0 7px 16px;
+  font-size:14px;color:var(--faint);
+  transition:color .3s var(--ease),transform .3s var(--ease);
+}
+.capnav li::before{
+  content:counter(capnav,decimal-leading-zero);
+  font-family:var(--mono);font-size:10px;letter-spacing:.12em;
+  color:var(--rule-2);transition:color .3s var(--ease);
+}
+/* The marker rides the active entry rather than each row carrying its own. */
+.capnav li::after{
+  content:"";position:absolute;left:0;top:50%;width:7px;height:1px;
+  background:var(--signal);transform:scaleX(0) translateY(-50%);transform-origin:left;
+  transition:transform .3s var(--ease);
+}
+.capnav li.on{color:var(--ink);transform:translateX(3px)}
+.capnav li.on::before{color:var(--signal)}
+.capnav li.on::after{transform:scaleX(1) translateY(-50%)}
+
+@media(max-width:900px){
+  /* Below the split the cards are directly underneath, so a contents list
+     pointing at them is just the same six words twice. */
+  .capnav{display:none}
 }

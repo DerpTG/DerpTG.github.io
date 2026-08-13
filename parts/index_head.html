@@ -1,9 +1,18 @@
 <script>
-/* Runs before first paint. If the gate is due this session, tag <html> now so
-   the CSS can show it the instant its markup is parsed. Doing this from
-   main.js at the end of <body> meant the whole page painted first and the
-   gate dropped on top a frame later, which read as a flash of the site. */
-(function(){try{if(!sessionStorage.getItem('fn.gate.seen'))document.documentElement.className+=' gating';}catch(e){}})();
+/* Pre-paint. If the case-open intro is due this session, tag <html> now, so
+   the hero's load sequence is already paused when the first frame paints and
+   main.js has something to build over. Doing this from main.js alone meant the
+   hero painted first and the panel dropped on top a frame later, which read as
+   a flash of the site: the exact problem the v2 gate had.
+
+   Bailing here on prefers-reduced-motion or on a second view this session is
+   what makes the intro a once-per-session flourish rather than a gate. */
+(function(){try{
+  var r=document.documentElement, m=window.matchMedia;
+  if(sessionStorage.getItem('fn.intro.seen'))return;
+  if(m&&m('(prefers-reduced-motion: reduce)').matches)return;
+  r.className+=' intro';
+}catch(e){}})();
 </script>
 <script type="application/ld+json">
 {
@@ -14,6 +23,7 @@
   "jobTitle":"Cybersecurity Specialist",
   "alumniOf":"Pennsylvania State University",
   "email":"mailto:fnaroditskiy@gmail.com",
+  "knowsAbout":["Digital forensics","Malware analysis","Incident response","SIEM and log analysis","Security governance","Privacy compliance","IT support","Active Directory","Microsoft 365"],
   "address":{"@type":"PostalAddress","addressLocality":"Warminster","addressRegion":"PA","addressCountry":"US"},
   "sameAs":["https://www.linkedin.com/in/felix-naroditskiy","https://github.com/DerpTG"]
 }

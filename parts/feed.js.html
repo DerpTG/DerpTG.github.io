@@ -6,8 +6,10 @@ var LOG = [
     title: 'Windows Security Log analysis with a custom Python parser',
     tools: ['Python', 'ElementTree', 'Windows Event Logs'],
     body: [
-      'Investigated a compromised Windows Server from its Security Log. I wrote a Python script using ElementTree to parse the XML and the csv module to generate structured output, then analyzed logon, logoff, and failed-logon patterns for indicators of compromise.',
-      'The parser worked through 78,320 events across roughly 24 hours. It surfaced a standout account (grant.larson) with 85 logins, only two failed logons (both administrator, from the loopback address on the domain controller), a large number of off-hours logins, and audit-log clearing (Event ID 1102), which pointed to deliberate evidence removal. I closed with recommendations covering account lockout, MFA, behavioral baselining, and follow-on forensics.'
+      'Investigated a compromised Windows Server from its Security Log using a custom Python parser built with ElementTree, generating structured CSV output.',
+      'Analyzed logon, logoff, and failed-logon patterns across 78,320 events spanning roughly 24 hours.',
+      'Identified a standout account with 85 logins, only two failed logons (both administrator, from the loopback address on the domain controller), extensive off-hours activity, and audit-log clearing (Event ID 1102) indicating deliberate evidence removal.',
+      'Recommended account lockout policies, MFA, behavioral baselining, and follow-on forensics.'
     ]
   },
   {
@@ -15,8 +17,10 @@ var LOG = [
     title: 'Memory analysis of an infected workstation',
     tools: ['Volatility', 'Windows 7 memory dump'],
     body: [
-      'Analyzed a 6.4 GB memory dump from a Windows 7 workstation using Volatility. Working from imageinfo through pslist and pstree, I established a normal process baseline and then looked for anything that did not belong.',
-      'The dump contained a process named evilgeth.exe masquerading as the legitimate geth.exe (Go Ethereum), consistent with unauthorized crypto-mining and possible wallet or key theft. I compared it against the legitimate Windows shell process to confirm the finding and recommended reverse engineering, network isolation, and follow-on disk and log analysis.'
+      'Analyzed a 6.4 GB Windows 7 memory dump in Volatility, working from imageinfo through pslist and pstree to establish a normal process baseline.',
+      'Identified evilgeth.exe masquerading as the legitimate geth.exe (Go Ethereum), consistent with unauthorized crypto-mining and possible wallet or key theft.',
+      'Compared the process against the legitimate Windows shell process to confirm the finding.',
+      'Recommended reverse engineering, network isolation, and follow-on disk and log analysis.'
     ]
   },
   {
@@ -24,8 +28,10 @@ var LOG = [
     title: 'Network traffic analysis of an enterprise compromise',
     tools: ['Wireshark', 'PCAP'],
     body: [
-      'Examined a packet capture from a compromised enterprise network in Wireshark, using display filters and conversation and endpoint analysis to map the environment and isolate anomalies.',
-      'The capture showed 164 active hosts across external, DMZ, core, and workstation segments. The key anomaly was a server cluster running an unusual set of services, including unsecured FTP, Telnet, remote exec and login, and obsolete Gopher, consistent with enumeration, backdoors, C2, and likely exfiltration. NetBIOS was also leaking to the open internet. I assessed it as a multi-stage, APT-style compromise and recommended segmentation and deeper packet, log, and memory analysis.'
+      'Examined a packet capture from a compromised enterprise network in Wireshark, using display filters with conversation and endpoint analysis.',
+      'Mapped 164 active hosts across external, DMZ, core, and workstation segments.',
+      'Isolated a server cluster running unsecured FTP, Telnet, remote exec and login, and obsolete Gopher, consistent with enumeration, backdoors, C2, and likely exfiltration, alongside NetBIOS leaking to the open internet.',
+      'Assessed the activity as a multi-stage, APT-style compromise and recommended segmentation with deeper packet, log, and memory analysis.'
     ]
   },
   {
@@ -33,8 +39,10 @@ var LOG = [
     title: 'Disk image analysis and attack-timeline reconstruction',
     tools: ['FTK Imager', 'Autopsy', 'HxD', 'SQLite'],
     body: [
-      'Reconstructed an intrusion on a shared small-business workstation from its disk image, verifying image integrity with MD5 hashing before analysis and working through FTK Imager, Autopsy, HxD, and a SQLite browser.',
-      'I separated normal use by the primary user from the malicious activity of a second account, which downloaded an IRC client and Tor as the likely initial vector. From there I traced the timeline: portable archiving and secure-deletion tools installed, a malware payload staged on the desktop, and batch scripts for reconnaissance and deletion hidden in the Recycle Bin and a public samples folder, ending with the user discovering their documents gone. I recommended isolation, quarantine, wipe-and-clean-backup recovery, and analysis of the other workstations.'
+      'Reconstructed an intrusion on a shared small-business workstation from its disk image, verifying integrity by MD5 hash before analysis.',
+      'Worked through FTK Imager, Autopsy, HxD, and a SQLite browser to separate normal primary-user activity from a second, malicious account.',
+      'Traced the timeline from an IRC client and Tor download as the likely initial vector, through portable archiving and secure-deletion tooling, a malware payload staged on the desktop, and reconnaissance and deletion batch scripts hidden in the Recycle Bin and a public samples folder.',
+      'Recommended isolation, quarantine, wipe-and-clean-backup recovery, and analysis of the remaining workstations.'
     ]
   },
   {
@@ -42,8 +50,10 @@ var LOG = [
     title: 'Intrusion detection with Snort',
     tools: ['Snort', 'nmap'],
     body: [
-      'Set up Snort as a network IDS on a target host and generated attack traffic from a separate machine to test detection. I ran the sensor in console mode with logging enabled and drove traffic with nmap.',
-      'Each test produced the expected alert: a ping sweep triggered an ICMP detection, a SYN scan and a version scan both raised SYN-scan alerts, and a manual HTTP request flagged a suspicious request on port 80. For each, I captured the source and destination addresses, ports, and timestamps, which is the raw material a Tier-1 analyst works from.'
+      'Deployed Snort as a network IDS on a target host and generated attack traffic from a separate machine to validate detection.',
+      'Ran the sensor in console mode with logging enabled, driving traffic with nmap.',
+      'Confirmed the expected alert for each test: an ICMP detection from a ping sweep, SYN-scan alerts from both a SYN scan and a version scan, and a suspicious-request flag on port 80 from a manual HTTP request.',
+      'Captured source and destination addresses, ports, and timestamps for each alert, the raw material of Tier-1 triage.'
     ]
   },
   {
@@ -51,8 +61,11 @@ var LOG = [
     title: 'Network defense lab series',
     tools: ['tcpdump', 'hping3', 'nmap', 'VyOS', 'OSSEC', 'ELK'],
     body: [
-      'A series of blue-team fundamentals labs across Linux, traffic analysis, and defensive tooling. Highlights: capturing and analyzing HTTP and SSH traffic with tcpdump, running a SYN flood with hping3 and watching the server\u2019s connection queue degrade, host and service discovery with nmap, blocking forged and invalid addresses on a VyOS firewall, and configuring OSSEC as a host-based IDS.',
-      'The series also covered split-horizon DNS, centralized logging with Rsyslog and NXLog across Linux, FreeBSD, and Windows, a buffer-overflow exploit written in C and Python to gain escalated privileges, and standing up the Elastic Stack (Elasticsearch, Logstash, Kibana) to collect and visualize log data. Additional web-assessment work used OWASP ZAP, Nikto, PKI and a local certificate authority, and Splunk with the Universal Forwarder.'
+      'Completed a blue-team fundamentals series spanning Linux, traffic analysis, and defensive tooling.',
+      'Captured and analyzed HTTP and SSH traffic with tcpdump, ran a SYN flood with hping3 to observe connection-queue degradation, and performed host and service discovery with nmap.',
+      'Blocked forged and invalid addresses on a VyOS firewall and configured OSSEC as a host-based IDS.',
+      'Built split-horizon DNS, centralized logging with Rsyslog and NXLog across Linux, FreeBSD, and Windows, and a buffer-overflow exploit in C and Python for privilege escalation.',
+      'Stood up the Elastic Stack (Elasticsearch, Logstash, Kibana) for log collection and visualization, with further work in OWASP ZAP, Nikto, PKI with a local certificate authority, and Splunk with the Universal Forwarder.'
     ]
   },
   {
@@ -60,8 +73,10 @@ var LOG = [
     title: 'ARP-poisoning man-in-the-middle investigation',
     tools: ['Wireshark', 'ARP'],
     body: [
-      'Analyzed a capture of a workstation and its gateway and identified a man-in-the-middle: a third machine sending gratuitous ARP replies to remap the gateway\u2019s IP address to its own MAC, visible as a destination-MAC swap partway through the capture, along with modified HTTP traffic passing through it.',
-      'I built an endpoint table to establish who was actually talking to whom, then closed with the standard countermeasures: dynamic ARP inspection, static ARP entries for critical hosts, and IDS/IPS monitoring for gratuitous ARP.'
+      'Analyzed a capture of a workstation and its gateway and identified a man-in-the-middle attack.',
+      'Detected a third machine sending gratuitous ARP replies to remap the gateway\u2019s IP address to its own MAC, visible as a destination-MAC swap partway through the capture, with modified HTTP traffic passing through it.',
+      'Built an endpoint table to establish the actual communication paths.',
+      'Recommended dynamic ARP inspection, static ARP entries for critical hosts, and IDS/IPS monitoring for gratuitous ARP.'
     ]
   },
   {
@@ -69,8 +84,10 @@ var LOG = [
     title: 'Active Directory administration across two lab builds',
     tools: ['Windows Server 2016', 'Active Directory', 'Group Policy', 'PowerShell'],
     body: [
-      'Hands-on AD administration from two separate courses. In the first build I stood up a domain controller, deployed a new forest as the root, enabled DNS delegation, authorized DHCP, joined Windows clients to the domain, and added users both through the Administrative Center and with PowerShell (New-ADUser).',
-      'The second build focused on administration: creating user accounts, organizing them into Organizational Units, applying Group Policy Objects that restricted Task Manager and the command prompt, and delegating scoped password-reset permissions to a department head, role-based access control and least privilege in practice, at lab scale.'
+      'Completed hands-on Active Directory administration across two separate lab builds.',
+      'Stood up a domain controller, deployed a new forest as the root, enabled DNS delegation, authorized DHCP, joined Windows clients to the domain, and created users through both the Administrative Center and PowerShell (New-ADUser).',
+      'Created user accounts, organized them into Organizational Units, and applied Group Policy Objects restricting Task Manager and the command prompt.',
+      'Delegated scoped password-reset permissions to a department head, applying role-based access control and least privilege at lab scale.'
     ]
   }
 ];
@@ -90,10 +107,11 @@ LOG.forEach(function (entry, i) {
     return '<span class="chip">' + fesc(t) + '</span>';
   }).join('');
 
-  // The hidden body paragraphs, revealed on expand.
-  var body = entry.body.map(function (p) {
-    return '<p>' + p + '</p>';
-  }).join('');
+  // The hidden body bullets, revealed on expand. Escaped for the same reason
+  // the archive records are: tool and framework names carry ampersands.
+  var body = '<ul class="pts">' + entry.body.map(function (p) {
+    return '<li>' + fesc(p) + '</li>';
+  }).join('') + '</ul>';
 
   row.innerHTML =
     '<button class="feed-btn" aria-expanded="false">' +

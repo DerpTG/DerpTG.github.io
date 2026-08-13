@@ -292,10 +292,11 @@ renderSample(0);  // open on the first sample
 var PROJ = [
   {
     cat: 'This site', t: 'This Portfolio Site', team: 'Solo',
-    sum: 'The site you are on. Static HTML, CSS, and vanilla JavaScript on GitHub Pages with a custom domain.',
+    sum: 'Static HTML, CSS, and vanilla JavaScript on GitHub Pages with a custom domain.',
     more: [
-      'No framework and no build step for the browser. One stylesheet driven by CSS custom properties, and each interactive piece is a data array plus a render function, so the whole thing stays readable months later.',
-      'The point was to let people click through the actual casework rather than read a list of claims about it. It redeploys on every push.'
+      'Built without a framework or a browser build step, using one stylesheet driven by CSS custom properties.',
+      'Structured each interactive piece as a data array plus a render function to keep the codebase readable long-term.',
+      'Presented casework as explorable detail rather than a list of claims, with automatic redeployment on every push.'
     ],
     skills: ['HTML', 'CSS', 'Vanilla JS', 'Git', 'GitHub Pages'],
     gh: 'https://github.com/DerpTG/DerpTG.github.io'
@@ -304,8 +305,9 @@ var PROJ = [
     cat: 'Networking', t: 'Networking and Systems Labs', team: 'Solo',
     sum: 'Enterprise network topologies built and troubleshot in Cisco Packet Tracer.',
     more: [
-      'VLANs and VTP for segmentation, port security to lock switch ports to known hosts, telnet access with password encryption, and VoIP telephony running over the same topology. Each lab started from a blank topology and an addressing plan rather than a template.',
-      'Most of the value was in the troubleshooting. Working out why a trunk will not come up, or why two VLANs cannot route to each other, teaches the protocol better than a working config ever does.'
+      'Built enterprise topologies from a blank canvas and an addressing plan rather than a template.',
+      'Configured VLANs and VTP for segmentation, port security to restrict switch ports to known hosts, encrypted telnet access, and VoIP telephony across the same topology.',
+      'Diagnosed trunk negotiation failures and inter-VLAN routing faults, building protocol-level understanding beyond a working configuration.'
     ],
     skills: ['Cisco Packet Tracer', 'VLANs', 'VTP', 'Port security', 'VoIP', 'IP addressing']
   },
@@ -313,8 +315,11 @@ var PROJ = [
     cat: 'Incident response', t: 'Turbo Ransomware IR Playbook', team: 'Team of 6',
     sum: 'A full ransomware playbook for a scooter-share company, preparation through recovery, with NCISS-scored escalation tiers.',
     more: [
-      'Escalation ran from Baseline, handled by the SOC alone, up to Emergency, which puts the full C-suite in a room within ten minutes. Each tier has a concrete NCISS score band and a fixed responder timeline attached to it, so nobody has to argue about severity mid-incident.',
-      'We mapped the playbook to NIST RMF, COBIT 2019, and MITRE ATT&CK. I co-owned Introduction, Detection and Initial Triage, and Containment, wrote the Conclusion, and ran the weekly scrums. Then we put it through CISA-format tabletops to find out which steps held up once people were under pressure.'
+      'Produced a ransomware incident response playbook covering preparation through recovery.',
+      'Defined NCISS-scored escalation tiers from Baseline, handled by the SOC alone, to Emergency, which convenes the full C-suite within ten minutes, each with a fixed score band and responder timeline to remove severity disputes mid-incident.',
+      'Mapped the playbook to NIST RMF, COBIT 2019, and MITRE ATT&CK.',
+      'Co-owned the Introduction, Detection and Initial Triage, and Containment sections, authored the Conclusion, and ran weekly scrums.',
+      'Validated procedures through CISA-format tabletop exercises to identify steps that failed under pressure.'
     ],
     skills: ['NIST RMF', 'MITRE ATT&CK', 'COBIT 2019', 'NCISS', 'CISA tabletops']
   },
@@ -322,8 +327,11 @@ var PROJ = [
     cat: 'Risk analysis', t: 'Elder Tech-Support Fraud Risk Analysis', team: 'Team of 4',
     sum: 'A semester-long risk assessment of a $1M+ retirement fund against a Microsoft refund scam.',
     more: [
-      'The scenario was an isolated 85-year-old about to lose a $1M+ retirement fund to a call-center scammer posing as a Microsoft refund specialist. I broke it into a chain: answer the call, trust the caller, grant remote access, log into the bank, authorize the transfer. Every link is somewhere the attack could still be stopped, which is the useful part. I scored six risks on likelihood and impact, from losing the money outright down to the emotional damage and never reporting it.',
-      'What we recommended was layered: education, family check-ins, and technical safeguards together. The residual risk section says plainly that no single one of those holds up against a skilled caller working someone in real time.'
+      'Assessed the risk of an isolated 85-year-old losing a $1M+ retirement fund to a call-center scammer posing as a Microsoft refund specialist.',
+      'Modeled the scam as a serial-dependency chain, from answering the call through granting remote access to authorizing the transfer, treating each link as an interdiction point.',
+      'Scored six risks on likelihood and impact, ranging from outright financial loss to emotional harm and failure to report.',
+      'Recommended layered mitigation across education, family check-in protocols, and technical safeguards.',
+      'Documented an explicit residual-risk assessment establishing that no single layer withstands a skilled caller working a target in real time.'
     ],
     skills: ['MECE', 'Scenario matrix', 'Benefit-cost', 'Defense in depth']
   },
@@ -331,8 +339,9 @@ var PROJ = [
     cat: 'Secure engineering', t: 'Secure Patient Data Pipeline', team: 'Team of 5',
     sum: 'A Java message-queuing pipeline that keeps patient records encrypted end to end.',
     more: [
-      'Records are AES-encrypted before serialization, travel through RabbitMQ as JSON, and only get decrypted at the consumer. Nothing sits in the queue in the clear, and that one requirement drove most of the design decisions after it.',
-      'Built for IST 242 with a team of five. I worked the encryption and decryption stages and the queuing flow.'
+      'Built a pipeline that AES-encrypts patient records before serialization, transports them through RabbitMQ as JSON, and decrypts only at the consumer.',
+      'Held no record in the queue in cleartext, a single requirement that drove the remaining design decisions.',
+      'Owned the encryption and decryption stages and the message-queuing flow.'
     ],
     skills: ['Java', 'RabbitMQ', 'AES', 'Maven', 'Gson'],
     gh: 'https://github.com/DerpTG/team6SystemIntegration'
@@ -341,8 +350,9 @@ var PROJ = [
     cat: 'Full stack', t: 'Alpha Web Storefront', team: 'Team of 2',
     sum: 'Project manager and UI lead on a MEAN-stack e-commerce storefront, delivered across eight milestones.',
     more: [
-      'Shopper accounts, product management, cart, shipping, billing, and returns, each shipped as its own milestone with CRUD behind it and a written test plan. Angular, Bootstrap, and jQuery on the front, Node.js and MongoDB behind it.',
-      'I owned the schedule, kept the team coordinated, and made the interface calls.'
+      'Delivered shopper accounts, product management, cart, shipping, billing, and returns, each as its own milestone with full CRUD and a written test plan.',
+      'Built the front end in Angular, Bootstrap, and jQuery over a Node.js and MongoDB back end.',
+      'Owned the schedule, coordinated the team, and made the interface decisions.'
     ],
     skills: ['Angular', 'Node.js', 'MongoDB', 'Bootstrap', 'jQuery'],
     gh: 'https://github.com/DerpTG/StoryTellersSite'
@@ -359,8 +369,11 @@ PROJ.forEach(function (p, i) {
   var rec = document.createElement('article');
   rec.className = 'rec-item';
 
-  // The paragraphs shown when the record is expanded.
-  var more = p.more.map(function (x) { return '<p>' + x + '</p>'; }).join('');
+  // The bullets shown when the record is expanded. Escaped, so an ampersand
+  // in a framework name (MITRE ATT&CK) renders rather than opening an entity.
+  var more = '<ul class="pts">' +
+    p.more.map(function (x) { return '<li>' + resc(x) + '</li>'; }).join('') +
+    '</ul>';
 
   // The labeled skills block: this is where each project's skills live.
   var skills = p.skills.map(function (s) {

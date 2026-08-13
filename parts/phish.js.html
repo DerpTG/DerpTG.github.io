@@ -84,7 +84,12 @@ function markFound(el){
     x.classList.add('found');
   });
 
-  // Add the explanation to the side panel.
+  /* Show the newest explanation on its own. They used to stack, which pushed
+     the panel long and buried the one the player had just uncovered under
+     everything they already knew. Replacing keeps attention on the find.
+     Clearing first also re-triggers the entry animation, since the node is
+     new each time. */
+  phishFound.innerHTML = '';
   var item = document.createElement('div');
   item.className = 'fnd';
   item.textContent = FLAGS[id];

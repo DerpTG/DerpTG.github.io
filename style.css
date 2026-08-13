@@ -153,7 +153,6 @@ img{display:block;max-width:100%}
   margin-top:24px;font-size:clamp(19px,2.1vw,25px);font-weight:500;
   line-height:1.32;letter-spacing:-.015em;max-width:23ch;color:var(--ink);
 }
-.tagline b{font-weight:500;border-bottom:2px solid var(--signal);padding-bottom:1px}
 .lede{margin-top:22px;font-size:16.5px;color:var(--mute);max-width:52ch}
 
 .cta{display:flex;flex-wrap:wrap;gap:10px;margin-top:34px;align-items:center}
@@ -614,9 +613,9 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--signal);outline-off
 .rec-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .3s}
 .rec-item.on .rec-body{grid-template-rows:1fr}
 .rec-in{overflow:hidden}
+/* Kept identical to .feed-pad. If one changes, change both. */
 .rec-pad{padding:4px 18px 22px;color:var(--mute);font-size:15px;max-width:80ch;line-height:1.62}
 .rec-sum{color:var(--ink);font-weight:500;margin-bottom:12px}
-.rec-pad p+p{margin-top:11px}
 .rec-foot{margin-top:16px}
 .gh{
   font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;
@@ -848,8 +847,15 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--signal);outline-off
 .feed-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .3s}
 .feed-row.on .feed-body{grid-template-rows:1fr}
 .feed-in{overflow:hidden}
-.feed-pad{padding:0 18px 20px 212px;color:var(--mute);font-size:15px;max-width:84ch;line-height:1.62}
-.feed-pad p+p{margin-top:11px}
+/* Flush left, matching .rec-pad exactly.
+
+   This used to indent 212px so the expanded body lined up under the Work
+   column of the row above it. That read fine as prose, but the archive
+   records next door open flush to the panel edge, so the two lists of
+   bullets sat in visibly different places. Same padding, same max-width,
+   same everything: an expanded lab entry and an expanded project record are
+   the same object and should look like it. */
+.feed-pad{padding:4px 18px 22px;color:var(--mute);font-size:15px;max-width:80ch;line-height:1.62}
 
 /* ============================================================ SIEM TRIAGE
    Matches siem.js: .siem-row with a sev- modifier, .siem-* detail classes. */
@@ -914,7 +920,6 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--signal);outline-off
   .feed-btn{grid-template-columns:74px 1fr 24px;gap:10px 12px}
   .feed-status{display:none}
   .feed-tools{grid-column:1/-1;justify-content:flex-start}
-  .feed-pad{padding-left:18px}
   .rec-btn{grid-template-columns:44px 1fr 26px;gap:10px}
   .rc-cat,.rc-src{display:none}
 }
@@ -1538,8 +1543,11 @@ html.js:not(.scrolled) .dark-top .navtog{color:var(--void-ink);border-color:var(
 .scene-dark .hero .lbl,.hero.scene-dark .lbl{color:var(--signal-d)}
 .scene-dark .hero h1 .red::after,.hero.scene-dark h1 .red::after{background:var(--void-ink)}
 .scene-dark .hero h1 .red:nth-child(2)::after,.hero.scene-dark h1 .red:nth-child(2)::after{background:var(--signal-d)}
-.hero.scene-dark .tagline{color:var(--void-ink)}
-.hero.scene-dark .tagline b{border-bottom-color:var(--signal-d)}
+/* The tagline carries the crimson rather than a highlighted phrase inside it.
+   The name directly above is already white, so a white tagline read as one
+   continuous block of the same voice; giving the whole line the signal colour
+   separates the positioning statement from the name without an underline. */
+.hero.scene-dark .tagline{color:var(--signal-d)}
 .hero.scene-dark .lede{color:var(--void-mute)}
 
 .hero.scene-dark .cta a,.hero.scene-dark .cta button{
@@ -2141,3 +2149,24 @@ html.intro .scroll-cue{animation-play-state:paused}
    separate it from the panel. Against black above it now reads as a third
    band, so it drops back to the panel colour and the bar does the separating. */
 .rec-head,.feed-head{background:var(--panel)}
+
+
+/* ============================================================================
+   V3.5 · RECORD AND FEED BULLETS
+
+   The archive records and lab feed entries used to open into prose. They now
+   open into bullets, which is how this work reads on a resume and how anyone
+   skimming a portfolio actually wants it.
+
+   Same marker as the experience section's bullets — a short crimson rule
+   rather than a disc — so a record, a lab entry, and a role bullet all look
+   like the same kind of statement.
+   ========================================================================= */
+.pts{list-style:none;display:grid;gap:10px;margin:0}
+.pts li{position:relative;padding-left:20px;line-height:1.58}
+.pts li::before{
+  content:"";position:absolute;left:0;top:.62em;width:7px;height:1px;
+  background:var(--signal);
+}
+/* The summary line above the bullets keeps its own spacing. */
+.rec-pad .rec-sum{margin-bottom:14px}

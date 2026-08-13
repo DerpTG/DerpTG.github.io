@@ -189,7 +189,7 @@ img{display:block;max-width:100%}
 .shot-tag .v.sig{color:var(--signal)}
 
 /* Facts strip. Four cells, hairline separated, flush to the hero. */
-.factband{border-top:1px solid var(--rule-2);border-bottom:1px solid var(--rule)}
+.factband{border-bottom:0}
 .facts{display:grid;grid-template-columns:repeat(4,1fr)}
 .facts div{
   padding:26px 26px 30px;border-right:1px solid var(--rule);
@@ -218,7 +218,11 @@ img{display:block;max-width:100%}
 @keyframes cue{0%,100%{transform:scaleY(.45);opacity:.5}50%{transform:scaleY(1);opacity:1}}
 
 /* ============================================================ SECTIONS */
-section{padding:78px 0;border-top:1px solid var(--rule)}
+/* No rule between sections, and less air than v2 carried. The hairline plus
+   156px of combined padding made every section announce itself as a separate
+   document; the page reads as one surface without it, and the section heading
+   is already doing the work of saying a new section started. */
+section{padding:54px 0}
 .shead{display:flex;align-items:baseline;gap:16px;margin-bottom:10px}
 .shead h2{font-size:15px;font-weight:700;letter-spacing:-.01em;white-space:nowrap}
 .shead .n{font-family:var(--mono);font-size:11px;color:var(--signal);font-weight:500}
@@ -362,7 +366,7 @@ section{padding:78px 0;border-top:1px solid var(--rule)}
 .cert-covers li::before{content:"";position:absolute;left:0;top:.62em;width:7px;height:1px;background:var(--signal)}
 
 /* ============================================================ FOOTER */
-footer{border-top:1px solid var(--rule-2);padding:28px 0 44px;margin-top:auto}
+footer{padding:20px 0 40px;margin-top:auto}
 footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:center}
 footer span,footer a{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint)}
 footer a{text-decoration:none;transition:.15s}
@@ -411,7 +415,7 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--signal);outline-off
   .caps{grid-template-columns:1fr}
   .cap,.cap:nth-child(3n),.cap:nth-child(2n){border-right:0;border-bottom:1px solid var(--rule)}
   .cap:last-child{border-bottom:0}
-  section{padding:56px 0}
+  section{padding:40px 0}
   .modal{padding:0}
   .modal-box{height:100vh;border:0}
 }
@@ -455,7 +459,7 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--signal);outline-off
 /* ============================================================================
    PAGE FURNITURE (subpages)
    ========================================================================= */
-.phead{padding:64px 0 46px;border-bottom:1px solid var(--rule)}
+.phead{padding:64px 0 46px}
 .back{
   font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
   color:var(--faint);text-decoration:none;display:inline-block;margin-bottom:24px;transition:.15s;
@@ -466,7 +470,6 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--signal);outline-off
   line-height:.96;text-transform:uppercase;
 }
 .phead .sub{color:var(--mute);max-width:62ch;margin-top:20px;font-size:17px}
-section.first{border-top:0}
 .phead .back{animation:rise .45s .04s both}
 .phead h1{animation:rise .55s .12s both}
 .phead .sub{animation:rise .55s .22s both}
@@ -1417,10 +1420,14 @@ button.shot-thumb{padding:0;font:inherit;color:inherit;cursor:zoom-in}
    As in v2 the classes are added by JS and never ship in the markup, so with
    JavaScript off nothing is hidden and the page reads as plain documents.
    ========================================================================= */
+/* Durations come from tokens so the touch block near the end of this file can
+   lengthen every entrance at once. A phone scrolls faster and its viewport is
+   short, so an entrance tuned for a desktop is already over by the time the
+   element is somewhere you are looking. */
 .rv{
   opacity:0;
-  transition:opacity .68s var(--ease-out),transform .68s var(--ease-out),
-             clip-path .78s var(--ease-out),filter .68s var(--ease-out);
+  transition:opacity var(--rvd,.68s) var(--ease-out),transform var(--rvd,.68s) var(--ease-out),
+             clip-path var(--rvc,.78s) var(--ease-out),filter var(--rvd,.68s) var(--ease-out);
   transition-delay:var(--rd,0ms);
 }
 .rv-up{transform:translateY(30px)}
@@ -2013,3 +2020,113 @@ html.intro .scroll-cue{animation-play-state:paused}
      pointing at them is just the same six words twice. */
   .capnav{display:none}
 }
+
+
+/* ============================================================================
+   V3.3 · TOUCH MOTION
+
+   The entrances were tuned on a desktop and read as snappy there. On a phone
+   the same numbers feel abrupt, for two reasons that compound:
+
+     A phone viewport is short, so an element crosses it in far less scroll
+     distance, and touch scrolling carries much more momentum than a wheel.
+     Between them, an element can enter, animate and finish while your thumb
+     is still moving, so you never see the motion, only the aftermath.
+
+     There is no eased scrolling on touch either. SMOOTH SCROLL is pointer:fine
+     only, on purpose, so the desktop gets a slower scroll *and* a slower
+     entrance and the two are in proportion. On a phone only the entrance is
+     left, against a faster scroll.
+
+   So every entrance runs roughly a third longer here, and main.js fires them
+   earlier: on a coarse pointer it uses a positive bottom rootMargin, which
+   extends the observer's box below the fold and starts the animation before
+   the element is actually on screen. By the time it arrives it is part-way
+   through rather than starting from nothing.
+   ========================================================================= */
+@media(pointer:coarse){
+  :root{--rvd:.92s;--rvc:1.05s}
+
+  /* Duration lists follow each rule's own shorthand order. */
+  .tilt{transition-duration:.88s,1.2s}          /* opacity, transform */
+  .hinge{transition-duration:1.15s,.68s}        /* transform, opacity */
+  .stag>*{transition-duration:.72s,.72s}        /* opacity, transform */
+  .reveal{transition-duration:.78s,.78s}        /* v2 layer, same treatment */
+
+  /* Slightly more travel too. A short distance at a long duration reads as a
+     drift rather than as an arrival. */
+  .rv-up{transform:translateY(38px)}
+  .rv-rise{transform:translateY(52px) scale(.97)}
+  .stag>*{transform:translateY(20px)}
+
+  /* The stagger between siblings is what makes a list read as arriving in
+     order. At desktop spacing it is too tight to register on a phone, where
+     the whole list is on screen at once. */
+  .stag>*{transition-delay:calc(var(--rd,0ms) * 1.35)}
+}
+
+
+/* ============================================================================
+   V3.4 · BLACK TITLE BARS
+
+   The contrast the subpages were missing, without swamping them. A first
+   attempt made whole widgets near-black and that was too much: these panels
+   are mostly dense technical content, and inverting all of it turned three
+   pages into one long dark screen and lost the evidence-room reading.
+
+   Only the title bar goes black. Every widget on the site already has one —
+   the terminal path, projects.log, the lab feed header, each exercise header,
+   the kill-chain header — so one rule gives every page the same accent, and
+   the content underneath stays on paper where it reads best.
+
+   Each panel also takes a near-black outline rather than a grey hairline, so
+   the bar reads as the top of an enclosed object rather than as a stripe
+   floating on the panel. Together they read as a device sitting on the page,
+   which is the same idea as the boxed dark panels on the home page, at a
+   fraction of the weight.
+
+   The severity trio needs dark twins for the few coloured items that live in
+   these bars: --sev-hi/md/lo were darkened to hold contrast on paper and are
+   far too dim on near-black.
+   ========================================================================= */
+:root{
+  --sev-hi-d:#FF4A61;
+  --sev-md-d:#E0A93B;
+  --sev-lo-d:#4FBF8B;
+}
+
+.kc,.term,.rec,.feed,.lab-ex,.panel{border-color:var(--ink)}
+
+.kc-top,.term-top,.rec-top,.feed-top,.lab-ex-top,.panel-top{
+  background:var(--void);
+  border-bottom:1px solid var(--ink);
+  color:var(--void-ink);
+}
+
+/* Titles, and a crimson block starting each one. It echoes the caret in the
+   site's brand mark, and it is the only decoration in the bar. .term-top is
+   left out because its path already opens with its own prompt marker. */
+.kc-top .t,.rec-top .t,.feed-top .t,.lab-ex-top .t,.panel-top .t{color:var(--void-ink)}
+.kc-top .t::before,.rec-top .t::before,.feed-top .t::before,
+.lab-ex-top .t::before,.panel-top .t::before{
+  content:"";display:inline-block;width:5px;height:11px;
+  background:var(--signal-d);margin-right:9px;vertical-align:-1px;
+}
+
+.term-top .path{color:var(--void-mute)}
+.term-top .path::before{color:var(--signal-d)}
+
+/* Secondary readouts sitting on the right of a bar. */
+.kc-top .s,.lab-ex-top .score{color:var(--signal-d)}
+.panel-top .s{color:var(--void-faint)}
+.feed-top .feed-live{color:var(--sev-lo-d)}
+.feed-top .feed-live i{background:var(--sev-lo-d)}
+
+/* The swipe/scroll affordance appears inside several of these bars. */
+.kc-top .scroll-hint,.term-top .scroll-hint,
+.lab-ex-top .scroll-hint,.feed-top .scroll-hint{color:var(--void-faint)}
+
+/* The column-heading strip that sits directly under a bar was tinted to
+   separate it from the panel. Against black above it now reads as a third
+   band, so it drops back to the panel colour and the bar does the separating. */
+.rec-head,.feed-head{background:var(--panel)}

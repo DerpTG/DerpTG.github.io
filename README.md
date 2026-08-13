@@ -20,6 +20,7 @@ Direction is **"evidence room"**: a cool gray-green ground rather than paper, ne
 - `--ground #E7E9E4` · `--panel #F4F5F2` · `--ink #14171A` · `--signal #C8102E`
 - A near-black counter-surface (`--void`) with tokens mirroring the light ones one for one. `--signal-d` is the lifted crimson, because the brand red only reaches 3.2:1 on near-black and can't be text there.
 - **Dark is full-bleed in page headers only.** Below them it appears boxed — `.darkbox` panels inset on the paper, so nothing bands across the page. Getting there took two wrong turns; both are written up in the `V3.2 · BOXED DARK` comment in `style.css`.
+- **On the subpages the contrast comes from title bars, not whole panels.** Every widget already has one — the terminal path, `projects.log`, the lab feed header, each exercise header, the kill chain — so they all go near-black with a crimson block starting the title, and the panel takes a near-black outline to match. The content underneath stays on paper, where dense technical text reads best. Making the whole widgets dark was tried first and turned three pages into one long screen. The severity trio has `-d` twins for the few coloured readouts that sit in these bars, since the paper values are far too dim on near-black.
 - **Type:** Archivo for display and prose, IBM Plex Mono for data only. If it isn't machine-readable (a date, a count, a hash, an identifier) it isn't mono.
 - Every text colour clears WCAG AA (4.5:1) against both surfaces. Verified, not assumed.
 

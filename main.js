@@ -323,7 +323,12 @@ function makeModal(id, closeBtnId) {
           el.style.removeProperty('--rd');
         }, delay + 620);
       });
-    }, { rootMargin: '0px 0px -4% 0px', threshold: 0.02 });
+      // Same reasoning as the v3 engine: touch fires early, desktop late.
+    }, {
+      rootMargin: (window.matchMedia && window.matchMedia('(pointer: coarse)').matches)
+        ? '0px 0px 9% 0px' : '0px 0px -4% 0px',
+      threshold: 0.02
+    });
     targets.forEach(function (el) { io.observe(el); });
   }
 
@@ -731,13 +736,27 @@ function makeModal(id, closeBtnId) {
        rootMargin does the waiting instead. Pulling the bottom edge in by 8%
        means an element still has to clear the fold before it fires, which is
        what the threshold was there for. */
+    /* Touch fires early, desktop fires late.
+
+       A negative bottom margin pulls the observer's box up, so an element has
+       to clear the fold before it animates. That is right on a desktop, where
+       eased scrolling means it then sits in view long enough to be watched.
+
+       On a phone there is no eased scrolling, the viewport is short, and touch
+       momentum is high, so the same setting means the entrance runs while the
+       element is still flying up the screen. A positive bottom margin extends
+       the box below the fold instead and starts the animation before the
+       element arrives, so it is part-way through by the time you see it. */
+    var coarse = window.matchMedia &&
+      window.matchMedia('(pointer: coarse)').matches;
+
     var eio = new IntersectionObserver(function (entries) {
       entries.forEach(function (en) {
         if (!en.isIntersecting) return;
         en.target.classList.add('in');
         eio.unobserve(en.target);
       });
-    }, { rootMargin: '0px 0px -8% 0px', threshold: 0 });
+    }, { rootMargin: coarse ? '0px 0px 9% 0px' : '0px 0px -8% 0px', threshold: 0 });
     entering.forEach(function (el) { eio.observe(el); });
   }
 

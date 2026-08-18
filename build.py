@@ -118,13 +118,13 @@ RESUME_MODAL = """
     <div class="modal-hd">
       <span class="t">Resume &middot; F. Naroditskiy</span>
       <span class="actions">
-        <a class="dl" href="NaroditskiyFelixResume.pdf" download>Download</a>
-        <a href="NaroditskiyFelixResume.pdf" target="_blank" rel="noopener">Open in tab</a>
+        <a class="dl" href="NaroditskiyFelix_Cybersecurity_Resume.pdf" download>Download</a>
+        <a href="NaroditskiyFelix_Cybersecurity_Resume.pdf" target="_blank" rel="noopener">Open in tab</a>
         <button id="closeResume">Close</button>
       </span>
     </div>
     <iframe id="resumeFrame" title="Resume" src="about:blank"></iframe>
-    <p class="pdf-fallback">Your browser can&rsquo;t preview PDFs inline.<br><a href="NaroditskiyFelixResume.pdf" target="_blank" rel="noopener">Open the resume &rarr;</a></p>
+    <p class="pdf-fallback">Your browser can&rsquo;t preview PDFs inline.<br><a href="NaroditskiyFelix_Cybersecurity_Resume.pdf" target="_blank" rel="noopener">Open the resume &rarr;</a></p>
   </div>
 </div>
 """
@@ -141,6 +141,23 @@ CERT_MODAL = """
       </span>
     </div>
     <div class="cert-body" id="certBody"></div>
+  </div>
+</div>
+"""
+
+
+# Index only, same as CERT_MODAL: the coursework chips are the only triggers on
+# the site, so shipping this elsewhere would leave dead markup on four pages.
+COURSE_MODAL = """
+<div class="modal" id="courseModal" role="dialog" aria-modal="true" aria-label="Course detail">
+  <div class="modal-box cert-box">
+    <div class="modal-hd">
+      <span class="t" id="courseName">Course</span>
+      <span class="actions">
+        <button id="closeCourse">Close</button>
+      </span>
+    </div>
+    <div class="cert-body" id="courseBody"></div>
   </div>
 </div>
 """
@@ -212,6 +229,7 @@ def build():
           + part('index_body.html')
           + RESUME_MODAL
           + CERT_MODAL
+          + COURSE_MODAL
           + footer('projects.html', 'Start with the projects')
           + '\n<script src="main.js"></script>\n</body>\n</html>\n')
 

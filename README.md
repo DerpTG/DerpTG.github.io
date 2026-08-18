@@ -8,7 +8,7 @@ My personal cybersecurity portfolio. Digital forensics, malware analysis, and in
 
 | Page | What's on it |
 |------|--------------|
-| `index.html` | Case-open intro, hero, facts, work history, capabilities, certifications, and the index into the rest. **Keep this filename** — GitHub Pages serves it as the site root. |
+| `index.html` | Case-open intro, hero, facts, work history, capabilities, education and certifications, and the index into the rest. **Keep this filename** — GitHub Pages serves it as the site root. |
 | `projects.html` | An interactive kill-chain map, a terminal-style triage tool covering 12 malware samples, then the project record list |
 | `lab.html` | Self-directed lab work as a live alert feed, plus three try-it-yourself exercises |
 | `about.html` | Bio, quick facts, and an interests console with photos |
@@ -33,6 +33,7 @@ Each widget is a data array plus a render function, kept simple so the code stay
 
 - **Case-open intro** (`index.html`) — a case panel opens itself on screen. Home page only, once per session, ended by any input, skipped under reduced motion.
 - **Capabilities** (`index.html`) — sticky heading and live index on the left, cards tilting in on the right
+- **Coursework** (`index.html`) — each course chip opens what it covered, same modal shell as the certifications
 - **Kill-chain map** (`projects.html`) — a seven-stage MITRE ATT&CK timeline from a capstone ransomware investigation
 - **Malware triage terminal** (`projects.html`) — static and dynamic analysis records for 12 detonated samples
 - **Project records** (`projects.html`) — a packet-capture-style list; each record opens to the story and the skills it used
@@ -87,7 +88,7 @@ Page bodies and the widget scripts live in `parts/`. **Edit those, re-run, commi
 ├── .well-known/
 │   └── security.txt    Vulnerability-disclosure contact
 ├── CNAME               Custom domain. Do not delete.
-└── NaroditskiyFelixResume.pdf
+└── NaroditskiyFelix_Cybersecurity_Resume.pdf
 ```
 
 The favicon set stays at the root because browsers request `/favicon.ico` and `apple-touch-icon.png` from there by default. The resume stays at the root so it has a clean shareable URL.

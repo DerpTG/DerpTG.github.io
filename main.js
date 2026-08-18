@@ -1,23 +1,24 @@
 /*
    main.js, shared behavior, loaded on every page.
 
-   Ten pieces, each checking for its own elements first so the file is safe
+   Eleven pieces, each checking for its own elements first so the file is safe
    on pages that don't use a given feature:
 
      1. Mobile nav       toggles the collapsed nav on narrow screens
      2. Modal helper     shared open/close/focus behaviour for the overlays
      3. Resume modal     opens the PDF in an overlay
      4. Cert modal       shows a certification's detail and verification link
-     5. Motion           scroll reveals, widget swaps, animated pane heights
-     6. Photo lightbox   full-size photo overlay, built at runtime
-     7. Scrollable panes edge fades for panes that overflow at phone width
-     8. V3 engine        nav plate, entrances, the scroll channel, tilt
-     9. Node field       the hero's canvas background
-    10. Case-open intro  the home page's opening animation
+     5. Course modal     shows what a coursework chip covered
+     6. Motion           scroll reveals, widget swaps, animated pane heights
+     7. Photo lightbox   full-size photo overlay, built at runtime
+     8. Scrollable panes edge fades for panes that overflow at phone width
+     9. V3 engine        nav plate, entrances, the scroll channel, tilt
+    10. Node field       the hero's canvas background
+    11. Case-open intro  the home page's opening animation
 
    The experience accordions used to live here and are gone, because the
    experience section is now always open. The v2 entry gate is gone too: it
-   was a screen you had to dismiss, and piece 10 is the same idea played as
+   was a screen you had to dismiss, and piece 11 is the same idea played as
    an animation you simply watch.
 
    Page-specific widgets (the lab feed, the project records, the interests
@@ -129,7 +130,7 @@ function makeModal(id, closeBtnId) {
     o.addEventListener('click', function (e) {
       e.preventDefault();
       if (frame && (!frame.src || frame.src.indexOf('about:blank') > -1)) {
-        frame.src = 'NaroditskiyFelixResume.pdf';
+        frame.src = 'NaroditskiyFelix_Cybersecurity_Resume.pdf';
       }
       m.open();
     });
@@ -254,6 +255,243 @@ function makeModal(id, closeBtnId) {
   });
 })();
 
+
+/* ---------- Coursework modal ----------
+   COURSES is keyed by the id in each chip's data-course attribute, e.g.
+   <button class="chip" data-course="capstone">. Each entry has:
+     code    the Penn State course number
+     name    the course as it is listed on the resume
+     blurb   one line on what the course was
+     covers  the work it actually produced, rendered as a list
+
+   The chip label is the resume's wording, which for a few courses differs
+   from the catalogue title (CYBER 362 is catalogued as Cybersecurity
+   Analytics Studio, CYBER 366 as Malware Analytics). The modal shows the
+   course number and the work rather than restating a title, so nothing here
+   depends on the two matching.
+
+   To add one later: add a chip with a new data-course id and a matching entry
+   here. Nothing else changes. */
+(function () {
+  var m = makeModal('courseModal', 'closeCourse');
+  if (!m) return;
+
+  var COURSES = {
+    capstone: {
+      code: 'CYBER 440',
+      name: 'Cyber Capstone',
+      blurb: 'The culminating investigation course: analytic frameworks first, then technical analysis across malware, file systems, security logs, and network traffic, closing with an executive-level briefing.',
+      covers: [
+        'Team ransomware investigation across 12.7M+ packets and 90,000+ log entries',
+        'Network analysis lab (Wireshark)',
+        'Memory analysis lab (Volatility)',
+        'System image analysis (Autopsy, FTK Imager)',
+        'Windows Security Log analysis with a custom Python parser',
+        'Executive briefing pitched above the technical detail'
+      ]
+    },
+    ir: {
+      code: 'CYBER 342W',
+      name: 'Incident Response and Disaster Recovery',
+      blurb: 'Incident response and continuity planning, delivered as a complete ransomware playbook for a fictional company.',
+      covers: [
+        'Ransomware IR playbook, preparation through recovery',
+        'Mapped to NIST RMF and COBIT 2019',
+        'MITRE ATT&CK technique mapping',
+        'NCISS severity scoring driving role-based escalation',
+        'Chain of custody and evidence preservation',
+        'CISA-format tabletop exercises'
+      ]
+    },
+    secops: {
+      code: 'CYBER 362',
+      name: 'Security Operations',
+      blurb: 'Analytics studio covering detection engineering, cloud risk, and the controls that sit around infrastructure.',
+      covers: [
+        'Snort IDS deployment and custom rule writing',
+        'Cloud vulnerability deep dive, including the Capital One breach',
+        'Risk assessment and mitigation with ALE scoring',
+        'Infrastructure controls and IPS placement',
+        'Change management, CASB, federation and SSO',
+        'ICS network segmentation trade-offs'
+      ]
+    },
+    malware: {
+      code: 'CYBER 366',
+      name: 'Malware Analysis',
+      blurb: 'Principles and practice of malware detection, analysis, and defense, run hands-on in an isolated lab.',
+      covers: [
+        'Twelve samples analyzed static and dynamic in FlareVM',
+        'PE header verification and hashing',
+        'Packer and obfuscation detection (Exe Info PE, PeStudio)',
+        'Behavioral analysis (Process Monitor, Regshot, System Informer)',
+        'Simulated network for C2 observation (FakeNet-NG)',
+        'Family attribution, IOC extraction, and evasion techniques'
+      ]
+    },
+    forensics: {
+      code: 'IST 454',
+      name: 'Computer Forensics',
+      blurb: 'Forensic process, laboratory design, and evidence handling, with casework built in Autopsy.',
+      covers: [
+        'Forensic lab design: hardware, software, staffing, and budget',
+        'Evidence handling and security protocols',
+        'Autopsy investigations across redacted drive images',
+        'Multi-task forensic reporting',
+        'Facility maintenance and disaster recovery planning'
+      ]
+    },
+    defense: {
+      code: 'CYBER 262',
+      name: 'Cyber Defense Studio',
+      blurb: 'Eleven hands-on cyber-range labs spanning offense, network defense, logging, and DNS and firewall configuration.',
+      covers: [
+        'Set-UID buffer overflow to root (GDB, NOP sled, shellcode)',
+        'Metasploit recon, NFS enumeration, and SSH key harvesting',
+        'Snort NIDS with custom rules; OSSEC HIDS with file-integrity monitoring',
+        'Centralized logging with Rsyslog, logwatch, and fail2ban',
+        'Elasticsearch, Logstash, and Kibana pipeline with dashboards',
+        'VyOS firewall, split-horizon BIND DNS, and DoS defenses'
+      ]
+    },
+    infosec: {
+      code: 'CYBER 456',
+      name: 'Information Security Management',
+      blurb: 'Security governance: policy, standards, auditing, and the regulatory environment around a breach.',
+      covers: [
+        'ISO/IEC 27000-series auditing',
+        'PA Breach of Personal Information Notification Act analysis',
+        'University policy, standards, and guidelines',
+        'Ransomware and supply-chain threat research',
+        'Contingency and incident response planning',
+        'Microsoft Security Copilot and the AI-assisted SOC'
+      ]
+    },
+    risk: {
+      code: 'SRA 311W',
+      name: 'Risk Analysis',
+      blurb: 'Formal risk assessment method: defining the system, scoring the risks, and choosing treatment.',
+      covers: [
+        'Elder tech-support fraud risk assessment',
+        'Likelihood and impact scoring across six risks',
+        'MECE decomposition and interdiction points',
+        'Benefit-cost comparison of controls',
+        'Defense in depth and explicit residual risk',
+        'Ten reflective risk journals'
+      ]
+    },
+    law: {
+      code: 'IST 432',
+      name: 'Legal and Regulatory Environment of IST',
+      blurb: 'Cyber law: privacy, intellectual property, ISP liability, contract formation, and jurisdiction.',
+      covers: [
+        'CDA Section 230 and ISP liability',
+        'Computer Fraud and Abuse Act (CFAA)',
+        'Video Privacy Protection Act (VPPA)',
+        'ACPA, cybersquatting, and trademark',
+        'Browsewrap and clickwrap contract formation',
+        'Net neutrality and FCC policy'
+      ]
+    },
+    networking: {
+      code: 'IST 220',
+      name: 'Networking',
+      blurb: 'Enterprise network design built and troubleshot from a blank topology in Cisco Packet Tracer.',
+      covers: [
+        'VLANs and VTP for segmentation',
+        'Port security restricting switch ports to known hosts',
+        'Telnet access with password encryption',
+        'VoIP telephony over the same topology',
+        'IP addressing and subnetting',
+        'Trunk and inter-VLAN routing troubleshooting'
+      ]
+    },
+    integration: {
+      code: 'IST 242',
+      name: 'System Integration',
+      blurb: 'Integrating systems across a message queue while keeping the payload encrypted end to end.',
+      covers: [
+        'Java application development',
+        'AES encryption and decryption',
+        'JSON serialization with Gson',
+        'RabbitMQ message queuing',
+        'Maven build management',
+        'End-to-end secure patient-data pipeline'
+      ]
+    },
+    databases: {
+      code: 'IST 210',
+      name: 'Databases',
+      blurb: 'Relational design and SQL, from schema on paper to a working implementation.',
+      covers: [
+        'Relational schema design',
+        'DDL: CREATE, DROP, and constraints',
+        'DML: INSERT and querying',
+        'Primary and foreign key relationships',
+        'Oracle APEX',
+        'Multi-table education and storefront models'
+      ]
+    },
+    webdev: {
+      code: 'IST 256',
+      name: 'Web Development',
+      blurb: 'Full-stack web application development delivered across weekly milestones.',
+      covers: [
+        'Angular front end',
+        'Node.js and MongoDB back end',
+        'Bootstrap, jQuery, and AJAX',
+        'CRUD across products, shoppers, cart, and returns',
+        'Written test plans per milestone',
+        'Project management and UI ownership'
+      ]
+    },
+    programming: {
+      code: 'CMPSC 131',
+      name: 'Programming and Computation',
+      blurb: 'Python fundamentals through object-oriented design, ending in an honors robotics capstone.',
+      covers: [
+        'Conditionals, loops, and functions',
+        'Lists, dictionaries, and strings',
+        'Classes and objects',
+        'File handling and data structures',
+        'Exception handling',
+        'Honors mBot robotics capstone in Python'
+      ]
+    }
+  };
+
+  var nameEl = document.getElementById('courseName');
+  var bodyEl = document.getElementById('courseBody');
+
+  function cesc(x) {
+    return String(x).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  function openCourse(id) {
+    var c = COURSES[id];
+    if (!c) return;                                // unknown id, ignore
+
+    nameEl.textContent = c.name;
+
+    var covers = c.covers.map(function (i) {
+      return '<li>' + cesc(i) + '</li>';
+    }).join('');
+
+    bodyEl.innerHTML =
+      '<span class="cert-issuer">' + cesc(c.code) + '</span>' +
+      '<p class="cert-blurb">' + cesc(c.blurb) + '</p>' +
+      '<span class="lbl">What it covered</span>' +
+      '<ul class="cert-covers">' + covers + '</ul>';
+
+    m.open();
+  }
+
+  document.querySelectorAll('[data-course]').forEach(function (chip) {
+    chip.addEventListener('click', function () {
+      openCourse(chip.getAttribute('data-course'));
+    });
+  });
+})();
 
 /* ============================================================================
    MOTION

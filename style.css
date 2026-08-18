@@ -2170,3 +2170,67 @@ html.intro .scroll-cue{animation-play-state:paused}
 }
 /* The summary line above the bullets keeps its own spacing. */
 .rec-pad .rec-sum{margin-bottom:14px}
+
+/* ============================================================================
+   V3.6 · EDUCATION BLOCK
+
+   Sits above the certification badges. The degree was previously only a line
+   in the facts strip, and the coursework was nowhere on the site at all,
+   which for a recent graduate is the part a reader most wants.
+
+   Courses reuse .chip, the same token the archive records and lab feed use
+   for tools, so a course and a tool read as the same class of tag.
+   ========================================================================= */
+.edu{
+  border:1px solid var(--rule-2);background:var(--panel-hi);
+  padding:26px 28px 28px;margin-bottom:26px;box-shadow:var(--e1);
+}
+.edu-hd{
+  display:flex;flex-direction:column;gap:7px;
+  padding-bottom:20px;margin-bottom:22px;border-bottom:1px solid var(--rule);
+}
+.edu-deg{font-size:19px;font-weight:700;letter-spacing:-.02em;line-height:1.25}
+.edu-meta{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--faint);
+}
+.edu .lbl{display:block;margin-bottom:14px;color:var(--signal)}
+.course{display:flex;flex-wrap:wrap;gap:8px}
+
+@media(max-width:620px){
+  .edu{padding:20px 18px 22px}
+  .edu-deg{font-size:17px}
+}
+
+/* Coursework chips are buttons, so they need the control reset .chip never
+   had, plus a hover that says they open something. Same affordance language
+   as .cert, one size down. */
+button.chip{
+  font-family:var(--mono);font-size:10px;letter-spacing:.08em;
+  cursor:pointer;line-height:1.5;
+  transition:border-color .16s,background .16s,color .16s,transform .16s;
+}
+button.chip:hover,button.chip:focus-visible{
+  border-color:var(--ink);background:var(--panel-2);color:var(--ink);
+  transform:translateY(-1px);
+}
+@media(pointer:coarse){button.chip{min-height:32px}}
+
+/* ---- Work card action row -----------------------------------------------
+   The action and its category line used to share a row, with the categories
+   pushed right by margin-left:auto. Inside the boxed work panel the cards are
+   narrow enough that the categories wrap, and a wrapped auto-margin lands
+   right-aligned on its own line while the action stays left. Ragged, and
+   inconsistent between the three cards since each string is a different
+   length, so whether it fit changed per card and per viewport.
+
+   Stacked and left-aligned instead: categories above, action beneath, the
+   same shape in all three cards at every width. order:-1 does the swap so the
+   markup can keep the action first. */
+.ncard .go{
+  flex-direction:column;align-items:flex-start;flex-wrap:nowrap;
+  gap:10px;margin-top:22px;padding-top:15px;
+  border-top:1px solid var(--rule);
+}
+.scene-dark .ncard .go{border-top-color:var(--void-rule)}
+.ncard .go .ct{order:-1;margin-left:0;white-space:normal}

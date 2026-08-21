@@ -1313,7 +1313,7 @@ function makeModal(id, closeBtnId) {
       '<div class="intro-body">' +
         '<span class="intro-k">Case file</span>' +
         '<span class="intro-nm">F. Naroditskiy</span>' +
-        '<span class="intro-sub">Cybersecurity &middot; Forensics &middot; Incident response</span>' +
+        '<span class="intro-sub">Cybersecurity &middot; IT &middot; Incident response</span>' +
         '<span class="intro-go"><span class="h">Start investigation</span>' +
           '<span class="d">Open the site</span><span class="arw">&rarr;</span></span>' +
       '</div>' +

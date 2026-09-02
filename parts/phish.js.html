@@ -1,5 +1,5 @@
 <script>
-/* The flags and their explanations, keyed by id. */
+/* Phishing hunt. The flags and their explanations, keyed by id. */
 var FLAGS = {
   sender:  'The display name says Flexin IT, but the actual address is a lookalike domain (flexin-watches-support.com, not flexinwatches.com). Spoofed sender is the number-one tell.',
   subject: 'The subject threatens account loss on a deadline before you have even opened the message. Pressure in the subject line is there to get the click, not to inform you.',
@@ -37,7 +37,7 @@ var totalFlags=0;                      // set after render, from the DOM
 
 function phEsc(x){return String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
-/* Turn a segment into HTML: a clickable span if it's a flag, else plain text. */
+/* Turn a segment into HTML. A clickable span if it's a flag, else plain text. */
 function segHtml(seg){
   var text = seg.label ? seg.label : seg.t;
   if (seg.flag) {
@@ -59,9 +59,8 @@ var bodyHtml = MAIL.body.map(function(p){
 }).join('');
 phishBody.innerHTML = bodyHtml;
 
-/* Count the distinct flag ids that actually made it into the email, and set
-   the starting counter from that. Deriving it here (instead of from FLAGS)
-   keeps the target honest if the email and the explanation list drift. */
+/* Count the distinct flag ids actually in the email, not the ones in FLAGS.
+   Keeps the target honest if the two drift. */
 var renderedIds = {};
 document.querySelectorAll('.flag').forEach(function(el){
   renderedIds[el.getAttribute('data-flag')] = true;
@@ -69,11 +68,8 @@ document.querySelectorAll('.flag').forEach(function(el){
 totalFlags = Object.keys(renderedIds).length;
 phishProg.textContent = '0 / ' + totalFlags;
 
-/* Wire every flag: clicking (or Enter) marks it found.
-   If the same flag id ever appears in more than one place in the email, all
-   of its instances are marked together, and the total below counts distinct
-   ids that are actually reachable in the markup, so the counter can always
-   be completed. */
+/* Wire every flag. Click or Enter marks it found. A flag id used in more
+   than one place marks all of its instances together. */
 function markFound(el){
   var id = el.getAttribute('data-flag');
   if (foundSet[id]) return;            // already found
@@ -84,11 +80,8 @@ function markFound(el){
     x.classList.add('found');
   });
 
-  /* Show the newest explanation on its own. They used to stack, which pushed
-     the panel long and buried the one the player had just uncovered under
-     everything they already knew. Replacing keeps attention on the find.
-     Clearing first also re-triggers the entry animation, since the node is
-     new each time. */
+  /* Show the newest explanation on its own. Clearing first re-triggers the
+     entry animation. The node is new each time. */
   phishFound.innerHTML = '';
   var item = document.createElement('div');
   item.className = 'fnd';

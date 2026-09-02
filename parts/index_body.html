@@ -1,20 +1,7 @@
 <main>
 
-<!-- ===================================================================== HERO
-     The one full-bleed dark surface on the page. Everything below it is paper,
-     and where the dark comes back it comes back boxed: a panel sitting on the
-     table, not a band running edge to edge.
-
-     Background layers stack under the content: the node field on canvas, a
-     technical grid, the bloom, a slow scan, and grain.
-
-     The name is still revealed by retracting redaction bars. The text under
-     them is ordinary markup, so it stays selectable, indexable, and readable
-     with animation off.
-
-     main.js builds the case-open intro over this on first visit of a session.
-     None of that ships in the markup, so with JavaScript off the hero is just
-     the hero. -->
+<!-- ==================================================================== HERO
+     The only full-bleed dark surface. -->
 <div class="hero scene-dark" id="hero">
   <canvas class="bgl hero-net" id="heroNet" aria-hidden="true"></canvas>
   <div class="bgl bgl-grid" aria-hidden="true"></div>
@@ -25,7 +12,7 @@
   <div class="wrap hero-grid">
     <div class="hero-main">
       <span class="lbl">Cybersecurity &middot; IT &middot; Incident response</span>
-      <!-- tabindex="-1": not in the tab order, but focusable by script. -->
+      <!-- tabindex="-1". Not in the tab order, but focusable by script. -->
       <h1 tabindex="-1">
         <span class="red">Felix</span>
         <span class="red">Naroditskiy</span>
@@ -40,7 +27,7 @@
       </div>
     </div>
 
-    <!-- Portrait, tagged like a case photograph. Every field is real. -->
+    <!-- Portrait, tagged like a case photograph. -->
     <figure class="shot">
       <img src="img/felix.jpg" srcset="img/felix-sm.jpg 450w, img/felix.jpg 900w" sizes="(max-width:1000px) 380px, 380px"
            width="900" height="900" alt="Felix Naroditskiy" fetchpriority="high">
@@ -55,7 +42,7 @@
   <a class="scroll-cue" href="#facts" aria-label="Scroll to details"><span></span>Scroll</a>
 </div>
 
-<!-- Facts strip. Back on paper, flush under the hero on a clean edge. -->
+<!-- Facts strip. -->
 <div class="factband" id="facts">
   <div class="wrap">
     <dl class="facts" data-stagger>
@@ -151,15 +138,7 @@
 </section>
 
 <!-- ============================================================ CAPABILITIES
-     Sticky heading on the left, six cards travelling up past it on the right,
-     each tilting flat as it arrives. Nothing pins the page and nothing scrolls
-     sideways, so the section reads as part of the scroll rather than as a
-     widget that has taken the page over.
-
-     The cards are the boxed dark: near-black panels sitting on the paper,
-     each carrying its own grid and bloom, rather than the page cutting to
-     black edge to edge. Below 900px the split collapses and the heading stops
-     sticking, which leaves an ordinary stack of cards. -->
+     Sticky heading left, cards tilting past it right. -->
 <section class="lit">
   <div class="bgl bgl-grid on-light bgl-par" data-par="0.05" aria-hidden="true"></div>
   <div class="wrap">
@@ -168,10 +147,7 @@
         <div class="shead" data-rv="clip"><span class="n">02</span><h2>Capabilities</h2><span class="fill"></span></div>
         <p class="sdesc" data-rv="up">Skills, tools, and techniques I learn and use, from coursework to professional experience.</p>
 
-        <!-- Live index. main.js marks the entry whose card is currently in
-             front of the heading. Ordinary list markup, so it still reads as
-             a contents list with JavaScript off; aria-hidden because it
-             duplicates the headings on the cards themselves. -->
+        <!-- Live index. aria-hidden. It duplicates the card headings. -->
         <ol class="capnav" aria-hidden="true">
           <li>Security analysis</li>
           <li>Security tooling</li>
@@ -210,7 +186,7 @@
   </div>
 </section>
 
-<!-- ================================================== EDUCATION AND CERTS -->
+<!-- ===================================================== EDUCATION AND CERTS -->
 <section class="lit">
   <div class="bgl bgl-grid on-light bgl-par" data-par="0.03" aria-hidden="true"></div>
   <div class="wrap">
@@ -251,11 +227,7 @@
   </div>
 </section>
 
-<!-- ================================================================ THE WORK
-     The second boxed dark: one panel holding the three index cards, inset on
-     the paper with the page's margins still showing either side. Same idea as
-     the capability cards, at a larger size, so the dark reads as an object on
-     the page both times it appears. -->
+<!-- ================================================================ THE WORK -->
 <section class="lit">
   <div class="bgl bgl-grid on-light bgl-par" data-par="0.03" aria-hidden="true"></div>
   <div class="wrap">

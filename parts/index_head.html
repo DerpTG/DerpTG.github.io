@@ -1,12 +1,7 @@
 <script>
-/* Pre-paint. If the case-open intro is due this session, tag <html> now, so
-   the hero's load sequence is already paused when the first frame paints and
-   main.js has something to build over. Doing this from main.js alone meant the
-   hero painted first and the panel dropped on top a frame later, which read as
-   a flash of the site: the exact problem the v2 gate had.
-
-   Bailing here on prefers-reduced-motion or on a second view this session is
-   what makes the intro a once-per-session flourish rather than a gate. */
+/* Tag <html> before the first paint if the intro is due. .intro pauses the
+   hero's load sequence. Setting it from main.js paints the hero first and
+   flashes the site. Bails on reduced motion and after the first view. */
 (function(){try{
   var r=document.documentElement, m=window.matchMedia;
   if(sessionStorage.getItem('fn.intro.seen'))return;

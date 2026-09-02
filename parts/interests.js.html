@@ -1,5 +1,5 @@
 <script>
-/* The interests, in the order they appear in the list. */
+/* Interests console. The entries, in list order. */
 var INTERESTS = [
   {
     key: 'watchmaking', name: 'Watches', tag: 'Obsession',
@@ -108,8 +108,8 @@ function renderInterest(i) {
   intOut.innerHTML = h;
 }
 
-/* The console rewrites its output pane, so any thumbnails it just drew are
-   new nodes. Tell the lightbox to pick them up. */
+/* The console rewrites its output pane. Tell the lightbox about the new
+   thumbnails. */
 document.addEventListener('click', function (e) {
   if (e.target.closest('#intList .smp')) {
     window.setTimeout(function () {

@@ -1,27 +1,15 @@
 /*
    style.css for felixnaroditskiy.com
 
-   Direction: "evidence room." A cool gray-green ground (lab surfaces and
-   evidence packaging, not paper), near-black ink, and one saturated crimson
-   used strictly as an index marker, never as decoration.
-
-   Signature: the hero name is revealed by retracting redaction bars.
-
-   Color tokens
+   Tokens
      --ground / --panel / --panel-2   surfaces, base to raised
      --ink / --mute / --faint         text, primary to tertiary
      --rule / --rule-2                hairlines, subtle then structural
-     --signal                         crimson. Index marks, current state,
-                                      the redaction bars. Nothing else.
-     --sev-hi / --sev-md / --sev-lo   severity, kept from the old palette but
-                                      darkened to hold contrast on a light ground
+     --signal                         crimson. Index marks and state only.
+     --sev-hi / --sev-md / --sev-lo   severity
+     --display / --mono               Archivo for text, Plex Mono for data
 
-   Every text color here clears WCAG AA (4.5:1) against --ground.
-
-   Type
-     --display  Archivo. Headings and prose. Technical grotesk, signage weight.
-     --mono     IBM Plex Mono. Data only: dates, counts, labels, identifiers.
-                If it isn't machine-readable, it isn't mono.
+   All text colors clear WCAG AA (4.5:1) against --ground.
 */
 
 :root{
@@ -45,9 +33,8 @@
   --gut:28px;
 }
 
-/* Cross-document view transitions. Five pages, one stylesheet, so every
-   page-to-page navigation opts in at once. Browsers without support just
-   navigate normally. */
+/* Cross-document view transitions. Browsers without support navigate
+   normally. */
 @view-transition{navigation:auto}
 
 *{box-sizing:border-box;margin:0;padding:0}
@@ -65,8 +52,8 @@ a{color:inherit}
 img{display:block;max-width:100%}
 ::selection{background:var(--signal);color:#fff}
 
-/* Utility label. Mono, uppercase, tracked. Reserved for data labels,
-   not headings, not navigation, not buttons. */
+/* Utility label. Mono, uppercase, tracked. Data labels only, not headings
+   or buttons. */
 .lbl{
   font-family:var(--mono);font-size:10.5px;font-weight:500;
   letter-spacing:.16em;text-transform:uppercase;color:var(--faint);
@@ -85,9 +72,7 @@ img{display:block;max-width:100%}
   display:flex;align-items:center;gap:10px;text-decoration:none;
   font-weight:700;font-size:15px;letter-spacing:-.01em;flex-shrink:0;
 }
-/* Blinking block caret rather than a status dot. The pulsing green dot is
-   everywhere on developer portfolios, and this matches the terminal panes
-   the rest of the site already uses. */
+/* Blinking block caret. Matches the terminal panes elsewhere. */
 .brand i{
   width:7px;height:15px;background:var(--signal);flex-shrink:0;
   animation:caret 1.15s step-end infinite;
@@ -115,28 +100,24 @@ img{display:block;max-width:100%}
 .nav-act .solid:hover,.nav-act .solid:focus-visible{background:var(--ink);border-color:var(--ink);color:var(--ground)}
 .navtog{display:none}
 
-/* ============================================================ HERO */
-/* Hero fills the viewport below the nav. The facts strip that used to sit
-   inside it is now its own band, so the hero holds the fold on its own. */
+/* ============================================================ HERO
+   Fills the viewport below the nav. */
 .hero{
   position:relative;overflow:hidden;
   min-height:calc(100svh - 62px);
   display:flex;flex-direction:column;justify-content:center;
   padding:64px 0 96px;
 }
-/* minmax(0,1fr), not 1fr: a bare 1fr floors at min-content, and the surname
-   set at 104px is wider than the track should be, so the grid overflowed its
-   own content box and pushed the portrait past every other right edge on the
-   page. minmax(0,...) lets the track shrink and guarantees that cannot recur. */
+/* minmax(0,1fr), not 1fr. A bare 1fr floors at min-content, and the surname
+   is wider than the track. The grid overflows and pushes the portrait off
+   the right edge. */
 .hero-grid{
   display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:64px;align-items:center;
 }
 .hero .lbl{display:block;margin-bottom:26px;color:var(--signal)}
 
-/* The name. Each line sits in a .red wrapper whose ::after is a solid ink
-   bar covering it. On load the bar retracts to the right, uncovering the
-   letters. The text is real text underneath, so it is selectable, indexable,
-   and readable with animation off. */
+/* Each line sits in a .red wrapper. Its ::after is an ink bar that retracts
+   on load. Real text underneath, still selectable with animation off. */
 .hero h1{
   font-size:clamp(44px,7vw,96px);
   font-weight:800;line-height:.92;letter-spacing:-.04em;
@@ -174,8 +155,7 @@ img{display:block;max-width:100%}
   background:none;color:var(--signal);border-color:var(--signal);transform:none;
 }
 
-/* Portrait, tagged like an evidence photograph. The tag strip carries real
-   information, so it labels rather than decorates. */
+/* Portrait, tagged like an evidence photograph. */
 .shot{border:1px solid var(--rule-2);background:var(--panel)}
 .shot img{width:100%;height:auto;aspect-ratio:1;object-fit:cover;filter:saturate(1.02) contrast(1.02)}
 .shot-tag{
@@ -217,10 +197,7 @@ img{display:block;max-width:100%}
 @keyframes cue{0%,100%{transform:scaleY(.45);opacity:.5}50%{transform:scaleY(1);opacity:1}}
 
 /* ============================================================ SECTIONS */
-/* No rule between sections, and less air than v2 carried. The hairline plus
-   156px of combined padding made every section announce itself as a separate
-   document; the page reads as one surface without it, and the section heading
-   is already doing the work of saying a new section started. */
+/* No rule between sections. The heading already marks the boundary. */
 section{padding:54px 0}
 .shead{display:flex;align-items:baseline;gap:16px;margin-bottom:10px}
 .shead h2{font-size:15px;font-weight:700;letter-spacing:-.01em;white-space:nowrap}
@@ -229,9 +206,8 @@ section{padding:54px 0}
 .sdesc{color:var(--mute);max-width:60ch;margin-bottom:42px;font-size:16px}
 
 /* ============================================================ EXPERIENCE
-   Fully open, no accordions. Roles sit inside an .org block so an employer
-   with two titles reads as one job rather than two, with a Current/Prior
-   badge on each role instead of a running number. */
+   Always open. Roles sit inside an .org block. An employer with two titles
+   reads as one job, with a Current/Prior badge on each role. */
 .roles{display:grid;gap:0}
 .role{
   display:grid;grid-template-columns:180px 1fr;gap:40px;
@@ -257,9 +233,9 @@ section{padding:54px 0}
 }
 .role li b{color:var(--ink);font-weight:600}
 
-/* ============================================================ CAPABILITIES */
-/* Six categories in a 3x2 grid. Borders are drawn per-cell by nth-child so
-   the interior rules meet cleanly at both breakpoints. */
+/* ============================================================ CAPABILITIES
+   Six categories in a 3x2 grid. nth-child draws the borders per cell. The
+   interior rules meet cleanly at both breakpoints. */
 .caps{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--rule-2);background:var(--panel)}
 .cap{padding:24px 24px 28px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule)}
 .cap:nth-child(3n){border-right:0}
@@ -290,10 +266,8 @@ section{padding:54px 0}
 .ncard .lbl{display:block;margin-bottom:16px;color:var(--signal)}
 .ncard h3{font-size:23px;font-weight:700;letter-spacing:-.025em;margin-bottom:10px}
 .ncard p{color:var(--mute);font-size:15px;flex:1;line-height:1.55}
-/* The label and the count sat on one line with barely any slack, so a slightly
-   larger font or a zoomed viewport broke both of them mid-phrase. Each half is
-   now unbreakable and the row wraps as a whole: if they cannot share a line,
-   the count drops beneath, still right-aligned. */
+/* Each half is unbreakable and the row wraps as a whole. A zoomed viewport
+   drops the count below instead of breaking mid-phrase. */
 .ncard .go{
   margin-top:24px;display:flex;flex-wrap:wrap;align-items:baseline;
   gap:6px 16px;font-size:14px;font-weight:600;
@@ -307,11 +281,10 @@ section{padding:54px 0}
 .ncard .arw{display:inline-block;transition:transform .18s;color:var(--signal)}
 
 /* ============================================================ SOCIAL MARKS
-   Brand marks instead of the words. Greyed back so they read as secondary to
-   the email and resume buttons beside them, and only come forward on hover.
-   Each link carries an aria-label, since there is no text to announce. */
-/* Scoped as .cta .ico-link, not .ico-link: the sibling rule .cta a is
-   (0,1,1) and would otherwise win, painting these as outlined buttons. */
+   Greyed back to sit behind the email and resume buttons. Each link needs an
+   aria-label. There is no text to announce. */
+/* The .cta .ico-link half is what beats .cta a at (0,1,1). Without it these
+   get painted as outlined buttons. */
 .cta .ico-link,.ico-link{
   display:inline-flex;align-items:center;justify-content:center;
   width:38px;height:38px;padding:0;border:0;background:none;
@@ -349,8 +322,7 @@ section{padding:54px 0}
 .modal-hd a.dl{background:var(--signal);border-color:var(--signal);color:#fff}
 .modal-hd a.dl:hover{background:var(--ink);border-color:var(--ink)}
 .modal-box iframe{flex:1;width:100%;border:0;background:#fff}
-/* iOS Safari will not render a PDF in an iframe. Shown only on coarse
-   pointers, where the sensible action is to open the file directly. */
+/* iOS Safari will not render a PDF in an iframe. Coarse pointers only. */
 .pdf-fallback{display:none;padding:34px 26px;text-align:center;color:var(--mute)}
 .pdf-fallback a{color:var(--signal);font-weight:600}
 .cert-box{height:auto;max-height:88vh}
@@ -424,15 +396,8 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--signal);outline-off
 }
 
 /* ============================================================ MOTION
-   Two layers.
-
-   1. Page load. Hairlines draw, content rises, and the redaction bars
-      retract off the name. One orchestrated sequence, not scattered effects.
-   2. Scroll. main.js tags blocks with .reveal via IntersectionObserver and
-      flips them to .in as they enter the viewport. Not animation-timeline:
-      Firefox still has scroll-driven animations behind a flag. The class is
-      added by JS, so with JS off nothing is ever hidden. The rules live in
-      the MOTION LAYER section further down. */
+   Load: hairlines draw, content rises, redaction bars retract.
+   Scroll: main.js flips .reveal to .in. Rules in MOTION LAYER. */
 
 @keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
 @keyframes unredact{from{transform:scaleX(1)}to{transform:scaleX(0)}}
@@ -543,8 +508,8 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--signal);outline-off
 }
 
 /* ============================================================ TERMINAL
-   Light-mode terminal. Keeps the console cues (mono, prompt, cursor) but sits
-   on the panel colour rather than black, so it reads as an analysis pane. */
+   Light-mode terminal. Console cues (mono, prompt, cursor) on the panel
+   colour instead of black. */
 .term{border:1px solid var(--rule-2);background:var(--panel);font-family:var(--mono)}
 .term-top{
   display:flex;align-items:center;gap:10px;padding:12px 16px;
@@ -792,8 +757,8 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--signal);outline-off
 }
 
 /* ============================================================ EMPLOYER MARKS
-   Real logo files, boxed on the panel colour so the Stemuli mark's own
-   palette sits on a neutral field instead of fighting the crimson. */
+   Real logo files, boxed on the panel colour. Keeps the Stemuli mark's own
+   palette off the crimson. */
 .org{border:1px solid var(--rule-2);background:var(--panel);margin-bottom:20px}
 .org:last-child{margin-bottom:0}
 .org-hd{
@@ -808,8 +773,8 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--signal);outline-off
 .org-loc{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
 
 /* ============================================================ LAB FEED
-   Selectors below match exactly what feed.js emits: .feed-row with a
-   sev-{done|active|note} modifier, and the .feed-* cell classes. */
+   Selectors match what parts/feed.js.html emits. .feed-row with a
+   sev-{done|active|note} modifier, plus the .feed-* cell classes. */
 .feed{border:1px solid var(--rule-2);background:var(--panel)}
 .feed-top{
   display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;
@@ -847,18 +812,13 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--signal);outline-off
 .feed-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .3s}
 .feed-row.on .feed-body{grid-template-rows:1fr}
 .feed-in{overflow:hidden}
-/* Flush left, matching .rec-pad exactly.
-
-   This used to indent 212px so the expanded body lined up under the Work
-   column of the row above it. That read fine as prose, but the archive
-   records next door open flush to the panel edge, so the two lists of
-   bullets sat in visibly different places. Same padding, same max-width,
-   same everything: an expanded lab entry and an expanded project record are
-   the same object and should look like it. */
+/* Flush left, matching .rec-pad. Expanded lab entries and project records
+   should line up. */
 .feed-pad{padding:4px 18px 22px;color:var(--mute);font-size:15px;max-width:80ch;line-height:1.62}
 
 /* ============================================================ SIEM TRIAGE
-   Matches siem.js: .siem-row with a sev- modifier, .siem-* detail classes. */
+   Matches parts/siem.js.html. .siem-row with a sev- modifier, plus the
+   .siem-* detail classes. */
 .siem-row{
   width:100%;display:block;text-align:left;background:none;border:0;
   border-bottom:1px solid var(--rule);padding:13px 16px;cursor:pointer;
@@ -910,12 +870,12 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--signal);outline-off
 .siem-verdict.wrong .v{color:var(--sev-hi)}
 .siem-verdict p{font-size:14px;color:var(--mute);line-height:1.6}
 
-/* pcap rows carry .pkt-* and .c-* classes emitted by pcap.js */
+/* pcap rows carry the .pkt-* and .c-* classes parts/pcap.js.html emits. */
 .pcap-list .pcap-row .c-info{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
 @media(max-width:760px){
-  /* Column headers are meaningless once the rows reflow. Declared here, at
-     the end of the file, so this wins over the .feed-head grid rule above. */
+  /* Column headers are meaningless once the rows reflow. Declared after the
+     .feed-head grid rule above so this wins. */
   .feed-head,.rec-head{display:none}
   .feed-btn{grid-template-columns:74px 1fr 24px;gap:10px 12px}
   .feed-status{display:none}
@@ -924,23 +884,20 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--signal);outline-off
   .rc-cat,.rc-src{display:none}
 }
 
-/* Grid and flex children default to min-width:auto, so a long unbreakable
-   string (an email address, a SHA-256, a C2 hostname) can push a track wider
-   than its container. These opt out of that on the panes that carry raw
-   indicators. */
+/* min-width:auto lets a long unbreakable string (email, SHA-256, hostname)
+   push a grid or flex track wider than its container. */
 .phish-hd .row,.phish-hd .row>*,.phish-body,.phish-side{min-width:0;overflow-wrap:anywhere}
 .siem-meta div,.siem-meta b,.ioc div,.ioc b,.pkt-line,.pkt-line b{min-width:0;overflow-wrap:anywhere}
 .out .ln{min-width:0}
 
-/* Anchor targets sit under the sticky nav without scroll-margin, which reads
-   as the top of the section being cut off. 62px nav + breathing room. */
+/* Without scroll-margin, anchor targets land under the sticky nav. 62px nav
+   plus breathing room. */
 :target,#facts,#top,section,.factband,.phead{scroll-margin-top:86px}
 .org-mark img{width:38px;height:38px}
 .org-mark{width:38px;height:38px}
 
-/* At the narrowest widths the brand, menu toggle and action button compete
-   for a 280px row. Shrink the brand and tighten the button rather than
-   letting the row push past the viewport. */
+/* The brand, menu toggle and action button compete for a 280px row. Shrink
+   the brand and tighten the button. */
 @media(max-width:400px){
   .brand{font-size:13px;gap:7px}
   .nav .wrap{gap:8px}
@@ -949,42 +906,26 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--signal);outline-off
   .samples .smp{min-width:180px}
 }
 
-/* Photo strip inside the interests console. Only entries carrying an imgs
-   array render one, so most interests stay text only. */
+/* Photo strip in the interests console. Only entries with an imgs array
+   render one. */
 .shots{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0 4px}
 .shot-thumb{
   display:block;border:1px solid var(--rule-2);background:var(--panel-2);
   line-height:0;transition:border-color .18s,transform .18s;
 }
-/* Square thumbs: several source photos are portrait wrist shots, and a 4:3
-   crop cut the subject out entirely. The lightbox shows the full uncropped
-   photo, so nothing is lost, only framed. */
+/* Square thumbs. A 4:3 crop cut the subject out of the portrait wrist shots.
+   The lightbox shows the full photo. */
 .shot-thumb img{width:170px;height:170px;object-fit:cover}
 .shot-thumb:hover,.shot-thumb:focus-visible{border-color:var(--signal);transform:translateY(-2px)}
 @media(max-width:520px){.shot-thumb img{width:100%;height:auto;aspect-ratio:1}.shot-thumb{width:calc(50% - 5px)}}
 
-/* ============================================================================
-   MOTION LAYER
+/* ============================================================ MOTION LAYER
+   Scroll reveal, hover, widget swaps, smooth resize. All off under
+   prefers-reduced-motion. Classes come from main.js, never the markup. */
 
-   Four pieces, all switched off under prefers-reduced-motion:
+/* ---- Scroll reveal. Rules are at the end of this section. ---- */
 
-     1. Scroll reveal    main.js tags blocks with .reveal and flips them to .in
-                         as they enter the viewport. The class is added by JS,
-                         never in the markup, so nothing is hidden when JS is
-                         off. IntersectionObserver rather than
-                         animation-timeline, because Firefox still has
-                         scroll-driven animations behind a flag and would
-                         otherwise get no reveal at all.
-     2. Hover            cards lift, rows take a crimson edge, links sweep.
-     3. Widget swaps     the interactive panes animate their content changes:
-                         terminal lines cascade, detail panes fade up.
-     4. Smooth resize    panes that swap content of different lengths animate
-                         between heights instead of snapping.
-   ========================================================================= */
-
-/* ---- 1. Scroll reveal: see the end of this section ---- */
-
-/* ---- 2. Hover ---- */
+/* ---- Hover ---- */
 .ncard{position:relative;transition:background .2s,transform .2s,box-shadow .2s}
 .ncard::after{
   content:"";position:absolute;inset:0;pointer-events:none;
@@ -1033,13 +974,9 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--signal);outline-off
 .gh,.back,.scroll-cue{transition:color .18s,border-color .18s,transform .18s}
 .gh:hover{transform:translateX(3px)}
 
-/* ---- 1. Scroll reveal (declared here, after the hover rules) ----
-   .ncard, .org and .role each set their own transition for hover. Those rules
-   sit above this one, so declaring the reveal earlier meant the hover
-   shorthand overrode it and the elements snapped in with no fade at all.
-   Declared last, the reveal wins while it is running; main.js then strips both
-   classes when it finishes, handing the element back to its hover transition
-   so hovering stays snappy instead of inheriting the long reveal duration. */
+/* ---- Scroll reveal ----
+   Must come after the hover rules on .ncard/.org/.role. Their shorthand
+   overrides it otherwise. main.js strips both classes when it finishes. */
 .reveal{
   opacity:0;transform:translateY(20px);
   transition:opacity .52s cubic-bezier(.22,.68,.28,1),transform .52s cubic-bezier(.22,.68,.28,1);
@@ -1051,25 +988,16 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--signal);outline-off
 .shead.reveal .fill{transform:scaleX(0)}
 .shead.reveal.in .fill{transform:scaleX(1)}
 
-/* ---- 3. Widget swaps ---- */
-/* Two swap styles.
-
-   .swap fades a pane in as one block. Right for short panes where the whole
-   thing reads at once.
-
-   .swap-cascade leaves the pane alone and staggers its parts instead, the way
-   the terminal panes stagger their lines. Used where a pane holds several
-   distinct pieces (a title, an ATT&CK ID, paragraphs, evidence rows) and
-   fading them together looked like the content simply popped.
-
-   The two never combine: a pane animating while its children also animate
-   multiplies the opacities and goes muddy. */
+/* ---- Widget swaps ---- */
+/* Never combine these. A pane animating while its children animate
+   multiplies the opacities and goes muddy.
+     .swap          fades the pane in as one block
+     .swap-cascade  staggers the pane's parts instead */
 .swap{animation:swapIn .34s cubic-bezier(.22,.68,.28,1) both}
 @keyframes swapIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 
-/* Children are listed explicitly rather than using > * because several of
-   these elements persist across swaps (only their text changes), so the
-   animation has to be re-armed by toggling the class on the parent. */
+/* Children are listed explicitly, not > *. Several persist across swaps with
+   only their text changing. The class on the parent re-arms the animation. */
 .swap-cascade .ttl,
 .swap-cascade .att,
 .swap-cascade p,
@@ -1091,7 +1019,7 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--signal);outline-off
 @keyframes lnIn{from{opacity:0;transform:translateX(-4px)}to{opacity:1;transform:none}}
 .shots .shot-thumb{animation:swapIn .4s both;animation-delay:var(--sd,0ms)}
 
-/* ---- 4. Smooth resize ---- */
+/* ---- Smooth resize ---- */
 .hsmooth{transition:height .4s cubic-bezier(.22,.68,.28,1);overflow-y:hidden}
 
 @media(prefers-reduced-motion:reduce){
@@ -1099,11 +1027,8 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--signal);outline-off
   .shead.reveal .fill{transform:scaleX(1)!important}
 }
 
-/* ============================================================================
-   PHOTO LIGHTBOX
-   Reuses the resume modal shell. The stage sizes to the image rather than
-   the other way round, so tall and wide photos both fit.
-   ========================================================================= */
+/* ========================================================== PHOTO LIGHTBOX
+   Reuses the resume modal shell. The stage sizes to the image. */
 .photo-box{height:auto;max-height:92vh;width:min(1040px,100%)}
 .photo-stage{
   display:flex;align-items:center;justify-content:center;
@@ -1115,24 +1040,10 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--signal);outline-off
 /* Thumbnails are buttons now, so reset the default control styling. */
 button.shot-thumb{padding:0;font:inherit;color:inherit;cursor:zoom-in}
 
-/* ============================================================================
-   SCROLLABLE PANES
-
-   Four panes overflow at phone width: the kill-chain rail, the malware sample
-   list, the SIEM alert queue, and the interests list. Mobile browsers use
-   overlay scrollbars that stay invisible until you are already scrolling, so
-   each of these looked like a static block with content cut off.
-
-   Two affordances, because neither is enough alone:
-     1. A permanent scrollbar. -webkit-appearance:none is what stops iOS from
-        treating it as a transient overlay.
-     2. An edge fade showing which direction still has content. main.js toggles
-        .at-start / .at-end so the fade only appears on a side you can actually
-        scroll toward, and disappears entirely once the pane fits.
-
-   The mask sits on the scroll container, not its contents, so it stays put
-   while the content moves under it.
-   ========================================================================= */
+/* ========================================================= SCROLLABLE PANES
+   Mobile scrollbars stay invisible until you scroll and an overflowing pane
+   looks cut off. -webkit-appearance:none stops iOS treating the scrollbar as
+   a transient overlay. The mask sits on the container, not its contents. */
 .scroll-x,.scroll-y{
   scrollbar-width:thin;
   scrollbar-color:var(--rule-2) var(--panel-2);
@@ -1151,8 +1062,8 @@ button.shot-thumb{padding:0;font:inherit;color:inherit;cursor:zoom-in}
 }
 .scroll-x::-webkit-scrollbar-thumb:hover,.scroll-y::-webkit-scrollbar-thumb:hover{background:var(--faint)}
 
-/* Edge fades. Default state assumes content on both sides; the .at-* classes
-   pull back whichever side has run out. */
+/* Edge fades. Defaults to content on both sides. The .at-* classes pull back
+   whichever side has run out. */
 .scroll-x{
   -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 30px,#000 calc(100% - 30px),transparent 100%);
           mask-image:linear-gradient(90deg,transparent 0,#000 30px,#000 calc(100% - 30px),transparent 100%);
@@ -1179,26 +1090,18 @@ button.shot-thumb{padding:0;font:inherit;color:inherit;cursor:zoom-in}
 }
 .scroll-x.at-start.at-end,.scroll-y.at-start.at-end{-webkit-mask-image:none;mask-image:none}
 
-/* A one-line nudge on touch devices, where there is no hover to discover with.
-   Sits in the pane header, so it never moves with the content. */
+/* A one-line nudge for touch, where there is no hover. Sits in the pane
+   header and does not move with the content. */
 .scroll-hint{
   display:none;font-family:var(--mono);font-size:9px;letter-spacing:.14em;
   text-transform:uppercase;color:var(--signal);white-space:nowrap;
 }
 @media(pointer:coarse){.scroll-hint{display:inline}}
 
-/* ============================================================================
-   SPOT THE PHISH
-
-   Nothing here swaps in bulk, so there is no batch to cascade. What was
-   popping was the per-interaction feedback: a finding appearing in the side
-   panel, the counter ticking, a flag turning red, and the closing note.
-
-   Most of this needs no JS. A .fnd is a brand new node, so it animates the
-   moment it is inserted; .phish-done and .flag.found start animating because
-   a class change makes the rule newly match. Only the counter needs help,
-   since its text changes in place.
-   ========================================================================= */
+/* =========================================================== SPOT THE PHISH
+   Per-interaction animation, no batch to cascade. .fnd is a new node and
+   animates on insertion. .phish-done and .flag.found animate on a class
+   change. Only the counter needs JS. Its text changes in place. */
 .phish-found .fnd{animation:fndIn .44s cubic-bezier(.22,.68,.28,1) both}
 @keyframes fndIn{
   from{opacity:0;transform:translateX(-10px)}
@@ -1229,14 +1132,9 @@ button.shot-thumb{padding:0;font:inherit;color:inherit;cursor:zoom-in}
 .phish-done.show .v{animation:cascadeIn .42s .1s cubic-bezier(.22,.68,.28,1) both}
 .phish-done.show p{animation:cascadeIn .42s .2s cubic-bezier(.22,.68,.28,1) both}
 
-/* ============================================================================
-   TOUCH TARGETS
-
-   On a touch device several controls were well under the 44px that both Apple
-   and Google recommend: the menu toggle sat at 27px, the back link at 18px,
-   and the nav links at 32px. Padding is added rather than font size, so
-   nothing about the visual weight changes on desktop.
-   ========================================================================= */
+/* ============================================================ TOUCH TARGETS
+   Controls that sat under the recommended 44px. Padding, not font size, so
+   desktop weight is unchanged. */
 @media(pointer:coarse){
   .brand{min-height:44px}
   .navtog{min-height:44px;padding:11px 13px}
@@ -1253,37 +1151,18 @@ button.shot-thumb{padding:0;font:inherit;color:inherit;cursor:zoom-in}
   .ico-link{width:44px;height:44px}
 }
 
-/* ============================================================================
-   V3 · SURFACES, DEPTH, SCENES
-
-   v2 was one surface. Ground and panel sat four points of lightness apart, so
-   a panel never read as raised, only as slightly different paper, and the page
-   became a stack of equal-weight bands.
-
-   v3 keeps the evidence room as the resting state and adds a second surface
-   underneath it: --void, a near-black the page cuts to for specific sections.
-   The concept holds. Light is the paper on the table; dark is the screen you
-   read it on. Sections that are about live systems (the hero, the operating
-   picture, the work index) sit on the dark surface. Sections that are about
-   record (experience, certifications) stay on paper.
-
-   The value gap between the two surfaces is what produces depth. Shadows and
-   layered backgrounds sharpen it; they do not carry it alone.
-
-   Dark tokens mirror the light ones one for one, so a component can move
-   between surfaces by swapping tokens rather than being rewritten:
+/* ==================================================== SURFACES AND SCENES
+   Two surfaces. Paper, and --void (near-black) for sections about live
+   systems. Dark tokens mirror the light ones one for one, so a component
+   moves between surfaces by swapping tokens.
 
      --void / --void-2 / --void-3     surfaces, base to raised
      --void-ink / -mute / -faint      text, primary to tertiary
      --void-rule / --void-rule-2      hairlines, subtle then structural
-     --signal-d                       crimson lifted to clear AA on near-black.
-                                      #C8102E only reaches 3.2:1 there, so the
-                                      brand red cannot be used for text on the
-                                      dark surface. Same role, brighter value.
+     --signal-d                       crimson lifted to clear AA on near-black;
+                                      #C8102E only reaches 3.2:1 there
 
-   Every dark-surface text colour clears WCAG AA (4.5:1) against --void:
-   --void-ink 15.8:1, --void-mute 7.6:1, --void-faint 5.1:1, --signal-d 6.0:1.
-   ========================================================================= */
+   All dark-surface text clears WCAG AA (4.5:1) against --void. */
 :root{
   --void:#0B0F11;
   --void-2:#141B1F;
@@ -1295,40 +1174,31 @@ button.shot-thumb{padding:0;font:inherit;color:inherit;cursor:zoom-in}
   --void-rule-2:#3A484E;
   --signal-d:#FF4A61;
 
-  /* A raised paper, lighter than --panel, for cards that need to lift off the
-     ground rather than sit in it. */
+  /* Raised paper, lighter than --panel. For cards that lift off the
+     ground instead of sitting in it. */
   --panel-hi:#FBFCFA;
 
-  /* Elevation. Ink-tinted rather than black on the light surface, because a
-     neutral black shadow on a gray-green ground reads as dirt. */
+  /* Elevation, ink-tinted. A neutral black shadow on a gray-green ground
+     reads as dirt. */
   --e1:0 1px 2px rgba(20,23,26,.04),0 3px 10px -6px rgba(20,23,26,.18);
   --e2:0 2px 4px rgba(20,23,26,.05),0 14px 30px -16px rgba(20,23,26,.30);
   --e3:0 4px 8px rgba(20,23,26,.06),0 30px 64px -30px rgba(20,23,26,.42);
   --e-d1:0 2px 14px -6px rgba(0,0,0,.7);
   --e-d2:0 24px 56px -26px rgba(0,0,0,.85);
 
-  /* One easing vocabulary. --ease for state changes that start from rest,
-     --ease-out for entrances, which want to arrive rather than settle. */
+  /* --ease for state changes that start from rest. --ease-out for
+     entrances. */
   --ease:cubic-bezier(.22,.68,.28,1);
   --ease-out:cubic-bezier(.16,1,.3,1);
 
   --navh:62px;
 }
 
-/* ---- The dark surface ---------------------------------------------------
-   isolation:isolate gives the background layers their own stacking context,
-   so mix-blend-mode on the noise layer composites against the scene and not
-   against whatever happens to be painted behind the section. */
-/* overflow:clip, not hidden.
-
-   The background layers bleed past the section box and have to be trimmed,
-   but overflow:hidden makes the section a scroll container, and a scroll
-   container is what position:sticky sticks to. The pinned capabilities stage
-   sits inside one of these, so with overflow:hidden it had nothing to stick
-   against and simply scrolled away with the page.
-
-   overflow:clip trims the same way without creating a scroll container, so
-   the stage still sticks to the viewport. */
+/* ---- The dark surface ----
+   isolation:isolate keeps mix-blend-mode on the noise layer compositing
+   against the scene, not whatever is behind the section. */
+/* overflow:clip, not hidden. hidden makes this a scroll container and the
+   sticky capabilities column scrolls away with the page. */
 .scene-dark{
   position:relative;isolation:isolate;overflow:clip;
   background:var(--void);color:var(--void-ink);
@@ -1344,20 +1214,13 @@ button.shot-thumb{padding:0;font:inherit;color:inherit;cursor:zoom-in}
 .scene-dark a{color:inherit}
 .scene-dark ::selection{background:var(--signal-d);color:var(--void)}
 
-/* ============================================================================
-   V3 · BACKGROUND LAYERS
-
-   Four stackable layers, each an absolutely positioned child of a scene. They
-   are separate elements rather than pseudo-elements because a scene routinely
-   needs three at once and an element only has two pseudo-elements.
-
-   All are pointer-events:none and aria-hidden in the markup: they carry no
-   information, so nothing is lost when they are not rendered.
-   ========================================================================= */
+/* ======================================================= BACKGROUND LAYERS
+   Four stackable layers per scene. Separate elements, not pseudo-elements.
+   A scene needs up to three at once. All pointer-events:none. */
 .bgl{position:absolute;inset:0;pointer-events:none;z-index:0}
 
-/* Technical grid. Masked to a soft ellipse so it fades out at the edges
-   instead of stopping at a hard line against the section boundary. */
+/* Technical grid. Masked to an ellipse so it fades at the edges instead of
+   stopping at the section boundary. */
 .bgl-grid{
   background-image:
     linear-gradient(to right,var(--grid-c,rgba(237,240,235,.055)) 1px,transparent 1px),
@@ -1369,27 +1232,22 @@ button.shot-thumb{padding:0;font:inherit;color:inherit;cursor:zoom-in}
 /* Light-surface variant, for the few scenes that stay on paper. */
 .bgl-grid.on-light{--grid-c:rgba(20,23,26,.05)}
 
-/* Bloom. Two soft radials: crimson for the brand, and a cool steel that reads
-   as monitor light. The cool value is the one deliberate departure from the
-   crimson-only rule, and it is confined to the dark surface, never used on
-   text, and desaturated far enough that it registers as light rather than as
-   a second brand colour. */
+/* Bloom. Two soft radials, crimson and a cool steel. The steel is the one
+   exception to the crimson-only rule. Dark surface only, never on text. */
 .bgl-glow{
   background:
     radial-gradient(640px 440px at 16% 20%,rgba(255,74,97,.15),transparent 68%),
     radial-gradient(760px 540px at 84% 76%,rgba(96,152,172,.11),transparent 72%);
 }
 
-/* Film grain. Breaks up the flat fills so large dark areas do not band on
-   cheap panels. Overlay keeps it from lightening the blacks. */
+/* Film grain. Stops large dark areas banding on cheap panels. Overlay keeps
+   it from lightening the blacks. */
 .bgl-noise{
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
   opacity:.05;mix-blend-mode:overlay;
 }
 
-/* Slow sweep, like a refresh passing down a monitor. Deliberately almost
-   subliminal: at .05 alpha it registers as the surface being alive rather
-   than as an animation playing. */
+/* Slow sweep, like a monitor refresh. Kept at .05 alpha. */
 .bgl-scan{
   height:38%;top:-38%;
   background:linear-gradient(180deg,transparent,rgba(237,240,235,.05),transparent);
@@ -1400,35 +1258,19 @@ button.shot-thumb{padding:0;font:inherit;color:inherit;cursor:zoom-in}
   100%{transform:translateY(calc(100vh + 100%))}
 }
 
-/* A layer that will be parallaxed needs slack above and below, or translating
-   it drags its own edge into frame and leaves a bare strip at the boundary. */
+/* Parallaxed layers need slack above and below. Without it, translating
+   drags the layer's own edge into frame. */
 .bgl-par{inset:-16% 0}
 
 /* The hero's node field is painted to a canvas by main.js. Sized in CSS,
    resolution handled in JS against devicePixelRatio. */
 .hero-net{width:100%;height:100%;opacity:.9}
 
-/* ============================================================================
-   V3 · MOTION, SECOND LAYER
-
-   v2 had one entrance: fade up 20px, same distance, same easing, on every
-   element on the page. Uniform motion reads as a single mechanical effect
-   rather than as choreography.
-
-   v3 keeps that observer and adds direction, scale, clip and depth variants,
-   plus a scroll-progress channel for set pieces. Everything is still driven
-   from JS: Firefox keeps scroll-driven CSS animations behind a flag as of
-   mid-2026, so animation-timeline would leave a large minority of visitors
-   with no motion at all. position:sticky does the pinning, which is
-   universally supported, and main.js writes a 0-to-1 --p onto each scene.
-
-   As in v2 the classes are added by JS and never ship in the markup, so with
-   JavaScript off nothing is hidden and the page reads as plain documents.
-   ========================================================================= */
-/* Durations come from tokens so the touch block near the end of this file can
-   lengthen every entrance at once. A phone scrolls faster and its viewport is
-   short, so an entrance tuned for a desktop is already over by the time the
-   element is somewhere you are looking. */
+/* ================================================== DIRECTIONAL ENTRANCES
+   Direction, scale, clip and depth variants, plus a scroll-progress
+   channel. */
+/* Durations come from tokens so the TOUCH MOTION block can lengthen every
+   entrance at once. */
 .rv{
   opacity:0;
   transition:opacity var(--rvd,.68s) var(--ease-out),transform var(--rvd,.68s) var(--ease-out),
@@ -1442,14 +1284,12 @@ button.shot-thumb{padding:0;font:inherit;color:inherit;cursor:zoom-in}
 .rv-scale{transform:scale(.93)}
 .rv-rise{transform:translateY(42px) scale(.97)}
 .rv-blur{filter:blur(9px)}
-/* Wipes up from its own bottom edge. Right for headings, where a fade reads
-   as weak and a slide reads as busy. */
+/* Wipes up from its bottom edge. Used for headings. */
 .rv-clip{clip-path:inset(0 0 102% 0)}
 .rv.in{opacity:1;transform:none;filter:none;clip-path:inset(0 0 0 0)}
 
-/* Cards that hinge in from their leading edge. The perspective lives on the
-   parent so every card in a row shares one vanishing point; per-card
-   perspective makes each one hinge to its own centre and the row splays. */
+/* Cards hinge in from their leading edge. Perspective goes on the parent for
+   one shared vanishing point. Per-card perspective makes the row splay. */
 .hinge-row{perspective:1600px;perspective-origin:50% 40%}
 .hinge{
   transform:rotateY(-72deg);opacity:0;transform-origin:left center;
@@ -1459,17 +1299,15 @@ button.shot-thumb{padding:0;font:inherit;color:inherit;cursor:zoom-in}
 }
 .hinge.in{transform:none;opacity:1}
 
-/* Depth parallax. main.js writes --py from scroll position. translate3d keeps
-   it on the compositor; will-change is set by JS only while a layer is in
-   view, because a permanent will-change on several layers costs more memory
-   than it saves. */
+/* Depth parallax; main.js writes --py. translate3d keeps it on the
+   compositor. will-change is set only while a layer is in view. */
 [data-par]{transform:translate3d(0,var(--py,0px),0)}
 
 /* Scroll-progress channel. --p runs 0 to 1 across a scene's scroll range. */
 [data-scene]{--p:0}
 
-/* Counters. main.js animates the number; this only keeps the digits from
-   reflowing the layout as the value changes width. */
+/* Counters. main.js animates the number. This just stops the digits
+   reflowing as the value changes width. */
 .tick{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
 
 @media(prefers-reduced-motion:reduce){
@@ -1479,23 +1317,11 @@ button.shot-thumb{padding:0;font:inherit;color:inherit;cursor:zoom-in}
   .bgl-scan{animation:none;display:none}
 }
 
-/* ============================================================================
-   V3 · NAV OVER A DARK HERO
-
-   Every page opens on the dark surface now, so build.py puts .dark-top on
-   each <body>. While the page is at the top the nav has no plate at all and
-   sits directly on the hero or page header; main.js adds .scrolled to <html>
-   past the first threshold and the ordinary light nav fades back in.
-
-   Scoping every override under :not(.scrolled) means the scrolled state needs
-   no counter-rules: the overrides simply stop matching.
-
-   The .js half matters just as much. Without it a visitor with JavaScript
-   disabled never gets .scrolled either, so the nav would stay transparent all
-   the way down and its dark text would sit invisibly on the light sections.
-   .js is set by an inline head script, which makes the plateless nav strictly
-   an enhancement and the legible one the default.
-   ========================================================================= */
+/* ====================================================== NAV OVER A DARK HERO
+   build.py puts .dark-top on every <body>. At the top the nav has no plate;
+   main.js adds .scrolled past the fold and the light nav fades in. Scoping
+   under :not(.scrolled) means the scrolled state needs no counter-rules.
+   Also gated on .js, or the nav stays transparent over the light sections. */
 .dark-top .nav{transition:background .32s var(--ease),border-color .32s var(--ease)}
 
 html.js:not(.scrolled) .dark-top .nav{
@@ -1516,18 +1342,9 @@ html.js:not(.scrolled) .dark-top .nav-act a:focus-visible{
 }
 html.js:not(.scrolled) .dark-top .navtog{color:var(--void-ink);border-color:var(--void-rule-2)}
 
-/* ============================================================================
-   V3 · HERO
-
-   Full bleed. The nav is sticky and therefore still in flow, so the hero is
-   pulled up under it by exactly its height and pads that height back on the
-   inside. The nav's z-index:60 keeps it painted on top.
-
-   Four background layers stack under the content: the node field on canvas,
-   the technical grid, the bloom, then grain. The signature redaction-bar
-   reveal is unchanged from v2 apart from its colours; it was the strongest
-   thing on the page and v3 had no reason to touch it.
-   ========================================================================= */
+/* ===================================================================== HERO
+   The nav is sticky and still in flow. The hero is pulled up under it by its
+   height and pads that back inside. */
 .hero.scene-dark{
   margin-top:calc(-1 * var(--navh));
   min-height:100svh;
@@ -1543,10 +1360,8 @@ html.js:not(.scrolled) .dark-top .navtog{color:var(--void-ink);border-color:var(
 .scene-dark .hero .lbl,.hero.scene-dark .lbl{color:var(--signal-d)}
 .scene-dark .hero h1 .red::after,.hero.scene-dark h1 .red::after{background:var(--void-ink)}
 .scene-dark .hero h1 .red:nth-child(2)::after,.hero.scene-dark h1 .red:nth-child(2)::after{background:var(--signal-d)}
-/* The tagline carries the crimson rather than a highlighted phrase inside it.
-   The name directly above is already white, so a white tagline read as one
-   continuous block of the same voice; giving the whole line the signal colour
-   separates the positioning statement from the name without an underline. */
+/* The whole tagline carries the crimson, not a phrase inside it. Separates
+   it from the white name above. */
 .hero.scene-dark .tagline{color:var(--signal-d)}
 .hero.scene-dark .lede{color:var(--void-mute)}
 
@@ -1563,8 +1378,8 @@ html.js:not(.scrolled) .dark-top .navtog{color:var(--void-ink);border-color:var(
   background:var(--void-ink);border-color:var(--void-ink);color:var(--void);
 }
 
-/* Portrait. Raised off the dark surface by shadow, with a hairline inner
-   highlight along the top edge so the card has a lit side. */
+/* Portrait. Shadow lifts it off the dark surface. Hairline highlight along
+   the top edge. */
 .hero.scene-dark .shot{
   border-color:var(--void-rule-2);background:var(--void-2);
   box-shadow:var(--e-d2);position:relative;
@@ -1600,17 +1415,10 @@ html.js:not(.scrolled) .dark-top .navtog{color:var(--void-ink);border-color:var(
 .scene-dark .cert.prog{color:#E0A93B}
 .scene-dark .cert.prog::before{background:#E0A93B}
 
-/* ============================================================================
-   V3 · WORK CARDS ON THE DARK SURFACE
-
-   The three index cards close the page on dark, mirroring the hero, so the
-   light middle of the page sits between two dark ends rather than trailing
-   off. Each card carries its own parallax offset, set by main.js, so the row
-   separates into three planes as it passes.
-   ========================================================================= */
-/* Real gaps rather than the light version's 1px hairline grid. The cards
-   hinge in from their left edges, and a card rotating away from a shared
-   background line exposes a bare coloured block behind it. */
+/* =============================================================== WORK CARDS
+   On the dark surface. Each carries its own parallax offset from main.js. */
+/* Real gaps, not the light version's 1px hairline grid. A card hinging away
+   from a shared background line exposes a bare block behind it. */
 .scene-dark .navgrid{background:none;border:0;gap:20px}
 .scene-dark .ncard{background:var(--void-2);color:var(--void-ink)}
 .scene-dark .ncard:hover,.scene-dark .ncard:focus-visible{background:var(--void-3)}
@@ -1621,17 +1429,9 @@ html.js:not(.scrolled) .dark-top .navtog{color:var(--void-ink);border-color:var(
 .scene-dark .ncard:hover{box-shadow:0 18px 40px -22px rgba(0,0,0,.9)}
 .scene-dark .ncard:hover::after,.scene-dark .ncard:focus-visible::after{box-shadow:inset 0 0 0 2px var(--signal-d)}
 
-/* ============================================================================
-   V3 · SUBPAGE HEADERS
-
-   The four subpages opened on a hairline-ruled band that looked like the top
-   of a document and gave the page no arrival at all. Each now opens on the
-   dark surface, pulled up under the nav the same way the home hero is, so
-   every page in the site starts dark and cuts to paper at its first section.
-
-   Every page carries body.dark-top now, not just the home page, which is what
-   lets the nav sit plateless over these headers too.
-   ========================================================================= */
+/* ========================================================== SUBPAGE HEADERS
+   Pulled up under the nav like the home hero, then cut to paper at the first
+   section. body.dark-top is what lets the nav sit plateless here. */
 .phead.scene-dark{
   margin-top:calc(-1 * var(--navh));
   padding:calc(var(--navh) + 86px) 0 82px;
@@ -1642,55 +1442,28 @@ html.js:not(.scrolled) .dark-top .navtog{color:var(--void-ink);border-color:var(
 .phead.scene-dark h1{color:var(--void-ink)}
 .phead.scene-dark .sub{color:var(--void-mute)}
 
-/* ============================================================================
-   V3 · DEPTH ON THE LIGHT SURFACE
-
-   The paper sections keep their hairline construction, but the blocks that
-   are meant to read as objects on the table now actually lift off it.
-   ========================================================================= */
+/* ================================================ DEPTH ON THE LIGHT SURFACE */
 .org{background:var(--panel-hi);box-shadow:var(--e1);transition:box-shadow .3s var(--ease),transform .3s var(--ease)}
 .org:hover{box-shadow:var(--e2);transform:translateY(-2px)}
 .factband{background:var(--panel-hi);box-shadow:var(--e1)}
 .navgrid{box-shadow:var(--e2)}
 .ncard:hover,.ncard:focus-visible{box-shadow:var(--e3)}
 
-/* ============================================================================
-   V3.1 · A CONTINUOUS BACKGROUND
-
-   The first cut of v3 put background layers only inside the dark scenes, so
-   the middle of every page was bare paper with nothing behind it and the
-   texture appeared and disappeared as you scrolled.
-
-   .sitebg is one fixed layer behind the whole document, present on every page
-   and every section. Because the light sections paint no background of their
-   own, it shows straight through them; the dark scenes are opaque and cover
-   it, which is correct, since they carry their own layers.
-
-   Its blooms are positioned from --sp, the page scroll progress that main.js
-   writes onto <html>. So the background drifts continuously for the length of
-   the page rather than repeating per section, which is what makes the scroll
-   read as one movement instead of a series of bands.
-   ========================================================================= */
+/* ==================================================== CONTINUOUS BACKGROUND
+   .sitebg is one fixed layer behind the document. Light sections show it
+   through, dark scenes cover it. Blooms are positioned from --sp and drift
+   for the length of the page instead of repeating per section. */
 .sitebg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
 .sitebg i{position:absolute;display:block}
 
 /* Everything in the document sits above it. */
 body>header,body>main,body>footer{position:relative;z-index:1}
 
-/* Alphas are low on purpose. These read as atmosphere on the dark hero, but
-   most of the page is paper, and the same values that look like light on
-   near-black look like a pink wash on white. */
-/* Both layers drift by transform, never by regenerating what they paint.
-
-   The first version put --sp inside the gradient positions and the grid's
-   background-position. That looks identical and is enormously more expensive:
-   a custom property inside a background forces the whole image to be redrawn
-   whenever it changes, so every scroll frame repainted three full-viewport
-   radial gradients on a fixed layer. It made scrolling feel heavy on a
-   desktop and cost real frames on a phone.
-
-   Painted once and moved on the compositor instead. Each layer is oversized
-   so translating it never drags its own edge into view. */
+/* Alphas are low on purpose. Values that read as light on near-black read
+   as a pink wash on paper. */
+/* Drift by transform, never by repainting. A custom property in a background
+   position redraws the whole image on every change. Layers are oversized so
+   translating never drags an edge into view. */
 .sb-bloom{
   inset:-30%;
   background:
@@ -1716,14 +1489,13 @@ body>header,body>main,body>footer{position:relative;z-index:1}
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-/* Light sections need a stacking context of their own so their background
-   layers sit under their content but over .sitebg. */
+/* Light sections need their own stacking context. Puts their background
+   layers under the content but over .sitebg. */
 .lit{position:relative;isolation:isolate}
 .lit>.wrap,.lit>.pin{position:relative;z-index:2}
 
-/* Light-surface variants of the scene layers. Far lower alpha than the dark
-   ones: the same values that read as atmosphere on near-black read as dirt
-   on paper. */
+/* Light-surface variants of the scene layers. Much lower alpha than the dark
+   ones. */
 .bgl-glow.on-light{
   background:
     radial-gradient(600px 420px at 10% 16%,rgba(200,16,46,.07),transparent 66%),
@@ -1744,16 +1516,8 @@ body>header,body>main,body>footer{position:relative;z-index:1}
   .factband.scene-dark .facts div{border-bottom-color:var(--void-rule)}
 }
 
-/* ============================================================================
-   V3.1 · ITEM-LEVEL STAGGER
-
-   Block-level entrances stop being interesting once you have seen three of
-   them. [data-stagger] hands the entrance down to the children instead, so a
-   capability list, a facts row, or a set of role bullets arrives line by line.
-
-   As everywhere else the class is added by main.js, never in the markup, so
-   with JavaScript off none of this applies and nothing is hidden.
-   ========================================================================= */
+/* ========================================================= ITEM-LEVEL STAGGER
+   [data-stagger] hands the entrance down to children. Added by main.js. */
 .stag>*{
   opacity:0;transform:translateY(15px);
   transition:opacity .5s var(--ease-out),transform .5s var(--ease-out);
@@ -1766,30 +1530,17 @@ body>header,body>main,body>footer{position:relative;z-index:1}
   .sb-bloom,.sb-grid{transform:none;will-change:auto}
 }
 
-/* ============================================================================
-   V3.2 · BOXED DARK
-
-   Two earlier attempts got the dark surface wrong. First it ran edge to edge
-   and the page banded, black then white then black. Then the bands were
-   blended and the 260px ramp between near-black and paper was visible as a
-   ramp, which is worse: you could see where it started and stopped.
-
-   The dark is now an object rather than a band. Below the hero it only ever
-   appears boxed, inset on the paper with the page margins still showing on
-   both sides, so there is no edge to blend and nothing to cut across. The
-   evidence-room reading is better for it: a screen sitting on the table.
-
-   .darkbox pairs with .scene-dark, which still supplies the surface tokens.
-   .darkbox adds only the frame, the lift, and its own texture, so anything
-   that already knows how to sit on the dark surface works inside one.
-   ========================================================================= */
+/* =============================================================== BOXED DARK
+   Below the hero the dark surface only appears boxed, inset on the paper.
+   .darkbox pairs with .scene-dark for the tokens and adds the frame, lift
+   and texture. */
 .darkbox{
   position:relative;isolation:isolate;overflow:clip;
   border:1px solid var(--void-rule-2);
   box-shadow:var(--e3);
 }
-/* Texture from pseudo-elements rather than .bgl children, because these are
-   repeated six times and markup for it would be six times the noise. */
+/* Texture from pseudo-elements, not .bgl children. These repeat six
+   times. */
 .darkbox::before{
   content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
   background-image:
@@ -1807,20 +1558,9 @@ body>header,body>main,body>footer{position:relative;z-index:1}
 }
 .darkbox>*{position:relative;z-index:1}
 
-/* ============================================================================
-   V3.2 · CAPABILITIES, STICKY SPLIT
-
-   The heading holds still on the left while the six cards travel up past it
-   on the right, each tilting flat as it arrives. Nothing pins the page and
-   nothing moves sideways, so it reads as part of the scroll instead of as a
-   widget that has taken the page over. That was the real problem with the
-   horizontal track: it stopped the page to run an effect, and the effect had
-   more empty stage than content in it.
-
-   Below 900px the split collapses and the heading stops sticking, which
-   leaves a plain stack of cards. That is also what a visitor with JavaScript
-   off gets at any width, since the tilt class is added by main.js.
-   ========================================================================= */
+/* ================================================= CAPABILITIES, STICKY SPLIT
+   Sticky heading left, cards tilting past it right. Below 900px the split
+   collapses to a plain stack. Same as the JavaScript-off state. */
 .capsplit{
   display:grid;grid-template-columns:minmax(0,320px) minmax(0,1fr);
   gap:56px;align-items:start;
@@ -1843,14 +1583,12 @@ body>header,body>main,body>footer{position:relative;z-index:1}
   color:var(--void-faint);opacity:.85;
 }
 .capsplit .cap .lbl{display:block;margin-bottom:18px;color:var(--signal-d)}
-/* Two columns inside each card keeps them wide and short, so a card is one
-   glance rather than a list you read down. */
+/* Two columns keep each card wide and short: one glance, not a list. */
 .capsplit .cap ul{list-style:none;display:grid;grid-template-columns:repeat(2,1fr);gap:10px 28px}
 .capsplit .cap li{font-size:14.5px;color:var(--void-mute);line-height:1.4}
 
-/* Cards hinge flat from their bottom edge as they come up the screen. The
-   origin is the bottom, so the card looks like it is standing up into place
-   rather than rotating around its own middle. */
+/* Origin at the bottom edge. The card stands up instead of rotating around
+   its middle. */
 .tilt{
   opacity:0;
   transform:perspective(1100px) rotateX(11deg) translateY(52px) scale(.985);
@@ -1879,20 +1617,7 @@ body>header,body>main,body>footer{position:relative;z-index:1}
 }
 
 
-/* ============================================================================
-   V3.2 · CASE-OPEN INTRO
-
-   The v2 gate, played rather than operated. A case panel drops in, a cursor
-   crosses to "Start investigation", clicks it, and the panel leaves as the
-   hero's own load sequence starts. About 1.6 seconds, once per session, and
-   any input at all cuts it short.
-
-   html.intro is set by the pre-paint script in parts/index_head.html, not by
-   main.js, so the hero is already sitting in its pre-animation state on the
-   first frame. It pauses the hero's load sequence exactly the way the v2 gate
-   did, which is what stops the intro playing to an empty room and the hero
-   then replaying once it is gone.
-   ========================================================================= */
+/* ========================================================== CASE-OPEN INTRO */
 html.intro,html.intro body{overflow:hidden}
 html.intro .hero .lbl,
 html.intro .hero h1 .red::after,
@@ -1941,8 +1666,8 @@ html.intro .scroll-cue{animation-play-state:paused}
   text-transform:uppercase;color:var(--signal-d);
 }
 
-/* Dashed until the cursor reaches it, solid once it does, so the "hover" is
-   legible as a state change rather than just a tint. */
+/* Dashed until the cursor reaches it, solid after. Makes the fake hover
+   read as a state change. */
 .intro-go{
   margin-top:28px;display:flex;align-items:center;gap:16px;
   border:1px dashed var(--void-rule-2);background:rgba(237,240,235,.03);
@@ -1959,9 +1684,8 @@ html.intro .scroll-cue{animation-play-state:paused}
 .intro-go.hot .arw{transform:translateX(5px)}
 .intro-go.hit{background:rgba(255,74,97,.18)}
 
-/* The cursor. Starts down and to the right of its target and glides in; the
-   offsets are relative to the measured target, so it always approaches from
-   the same angle whatever the viewport does to the panel. */
+/* The cursor. Starts below and right of its target and glides in. Offsets
+   are relative to the measured target, so the angle holds at any viewport. */
 .intro-cur{
   position:fixed;left:0;top:0;width:22px;height:22px;z-index:210;
   pointer-events:none;opacity:0;
@@ -1992,9 +1716,8 @@ html.intro .scroll-cue{animation-play-state:paused}
   .intro-go .d{display:none}
 }
 
-/* The intro never runs under reduced motion, because the head script bails
-   before setting the class. These are here so that if it is ever forced on,
-   nothing moves and nothing is left hidden. */
+/* The head script bails before setting the class under reduced motion.
+   Backstop in case it is ever forced on. */
 @media(prefers-reduced-motion:reduce){
   html.intro,html.intro body{overflow:auto}
   html.intro .hero *{animation-play-state:running}
@@ -2002,11 +1725,8 @@ html.intro .scroll-cue{animation-play-state:paused}
 }
 
 
-/* ---- Capabilities live index -------------------------------------------
-   The sticky column was a heading and two lines in a tall empty space. This
-   fills it with something that earns the room: a contents list that tracks
-   which card is currently in front of it, so the column has motion of its own
-   while the cards travel past. */
+/* ---- Capabilities live index ----
+   Tracks which card is level with the heading. */
 .capnav{
   list-style:none;margin-top:30px;padding-top:22px;
   border-top:1px solid var(--rule);
@@ -2035,34 +1755,16 @@ html.intro .scroll-cue{animation-play-state:paused}
 .capnav li.on::after{transform:scaleX(1) translateY(-50%)}
 
 @media(max-width:900px){
-  /* Below the split the cards are directly underneath, so a contents list
-     pointing at them is just the same six words twice. */
+  /* Below the split the cards sit directly underneath. A contents list
+     would just repeat them. */
   .capnav{display:none}
 }
 
 
-/* ============================================================================
-   V3.3 · TOUCH MOTION
-
-   The entrances were tuned on a desktop and read as snappy there. On a phone
-   the same numbers feel abrupt, for two reasons that compound:
-
-     A phone viewport is short, so an element crosses it in far less scroll
-     distance, and touch scrolling carries much more momentum than a wheel.
-     Between them, an element can enter, animate and finish while your thumb
-     is still moving, so you never see the motion, only the aftermath.
-
-     There is no eased scrolling on touch either. SMOOTH SCROLL is pointer:fine
-     only, on purpose, so the desktop gets a slower scroll *and* a slower
-     entrance and the two are in proportion. On a phone only the entrance is
-     left, against a faster scroll.
-
-   So every entrance runs roughly a third longer here, and main.js fires them
-   earlier: on a coarse pointer it uses a positive bottom rootMargin, which
-   extends the observer's box below the fold and starts the animation before
-   the element is actually on screen. By the time it arrives it is part-way
-   through rather than starting from nothing.
-   ========================================================================= */
+/* ============================================================= TOUCH MOTION
+   Desktop entrances read as abrupt on a phone. The viewport is short and
+   touch momentum is high. An element can enter and finish while your thumb
+   is still moving. Entrances run about a third longer here. */
 @media(pointer:coarse){
   :root{--rvd:.92s;--rvc:1.05s}
 
@@ -2070,44 +1772,24 @@ html.intro .scroll-cue{animation-play-state:paused}
   .tilt{transition-duration:.88s,1.2s}          /* opacity, transform */
   .hinge{transition-duration:1.15s,.68s}        /* transform, opacity */
   .stag>*{transition-duration:.72s,.72s}        /* opacity, transform */
-  .reveal{transition-duration:.78s,.78s}        /* v2 layer, same treatment */
+  .reveal{transition-duration:.78s,.78s}        /* reveal layer, same treatment */
 
-  /* Slightly more travel too. A short distance at a long duration reads as a
-     drift rather than as an arrival. */
+  /* More travel too. A short distance over a long duration reads as
+     drift. */
   .rv-up{transform:translateY(38px)}
   .rv-rise{transform:translateY(52px) scale(.97)}
   .stag>*{transform:translateY(20px)}
 
-  /* The stagger between siblings is what makes a list read as arriving in
-     order. At desktop spacing it is too tight to register on a phone, where
-     the whole list is on screen at once. */
+  /* Desktop stagger spacing is too tight to register on a phone, where the
+     whole list is on screen at once. */
   .stag>*{transition-delay:calc(var(--rd,0ms) * 1.35)}
 }
 
 
-/* ============================================================================
-   V3.4 · BLACK TITLE BARS
-
-   The contrast the subpages were missing, without swamping them. A first
-   attempt made whole widgets near-black and that was too much: these panels
-   are mostly dense technical content, and inverting all of it turned three
-   pages into one long dark screen and lost the evidence-room reading.
-
-   Only the title bar goes black. Every widget on the site already has one —
-   the terminal path, projects.log, the lab feed header, each exercise header,
-   the kill-chain header — so one rule gives every page the same accent, and
-   the content underneath stays on paper where it reads best.
-
-   Each panel also takes a near-black outline rather than a grey hairline, so
-   the bar reads as the top of an enclosed object rather than as a stripe
-   floating on the panel. Together they read as a device sitting on the page,
-   which is the same idea as the boxed dark panels on the home page, at a
-   fraction of the weight.
-
-   The severity trio needs dark twins for the few coloured items that live in
-   these bars: --sev-hi/md/lo were darkened to hold contrast on paper and are
-   far too dim on near-black.
-   ========================================================================= */
+/* ========================================================= BLACK TITLE BARS
+   Only the title bar goes black. The content under it stays on paper.
+   Panels take a near-black outline instead of a grey hairline. --sev-hi/md/lo
+   need dark twins. They are too dim on near-black. */
 :root{
   --sev-hi-d:#FF4A61;
   --sev-md-d:#E0A93B;
@@ -2122,9 +1804,8 @@ html.intro .scroll-cue{animation-play-state:paused}
   color:var(--void-ink);
 }
 
-/* Titles, and a crimson block starting each one. It echoes the caret in the
-   site's brand mark, and it is the only decoration in the bar. .term-top is
-   left out because its path already opens with its own prompt marker. */
+/* Titles, with a crimson block starting each one. .term-top is left out. Its
+   path already opens with a prompt marker. */
 .kc-top .t,.rec-top .t,.feed-top .t,.lab-ex-top .t,.panel-top .t{color:var(--void-ink)}
 .kc-top .t::before,.rec-top .t::before,.feed-top .t::before,
 .lab-ex-top .t::before,.panel-top .t::before{
@@ -2145,23 +1826,13 @@ html.intro .scroll-cue{animation-play-state:paused}
 .kc-top .scroll-hint,.term-top .scroll-hint,
 .lab-ex-top .scroll-hint,.feed-top .scroll-hint{color:var(--void-faint)}
 
-/* The column-heading strip that sits directly under a bar was tinted to
-   separate it from the panel. Against black above it now reads as a third
-   band, so it drops back to the panel colour and the bar does the separating. */
+/* The column-heading strip under a bar was tinted to separate it from the
+   panel. Against black it read as a third band. Back to the panel colour. */
 .rec-head,.feed-head{background:var(--panel)}
 
 
-/* ============================================================================
-   V3.5 · RECORD AND FEED BULLETS
-
-   The archive records and lab feed entries used to open into prose. They now
-   open into bullets, which is how this work reads on a resume and how anyone
-   skimming a portfolio actually wants it.
-
-   Same marker as the experience section's bullets — a short crimson rule
-   rather than a disc — so a record, a lab entry, and a role bullet all look
-   like the same kind of statement.
-   ========================================================================= */
+/* =================================================== RECORD AND FEED BULLETS
+   Same marker as the experience bullets: a short crimson rule, not a disc. */
 .pts{list-style:none;display:grid;gap:10px;margin:0}
 .pts li{position:relative;padding-left:20px;line-height:1.58}
 .pts li::before{
@@ -2171,16 +1842,8 @@ html.intro .scroll-cue{animation-play-state:paused}
 /* The summary line above the bullets keeps its own spacing. */
 .rec-pad .rec-sum{margin-bottom:14px}
 
-/* ============================================================================
-   V3.6 · EDUCATION BLOCK
-
-   Sits above the certification badges. The degree was previously only a line
-   in the facts strip, and the coursework was nowhere on the site at all,
-   which for a recent graduate is the part a reader most wants.
-
-   Courses reuse .chip, the same token the archive records and lab feed use
-   for tools, so a course and a tool read as the same class of tag.
-   ========================================================================= */
+/* ========================================================== EDUCATION BLOCK
+   Courses reuse .chip, the same token the records and lab feed use. */
 .edu{
   border:1px solid var(--rule-2);background:var(--panel-hi);
   padding:26px 28px 28px;margin-bottom:26px;box-shadow:var(--e1);
@@ -2202,9 +1865,8 @@ html.intro .scroll-cue{animation-play-state:paused}
   .edu-deg{font-size:17px}
 }
 
-/* Coursework chips are buttons, so they need the control reset .chip never
-   had, plus a hover that says they open something. Same affordance language
-   as .cert, one size down. */
+/* Coursework chips are buttons and need the control reset .chip never had,
+   plus a hover. Same affordance as .cert, one size down. */
 button.chip{
   font-family:var(--mono);font-size:10px;letter-spacing:.08em;
   cursor:pointer;line-height:1.5;
@@ -2216,17 +1878,10 @@ button.chip:hover,button.chip:focus-visible{
 }
 @media(pointer:coarse){button.chip{min-height:32px}}
 
-/* ---- Work card action row -----------------------------------------------
-   The action and its category line used to share a row, with the categories
-   pushed right by margin-left:auto. Inside the boxed work panel the cards are
-   narrow enough that the categories wrap, and a wrapped auto-margin lands
-   right-aligned on its own line while the action stays left. Ragged, and
-   inconsistent between the three cards since each string is a different
-   length, so whether it fit changed per card and per viewport.
-
-   Stacked and left-aligned instead: categories above, action beneath, the
-   same shape in all three cards at every width. order:-1 does the swap so the
-   markup can keep the action first. */
+/* ---- Work card action row ----
+   Stacked, not sharing a row. With margin-left:auto the categories landed
+   right-aligned on their own line whenever they wrapped. order:-1 lets the
+   markup keep the action first. */
 .ncard .go{
   flex-direction:column;align-items:flex-start;flex-wrap:nowrap;
   gap:10px;margin-top:22px;padding-top:15px;

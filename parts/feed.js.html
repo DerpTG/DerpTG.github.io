@@ -1,5 +1,5 @@
 <script>
-/* The lab entries, newest first. */
+/* Lab feed. The entries, newest first. */
 var LOG = [
   {
     sev: 'done', status: 'Complete',
@@ -107,8 +107,8 @@ LOG.forEach(function (entry, i) {
     return '<span class="chip">' + fesc(t) + '</span>';
   }).join('');
 
-  // The hidden body bullets, revealed on expand. Escaped for the same reason
-  // the archive records are: tool and framework names carry ampersands.
+  // The hidden body bullets, revealed on expand. Escaped. Tool and framework
+  // names carry ampersands.
   var body = '<ul class="pts">' + entry.body.map(function (p) {
     return '<li>' + fesc(p) + '</li>';
   }).join('') + '</ul>';

@@ -1,5 +1,5 @@
 <script>
-/* The project records. */
+/* Project records. In list order. */
 var PROJ = [
   {
     cat: 'This site', t: 'This Portfolio Site', team: 'Solo',
@@ -80,13 +80,13 @@ PROJ.forEach(function (p, i) {
   var rec = document.createElement('article');
   rec.className = 'rec-item';
 
-  // The bullets shown when the record is expanded. Escaped, so an ampersand
-  // in a framework name (MITRE ATT&CK) renders rather than opening an entity.
+  // The bullets shown when the record is expanded. Escaped. An ampersand in
+  // a framework name (MITRE ATT&CK) would open an entity.
   var more = '<ul class="pts">' +
     p.more.map(function (x) { return '<li>' + resc(x) + '</li>'; }).join('') +
     '</ul>';
 
-  // The labeled skills block: this is where each project's skills live.
+  // The skill chips for this record.
   var skills = p.skills.map(function (s) {
     return '<span class="chip">' + resc(s) + '</span>';
   }).join('');
@@ -110,7 +110,7 @@ PROJ.forEach(function (p, i) {
     // Always-visible skills strip, shown whether or not the record is open.
     '<div class="rec-skills-row"><span class="rsk-lbl">Skills</span>' +
       '<div class="rec-skills">' + skills + '</div></div>' +
-    // Collapsible detail: the summary, the full story, and any code link.
+    // Collapsible detail. The summary, the full story, and any code link.
     '<div class="rec-body"><div class="rec-in"><div class="rec-pad">' +
       '<p class="rec-sum">' + resc(p.sum) + '</p>' +
       more +

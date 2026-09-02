@@ -51,17 +51,17 @@ Named sections in the source, each carrying its own notes:
 
 | Where | What |
 |-------|------|
-| `MOTION LAYER` (css) · `MOTION` (js) | scroll reveals, hover, widget swaps, animated pane heights |
-| `V3 MOTION ENGINE` (js) | nav plate, directional entrances, the scroll channel |
-| `HERO NODE FIELD` (js) | the canvas background on every page header |
-| `CASE-OPEN INTRO` (js) | the opening animation |
+| `MOTION LAYER` (css) · `Scroll reveals and widget swaps` (js) | scroll reveals, hover, widget swaps, animated pane heights |
+| `Motion engine` (js) | nav plate, directional entrances, the scroll channel |
+| `Hero node field` (js) | the canvas background on every page header |
+| `Case-open intro` (js) | the opening animation |
 
 ## Build
 
 The nav, `<head>`, and footer are identical on every page, and hand-maintaining five copies is how they drift. `build.py` renders them from one template instead.
 
 ```bash
-python3 build.py
+python build.py
 ```
 
 Page bodies and the widget scripts live in `parts/`. **Edit those, re-run, commit the generated HTML.** Every `.html` at the root is generated and carries a "do not edit" banner; editing one directly means losing the change on the next build. Changes to `style.css`, `main.js`, or images need no rebuild.

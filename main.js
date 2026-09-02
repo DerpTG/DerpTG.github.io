@@ -1,29 +1,8 @@
-/*
-   main.js, shared behavior, loaded on every page.
+/* Shared behavior for every page. Each block bails early if its elements
+   aren't there.
 
-   Eleven pieces, each checking for its own elements first so the file is safe
-   on pages that don't use a given feature:
-
-     1. Mobile nav       toggles the collapsed nav on narrow screens
-     2. Modal helper     shared open/close/focus behaviour for the overlays
-     3. Resume modal     opens the PDF in an overlay
-     4. Cert modal       shows a certification's detail and verification link
-     5. Course modal     shows what a coursework chip covered
-     6. Motion           scroll reveals, widget swaps, animated pane heights
-     7. Photo lightbox   full-size photo overlay, built at runtime
-     8. Scrollable panes edge fades for panes that overflow at phone width
-     9. V3 engine        nav plate, entrances, the scroll channel, tilt
-    10. Node field       the hero's canvas background
-    11. Case-open intro  the home page's opening animation
-
-   The experience accordions used to live here and are gone, because the
-   experience section is now always open. The v2 entry gate is gone too: it
-   was a screen you had to dismiss, and piece 11 is the same idea played as
-   an animation you simply watch.
-
-   Page-specific widgets (the lab feed, the project records, the interests
-   console, the kill chain and malware tools) still keep their own scripts inline.
-*/
+   The page widgets (kill chain, malware lab, project records, lab feed,
+   the three exercises, interests) have their own scripts in parts/. */
 
 
 /* ---------- Mobile nav ---------- */
@@ -50,22 +29,8 @@
 })();
 
 
-/* ---------- Focusable children ----------
-   Visible focusable descendants, in tab order, for the overlay tab traps.
-
-   Two things this deliberately gets right:
-
-     Hidden elements are skipped. The resume modal's .pdf-fallback link is
-     display:none until the browser turns out not to preview PDFs, and the
-     lightbox hides its arrows when there is only one photo. Treating one of
-     those as the last stop guards an element Tab never reaches, and focus
-     walks straight out into the page behind.
-
-     The <iframe> is skipped too, so Close is the last stop. Once focus moves
-     into the PDF viewer the keydown fires in *its* document, the trap here
-     never sees it, and focus escapes on the next Tab. Keyboard users reach
-     the PDF through Download or Open in tab, which is the better route
-     anyway: a PDF viewer is its own tab-order maze to get back out of. */
+/* Visible focusables in tab order, for the modal tab traps. Skips hidden
+   elements and the PDF iframe. Focus escapes the trap on both. */
 function focusablesIn(el) {
   return [].filter.call(
     el.querySelectorAll('button, a[href], [tabindex]:not([tabindex="-1"])'),
@@ -74,9 +39,7 @@ function focusablesIn(el) {
 
 
 /* ---------- Shared modal helper ----------
-   Both overlays behave the same way: remember what was focused, move focus
-   into the dialog, lock background scroll, and restore everything on close.
-   Returns { open, close } so each modal can wire its own trigger. */
+   Traps focus, locks background scroll, restores both on close. */
 function makeModal(id, closeBtnId) {
   var modal = document.getElementById(id);
   if (!modal) return null;
@@ -104,9 +67,8 @@ function makeModal(id, closeBtnId) {
     if (!modal.classList.contains('show')) return;
     if (e.key === 'Escape') { close(); return; }
     if (e.key !== 'Tab') return;
-    /* These carry aria-modal="true", which tells a screen reader the rest of
-       the page is inert, but that is only a promise: Tab still walks out into
-       the page behind unless it is held here. The gate already does this. */
+    /* aria-modal only tells screen readers the page is inert.
+       Tab still walks out without a real trap. */
     var f = focusablesIn(modal);
     if (!f.length) return;
     var a = f[0], z = f[f.length - 1];
@@ -119,8 +81,7 @@ function makeModal(id, closeBtnId) {
 
 
 /* ---------- Resume modal ----------
-   Any [data-resume] link opens it. The PDF is only fetched on first open, so
-   it costs nothing on page load. */
+   Any [data-resume] link opens it. The PDF loads on first open. */
 (function () {
   var m = makeModal('resumeModal', 'closeResume');
   if (!m) return;
@@ -139,16 +100,8 @@ function makeModal(id, closeBtnId) {
 
 
 /* ---------- Certification modal ----------
-   CERTS is keyed by the id in each badge's data-cert attribute, e.g.
-   <button class="cert" data-cert="secplus">. Each entry has:
-     name    full title, shown in the modal header
-     issuer  who grants it
-     blurb   one line on what it proves
-     covers  topics, rendered as a list
-     verify  public verification URL for the Verify button
-
-   To add one later: add a badge with a new data-cert id and a matching entry
-   here. Nothing else changes. */
+   Keyed by each badge's data-cert. Fields: name, issuer, blurb, covers[],
+   verify (public verification URL). */
 (function () {
   var m = makeModal('certModal', 'closeCert');
   if (!m) return;
@@ -243,7 +196,7 @@ function makeModal(id, closeBtnId) {
       '<ul class="cert-covers">' + covers + '</ul>';
 
     verifyEl.href = c.verify;
-    // Nothing to verify for an in-progress cert, so the button relabels.
+    // Nothing to verify for an in-progress cert. The button relabels.
     verifyEl.textContent = (id === 'cysa') ? 'Learn more' : 'Verify';
     m.open();
   }
@@ -257,21 +210,9 @@ function makeModal(id, closeBtnId) {
 
 
 /* ---------- Coursework modal ----------
-   COURSES is keyed by the id in each chip's data-course attribute, e.g.
-   <button class="chip" data-course="capstone">. Each entry has:
-     code    the Penn State course number
-     name    the course as it is listed on the resume
-     blurb   one line on what the course was
-     covers  the work it actually produced, rendered as a list
-
-   The chip label is the resume's wording, which for a few courses differs
-   from the catalogue title (CYBER 362 is catalogued as Cybersecurity
-   Analytics Studio, CYBER 366 as Malware Analytics). The modal shows the
-   course number and the work rather than restating a title, so nothing here
-   depends on the two matching.
-
-   To add one later: add a chip with a new data-course id and a matching entry
-   here. Nothing else changes. */
+   Keyed by each chip's data-course. Fields: code, name, blurb, covers[].
+   Chip labels come from the resume, not the catalogue. CYBER 362 and 366
+   differ. */
 (function () {
   var m = makeModal('courseModal', 'closeCourse');
   if (!m) return;
@@ -493,44 +434,26 @@ function makeModal(id, closeBtnId) {
   });
 })();
 
-/* ============================================================================
-   MOTION
-
-   Four pieces, all skipped when the visitor prefers reduced motion. The CSS
-   side lives in the MOTION LAYER section of style.css.
-
-     1. Scroll reveal  tag the recurring blocks with .reveal, stagger siblings
-                       via --rd, then flip each to .in the first time it enters
-                       the viewport. The class is added here rather than in the
-                       markup, so nothing is hidden when JS is off.
-     2. Widget swaps   the interactive panes animate their content changes.
-     3. Smooth resize  panes animate between heights instead of snapping.
-     4. Thumb stagger  photo strips cascade in.
-
-   IntersectionObserver is used rather than CSS animation-timeline because
-   Firefox still ships scroll-driven animations behind a flag, and this needs
-   to work everywhere.
-   ========================================================================= */
+/* ---------- Scroll reveals and widget swaps ----------
+   All off under prefers-reduced-motion. CSS lives in MOTION LAYER.
+   Uses IntersectionObserver. Firefox still keeps animation-timeline behind
+   a flag. */
 (function () {
   var reduce = window.matchMedia &&
     window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (reduce) return;
 
-  /* ---- 1. Scroll reveal ---- */
+  /* ---- Scroll reveal ---- */
   if ('IntersectionObserver' in window) {
-    // .role is deliberately absent: it lives inside .org, which is already a
-    // target, and two nested fades multiply into a muddy quarter-opacity
-    // reveal. One block, one fade.
+    // .role is omitted. It sits inside .org, which is already a target, and
+    // nested fades multiply into a muddy quarter opacity.
     var sel = [
       '.shead', '.sdesc', '.org', '.caps', '.certs', '.ncard',
       '.kc', '.term', '.feed', '.rec', '.lab-ex', '.ex-h', '.ex-sub',
       '.bio-main', '.bio-facts', '.factband'
     ].join(',');
-    /* v3 manages its own entrances for anything carrying data-rv or
-       data-stagger, and for the children of a data-hinge row. Those elements
-       match the selectors above too, and letting both systems claim one
-       element means .reveal and .rv fight over transform: the element fades
-       but never travels. */
+    /* Skip anything the motion engine owns: data-rv, data-stagger, and
+       data-hinge children. Both systems set transform and fight. */
     var targets = Array.prototype.filter.call(
       document.querySelectorAll(sel),
       function (el) {
@@ -551,16 +474,15 @@ function makeModal(id, closeBtnId) {
         var el = en.target;
         el.classList.add('in');
         io.unobserve(el);
-        /* Once the fade finishes, drop both classes. The reveal rule is
-           declared after the hover rules and would otherwise keep overriding
-           them, leaving hover stuck at the reveal's half-second duration. */
+        /* Reveal is declared after the hover rules. Drop both classes
+           when it finishes or hover keeps the reveal's duration. */
         var delay = parseInt(el.style.getPropertyValue('--rd'), 10) || 0;
         window.setTimeout(function () {
           el.classList.remove('reveal', 'in');
           el.style.removeProperty('--rd');
         }, delay + 620);
       });
-      // Same reasoning as the v3 engine: touch fires early, desktop late.
+      // Touch fires early, desktop late. Same as the motion engine below.
     }, {
       rootMargin: (window.matchMedia && window.matchMedia('(pointer: coarse)').matches)
         ? '0px 0px 9% 0px' : '0px 0px -4% 0px',
@@ -571,16 +493,15 @@ function makeModal(id, closeBtnId) {
 
   if (!('MutationObserver' in window)) return;
 
-  /* ---- 2. Widget swaps ----
-     Terminal panes cascade line by line via the --d delay. Narrative and
-     detail panes fade up by re-triggering the .swap animation. */
+  /* ---- Widget swaps ----
+     Terminal panes cascade by --d delay; detail panes re-trigger .swap. */
   document.querySelectorAll('.out').forEach(function (pane) {
     new MutationObserver(function () {
       var kids = pane.children;
       for (var i = 0; i < kids.length; i++) {
         kids[i].style.setProperty('--d', Math.min(i * 22, 500) + 'ms');
       }
-      /* ---- 4. Thumb stagger ---- */
+      /* ---- Thumb stagger ---- */
       pane.querySelectorAll('.shots').forEach(function (strip) {
         [].forEach.call(strip.children, function (t, i) {
           t.style.setProperty('--sd', (420 + i * 90) + 'ms');
@@ -598,19 +519,15 @@ function makeModal(id, closeBtnId) {
     }).observe(pane, { childList: true, subtree: true });
   });
 
-  /* Panes whose parts stagger in, the way the terminal staggers its lines.
-     The kill chain used the block fade and its whole narrative appeared at
-     once, which read as the text popping rather than loading.
-
-     Several of these elements survive a swap (the kill chain only rewrites
-     kcT.textContent, it does not replace the node), so the animation has to be
-     re-armed by removing the class, forcing a reflow, and adding it back. */
+  /* Some of these survive a swap. The kill chain rewrites textContent
+     instead of replacing the node. Remove the class, force a reflow, add it
+     back. */
   var CASCADE = {
     '.kc-nar': '.ttl, .att, p, .kc-method-lbl, .chip',
     '.kc-ioc': '.tag, .ioc > div',
     '.siem-detail': '.siem-dh, h4, .siem-meta > div, .tag, .siem-acts, .siem-verdict',
-    /* pcap.js rewrites className outright, but it does that before setting
-       innerHTML, so the observer re-adds the cascade class afterwards. */
+    /* parts/pcap.js.html rewrites className, but does it before setting
+       innerHTML. The observer re-adds the cascade class after. */
     '.pcap-detail': '.pkt-tree .tag, .pkt-line, .pkt-note .tag, .pkt-note p'
   };
   Object.keys(CASCADE).forEach(function (sel) {
@@ -630,8 +547,8 @@ function makeModal(id, closeBtnId) {
     });
   });
 
-  /* The phish counter changes its text in place, so no new node appears to
-     animate. Watch it and bump it instead. */
+  /* The phish counter changes text in place. Nothing new is inserted, so
+     watch it and bump it. */
   var prog = document.getElementById('phishProg');
   if (prog) {
     new MutationObserver(function () {
@@ -641,12 +558,9 @@ function makeModal(id, closeBtnId) {
     }).observe(prog, { childList: true, characterData: true, subtree: true });
   }
 
-  /* ---- 3. Smooth resize ----
-     The viewers swap content of different lengths. Instead of snapping, each
-     pane is held at a fixed pixel height; on every change we measure the new
-     natural height and let a CSS transition carry it there. Heights are
-     re-fixed without animating when webfonts land and on resize, so a pane
-     never clips its content. */
+  /* ---- Smooth resize ----
+     Panes are pinned to a pixel height and transitioned to the new measured
+     height on each swap. Re-fixed without animating on webfont load/resize. */
   var panes = [
     document.querySelector('.kc-body'),   // kill chain
     document.getElementById('smpOut'),    // malware terminal
@@ -689,15 +603,9 @@ function makeModal(id, closeBtnId) {
 })();
 
 
-/* ============================================================================
-   PHOTO LIGHTBOX
-
-   Any [data-lightbox] thumbnail opens full size in an overlay, with the same
-   chrome as the resume modal. Built here so it works for however many photos
-   a page carries, and so adding more later needs no new markup.
-
-   Arrow keys and the on-screen arrows step through the set that was clicked.
-   ========================================================================= */
+/* ---------- Photo lightbox ----------
+   Any [data-lightbox] thumb opens full size. Built at runtime. Arrow keys
+   step through the clicked set. */
 (function () {
   var thumbs = [];
 
@@ -777,8 +685,8 @@ function makeModal(id, closeBtnId) {
     if (e.key === 'ArrowLeft') { show(i - 1); return; }
     if (e.key === 'ArrowRight') { show(i + 1); return; }
     if (e.key !== 'Tab') return;
-    // Same trap as the other overlays. With one photo the arrows are hidden,
-    // so the visible set is just Close and Tab simply holds there.
+    // Same trap as the other overlays. With one photo the arrows are hidden
+    // and only Close is left.
     var f = focusablesIn(box);
     if (!f.length) return;
     var a = f[0], z = f[f.length - 1];
@@ -788,18 +696,9 @@ function makeModal(id, closeBtnId) {
 })();
 
 
-/* ============================================================================
-   SCROLLABLE PANES
-
-   The kill-chain rail, the malware sample list, the SIEM queue and the
-   interests list all overflow at phone width, where the browser's overlay
-   scrollbar stays invisible until you are already scrolling. Each pane gets a
-   persistent scrollbar and an edge fade from style.css; this decides which
-   fade to show and re-checks whenever the pane can change size.
-
-   Everything degrades cleanly: without this the panes still scroll, they just
-   lose the affordance.
-   ========================================================================= */
+/* ---------- Scrollable panes ----------
+   Picks which edge fade to show and rechecks on resize. style.css draws the
+   scrollbar and the fades. */
 (function () {
   var panes = [].slice.call(document.querySelectorAll(
     '.rail, .samples, .siem-queue, .out'
@@ -856,38 +755,19 @@ function makeModal(id, closeBtnId) {
 })();
 
 
-/* ============================================================================
-   V3 MOTION ENGINE
+/* ---------- Motion engine ----------
+   Nav plate, entrances, scroll channel, tilt. Everything but the nav plate
+   is off under prefers-reduced-motion.
 
-   Four pieces. The nav plate runs always, because it is a state change rather
-   than an animation; the other three are skipped entirely under
-   prefers-reduced-motion, which leaves the markup in its resting state.
-
-     1. Nav plate    <html>.scrolled once past the fold threshold, which is
-                     what fades the nav's background in over the dark hero.
-     2. Entrances    data-rv="up|left|right|scale|rise|clip|blur" picks a
-                     direction per element instead of v2's single fade-up;
-                     data-stagger hands the entrance down to a block's
-                     children so a list arrives line by line; data-hinge rows
-                     swing their children in from the left edge. All added
-                     here, never in the markup.
-     3. Scroll       one rAF loop writes --sp (page progress) onto <html>,
-                     --p (0 to 1 across a scene) onto every [data-scene], and
-                     --py onto every [data-par]. CSS does the rest, so adding
-                     a scroll-linked effect usually needs no new JS.
-     4. Tilt         [data-tilt] cards stand up from their bottom edge as
-                     they arrive, which is what the capabilities column uses.
-
-   One rAF loop and one passive scroll listener serve all of it. Per-effect
-   listeners were the alternative and they compound badly: six effects meant
-   six handlers doing six layout reads per frame.
-   ========================================================================= */
+   Attributes: data-rv="up|left|right|scale|rise|clip|blur", data-stagger,
+   data-hinge, data-tilt. One rAF loop writes --sp on <html>, --p on
+   [data-scene] and --py on [data-par]. */
 (function () {
   var root = document.documentElement;
   var reduce = window.matchMedia &&
     window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /* ---- 1. Nav plate ---- */
+  /* ---- Nav plate ---- */
   var navOn = null;
   function navCheck() {
     var on = (window.pageYOffset || root.scrollTop) > 40;
@@ -900,7 +780,7 @@ function makeModal(id, closeBtnId) {
 
   if (reduce) return;
 
-  /* ---- 2. Entrances ---- */
+  /* ---- Entrances ---- */
   var RV = { up: 'rv-up', down: 'rv-down', left: 'rv-left', right: 'rv-right',
              scale: 'rv-scale', rise: 'rv-rise', clip: 'rv-clip', blur: 'rv-blur' };
 
@@ -913,10 +793,8 @@ function makeModal(id, closeBtnId) {
       entering.push(el);
     });
 
-    /* Stagger boxes hand the entrance down to their children, so a list
-       arrives line by line instead of the whole block fading at once. The
-       box itself is what gets observed and what carries .in; the children
-       only carry their own delay. */
+    /* Stagger boxes pass the entrance to their children. The box is
+       observed and carries .in. Children only carry a delay. */
     document.querySelectorAll('[data-stagger]').forEach(function (box) {
       box.classList.add('stag');
       Array.prototype.forEach.call(box.children, function (kid, i) {
@@ -925,17 +803,15 @@ function makeModal(id, closeBtnId) {
       entering.push(box);
     });
 
-    /* Capability cards stand up from their bottom edge as they come up the
-       screen. One class, no stagger: they arrive one at a time already. */
+    /* Capability cards stand up from their bottom edge. No stagger. They
+       already arrive one at a time. */
     document.querySelectorAll('[data-tilt]').forEach(function (el) {
       el.classList.add('tilt');
       entering.push(el);
     });
 
-    /* Live index in the sticky column. A second observer rather than a scroll
-       handler, with the root inset to a band across the middle of the screen,
-       so "current" means the card sitting level with the heading rather than
-       merely the topmost one still on screen. */
+    /* Root is inset to a mid-screen band. "Current" means the card level
+       with the heading, not the topmost one on screen. */
     var navItems = document.querySelectorAll('.capnav li');
     var cards = document.querySelectorAll('.capsplit-list > .cap');
     if (navItems.length && navItems.length === cards.length) {
@@ -961,29 +837,10 @@ function makeModal(id, closeBtnId) {
       });
     });
 
-    /* threshold must be 0, not a fraction.
-
-       An element's own clip-path is applied when the intersection rect is
-       computed, and .rv-clip starts at inset(0 0 102% 0), which clips it to
-       zero height. So a clipped heading reports isIntersecting:true with
-       intersectionRatio:0 forever, and any threshold above zero is never met:
-       the section headings sat at opacity 0 permanently while their sibling
-       paragraphs revealed normally.
-
-       rootMargin does the waiting instead. Pulling the bottom edge in by 8%
-       means an element still has to clear the fold before it fires, which is
-       what the threshold was there for. */
-    /* Touch fires early, desktop fires late.
-
-       A negative bottom margin pulls the observer's box up, so an element has
-       to clear the fold before it animates. That is right on a desktop, where
-       eased scrolling means it then sits in view long enough to be watched.
-
-       On a phone there is no eased scrolling, the viewport is short, and touch
-       momentum is high, so the same setting means the entrance runs while the
-       element is still flying up the screen. A positive bottom margin extends
-       the box below the fold instead and starts the animation before the
-       element arrives, so it is part-way through by the time you see it. */
+    /* threshold must be 0. .rv-clip starts at inset(0 0 102% 0) and a
+       clipped element always reports ratio 0. rootMargin does the waiting. */
+    /* Desktop waits for the element to clear the fold. Touch can't. The
+       viewport is short and momentum is high. Start it early instead. */
     var coarse = window.matchMedia &&
       window.matchMedia('(pointer: coarse)').matches;
 
@@ -997,7 +854,7 @@ function makeModal(id, closeBtnId) {
     entering.forEach(function (el) { eio.observe(el); });
   }
 
-  /* ---- 3 + 4. Scroll channel and pinning ---- */
+  /* ---- Scroll channel ---- */
   var scenes = [], pars = [], queued = false;
 
   document.querySelectorAll('[data-scene]').forEach(function (el) {
@@ -1010,16 +867,9 @@ function makeModal(id, closeBtnId) {
 
   var lastSp = '';
 
-  /* Every read happens before any write.
-
-     The first version set --sp and then measured each scene and parallax layer
-     in turn. Writing a style and then reading a rect in the same frame makes
-     the browser lay the page out again to answer the read, so a frame with
-     five measured elements could force five extra layouts. Batched this way it
-     costs one.
-
-     --sp is also only written when it actually changes. It sits on <html>, so
-     every write invalidates style for the whole document. */
+  /* Read everything before writing anything. Interleaving forces a layout
+     per element. --sp is only written when it changes. It invalidates the
+     whole document. */
   function frame() {
     queued = false;
 
@@ -1053,8 +903,8 @@ function makeModal(id, closeBtnId) {
     }
     for (i = 0; i < pars.length; i++) {
       var o = pars[i], v = parV[i];
-      // Off-screen layers keep their last offset and drop will-change, so a
-      // long page is not holding a compositor layer per parallax element.
+      // Off-screen layers keep their last offset and drop will-change. A long
+      // page shouldn't hold a compositor layer per parallax element.
       if (!v.vis) {
         if (o.live) { o.el.style.willChange = ''; o.live = false; }
         continue;
@@ -1070,8 +920,7 @@ function makeModal(id, closeBtnId) {
     requestAnimationFrame(frame);
   }
 
-  // Always listening now: --sp is written on every page, whether or not the
-  // page has a scene or a parallax layer on it.
+  // --sp is written on every page, with or without a scene or parallax layer.
   window.addEventListener('scroll', onScroll, { passive: true });
 
   var rt;
@@ -1090,20 +939,9 @@ function makeModal(id, closeBtnId) {
 })();
 
 
-/* ============================================================================
-   HERO NODE FIELD
-
-   The hero's canvas background: a slow drift of nodes linked when they come
-   within range, with occasional packets running along a link. It reads as
-   both network topology and monitored traffic, which is the pair of things
-   the page is actually about.
-
-   It carries no information, so it is aria-hidden in the markup and nothing
-   is lost when it does not run. Under prefers-reduced-motion a single static
-   frame is drawn instead of animating, which keeps the composition without
-   the movement. Painting stops whenever the hero scrolls out of view or the
-   tab is hidden, so an idle background tab costs nothing.
-   ========================================================================= */
+/* ---------- Hero node field ----------
+   Decorative canvas background, aria-hidden. Draws one static frame under
+   prefers-reduced-motion. Stops painting off-screen and on hidden tabs. */
 (function () {
   var cv = document.getElementById('heroNet');
   if (!cv || !cv.getContext) return;
@@ -1127,8 +965,7 @@ function makeModal(id, closeBtnId) {
   }
 
   function build() {
-    // Density by area, capped. A phone gets a sparser field than a desktop
-    // rather than the same count crammed into a quarter of the space.
+    // Density by area, capped. A phone gets a sparser field than a desktop.
     var n = Math.round(Math.min(Math.max((w * h) / 20000, 26), 78));
     nodes = [];
     for (var i = 0; i < n; i++) {
@@ -1164,8 +1001,7 @@ function makeModal(id, closeBtnId) {
       for (i = 0; i < nodes.length; i++) {
         a = nodes[i];
         a.x += a.vx; a.y += a.vy;
-        // Wrap rather than bounce: a bounce puts a visible hard edge on the
-        // field, and the mask already fades the boundary out.
+        // Wrap instead of bouncing. A bounce puts a hard edge on the field.
         if (a.x < -20) a.x = w + 20; else if (a.x > w + 20) a.x = -20;
         if (a.y < -20) a.y = h + 20; else if (a.y > h + 20) a.y = -20;
       }
@@ -1260,8 +1096,7 @@ function makeModal(id, closeBtnId) {
     }, { threshold: 0 }).observe(cv);
   }
 
-  // Pointer tether is a nicety on a mouse and meaningless on touch, where the
-  // finger is where you are already looking. Left off there.
+  // Pointer tether is meaningless on touch. The finger is already the focus.
   if (window.matchMedia && window.matchMedia('(pointer: fine)').matches) {
     cv.parentNode.addEventListener('pointermove', function (e) {
       var r = cv.getBoundingClientRect();
@@ -1277,27 +1112,9 @@ function makeModal(id, closeBtnId) {
 })();
 
 
-/* ============================================================================
-   CASE-OPEN INTRO
-
-   v2 opened on a gate you had to dismiss. This is the same screen played as a
-   short animation instead: the case panel drops in, a cursor crosses to
-   "Start investigation", clicks it, and the panel leaves as the hero's own
-   load sequence starts. Nothing to click, nothing to get past.
-
-   Two things keep it from being an obstacle. It is skipped entirely under
-   prefers-reduced-motion and after the first view of a session, and any input
-   ends it immediately: a key, a click, a wheel, a touch.
-
-   The pre-paint half lives in parts/index_head.html, which sets html.intro
-   before the first frame. That class pauses the hero's load sequence, so the
-   hero is already sitting in its pre-animation state when this runs. Building
-   the whole thing from here without that flag is what made v2's gate flash
-   the site for a frame before covering it.
-
-   It is aria-hidden and carries no information: the hero underneath is in the
-   DOM and readable the whole time, so a screen reader never sees any of it.
-   ========================================================================= */
+/* ---------- Case-open intro ----------
+   Runs about 3s, once per session. Any input ends it. aria-hidden throughout.
+   parts/index_head.html sets html.intro before this runs. */
 (function () {
   var root = document.documentElement;
   if (!root.classList.contains('intro')) return;
@@ -1328,9 +1145,8 @@ function makeModal(id, closeBtnId) {
 
   function at(ms, fn) { timers.push(window.setTimeout(fn, ms)); }
 
-  /* The cursor travels between measured points rather than percentages: the
-     panel is centred, so its button lands somewhere different at every
-     viewport size. */
+  /* Measured points, not percentages. The panel is centred, so the button
+     moves with the viewport. */
   function aim() {
     var b = go.getBoundingClientRect();
     cur.style.setProperty('--tx', Math.round(b.left + b.width * 0.34) + 'px');
@@ -1349,8 +1165,7 @@ function makeModal(id, closeBtnId) {
     done = true;
     timers.forEach(clearTimeout);
     scr.classList.add('out');
-    /* Release the hero sequence as the panel leaves, so the two overlap
-       rather than the page sitting still between them. */
+    /* Release the hero sequence as the panel leaves so the two overlap. */
     window.setTimeout(function () { root.classList.remove('intro'); }, 150);
     window.setTimeout(function () {
       if (scr.parentNode) scr.parentNode.removeChild(scr);
@@ -1359,7 +1174,7 @@ function makeModal(id, closeBtnId) {
   }
 
   function skip(e) {
-    // A modifier-only keypress is not an attempt to skip anything.
+    // Ignore modifier-only keypresses.
     if (e && e.type === 'keydown' &&
         (e.key === 'Shift' || e.key === 'Control' ||
          e.key === 'Alt' || e.key === 'Meta')) return;
@@ -1372,14 +1187,9 @@ function makeModal(id, closeBtnId) {
   scr.addEventListener('click', skip);
 
   function play() {
-    // Measured after a frame, so the panel has been laid out before we aim.
+    // Measured after a frame, once the panel has been laid out.
     requestAnimationFrame(function () {
-      /* Beats, in ms from the panel landing. Each gap is doing something:
-         the panel gets a moment to settle before anything moves, the cursor
-         glide is the longest single step, the button holds its hover state
-         long enough to register as a hover, and the click is allowed to land
-         before the panel leaves. Shortening any of them makes the sequence
-         read as hurried rather than as a thing being operated. */
+      /* Beats, in ms from the panel landing. */
       aim();
       scr.classList.add('in');
       at(900,  function () { aim(); cur.classList.add('move'); });   // glide, .95s
@@ -1389,11 +1199,8 @@ function makeModal(id, closeBtnId) {
     });
   }
 
-  /* A page opened in a background tab gets no animation frames, so starting
-     the sequence there would leave the panel sitting on a black screen until
-     the tab came forward. Wait for the tab instead, and keep a timer as a
-     backstop: setTimeout is throttled in a hidden tab but still fires, so the
-     intro can never end up stuck no matter what happens to rAF. */
+  /* Background tabs get no rAF. Wait for visibility, with a timer as a
+     backstop. setTimeout is throttled when hidden but still fires. */
   if (document.hidden) {
     document.addEventListener('visibilitychange', function once() {
       if (document.hidden) return;

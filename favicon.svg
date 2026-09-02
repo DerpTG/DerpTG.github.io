@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <!-- Favicon: the site brand mark. Dark panel, lime status dot, FN monogram. -->
+  <!-- Site brand mark. Dark panel, green status dot, FN monogram. -->
   <rect width="64" height="64" rx="14" fill="#0B1116"/>
   <rect width="64" height="64" rx="14" fill="none" stroke="#22333F" stroke-width="2"/>
   <circle cx="49" cy="15" r="5" fill="#8FE388"/>

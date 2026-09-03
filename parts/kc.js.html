@@ -53,7 +53,7 @@ function renderChain(i){
   // Tools/method line. A labeled row of the tools used at this stage.
   kcM.innerHTML='<span class="kc-method-lbl">Tools &amp; method</span>'+
     d.m.map(function(t){return '<span class="chip">'+t+'</span>'}).join('');
-  // Each evidence row: [label, value, tone]; tone becomes a CSS class on <b>.
+  // Each evidence row is [label, value, tone]. The tone becomes a CSS class.
   kcE.innerHTML=d.e.map(function(r){var c=r[2]?' class="'+r[2]+'"':'';return '<div><span>'+r[0]+'</span><b'+c+'>'+r[1]+'</b></div>'}).join('');
 }
 // Wire each stage node. Highlight it and render its data. data-i is the index.

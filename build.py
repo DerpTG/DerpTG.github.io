@@ -140,8 +140,8 @@ COURSE_MODAL = """
 """
 
 
-INDEX_DOC = """<!-- Home: hero, facts, experience, capabilities, education and
-     certs, work index, modals. -->
+INDEX_DOC = """<!-- Home. Hero, facts, experience, capabilities,
+     education and certs, the work index, and the modals. -->
 """
 
 
@@ -168,7 +168,7 @@ def write(name, html):
 def build():
     print('Building pages:')
 
-    # ---- index.html (home) ----
+    # ---- index.html ----
     # Unique layout, shared chrome. Adds a preloaded portrait, JSON-LD,
     # <body id="top" class="dark-top">, and the three modals.
     write('index.html',
@@ -188,7 +188,7 @@ def build():
           + footer('projects.html', 'Start with the projects')
           + '\n<script src="main.js"></script>\n</body>\n</html>\n')
 
-    # ---- projects.html (casework + archive, merged) ----
+    # ---- projects.html ----
     write('projects.html',
           head('projects.html', 'Projects &middot; Felix Naroditskiy',
                'Ransomware kill chain reconstruction, malware analysis casework, IR playbooks, networking labs, risk analysis, and code.',

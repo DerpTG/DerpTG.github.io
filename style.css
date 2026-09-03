@@ -59,7 +59,7 @@ img{display:block;max-width:100%}
   letter-spacing:.16em;text-transform:uppercase;color:var(--faint);
 }
 
-/* ============================================================ NAV */
+/* ==================================================================== NAV */
 .nav{
   position:sticky;top:0;z-index:60;
   background:color-mix(in srgb,var(--ground) 95%,transparent);
@@ -100,7 +100,7 @@ img{display:block;max-width:100%}
 .nav-act .solid:hover,.nav-act .solid:focus-visible{background:var(--ink);border-color:var(--ink);color:var(--ground)}
 .navtog{display:none}
 
-/* ============================================================ HERO
+/* ====================================================================== HERO
    Fills the viewport below the nav. */
 .hero{
   position:relative;overflow:hidden;
@@ -167,7 +167,7 @@ img{display:block;max-width:100%}
 .shot-tag .v{font-family:var(--mono);font-size:11.5px;font-weight:500;color:var(--ink);text-align:right}
 .shot-tag .v.sig{color:var(--signal)}
 
-/* Facts strip. Four cells, hairline separated, flush to the hero. */
+/* Facts strip. Four cells, hairline separated. */
 .factband{border-bottom:0}
 .facts{display:grid;grid-template-columns:repeat(4,1fr)}
 .facts div{
@@ -196,7 +196,7 @@ img{display:block;max-width:100%}
 }
 @keyframes cue{0%,100%{transform:scaleY(.45);opacity:.5}50%{transform:scaleY(1);opacity:1}}
 
-/* ============================================================ SECTIONS */
+/* =============================================================== SECTIONS */
 /* No rule between sections. The heading already marks the boundary. */
 section{padding:54px 0}
 .shead{display:flex;align-items:baseline;gap:16px;margin-bottom:10px}
@@ -205,7 +205,7 @@ section{padding:54px 0}
 .shead .fill{flex:1;height:1px;background:var(--rule);align-self:center}
 .sdesc{color:var(--mute);max-width:60ch;margin-bottom:42px;font-size:16px}
 
-/* ============================================================ EXPERIENCE
+/* ================================================================ EXPERIENCE
    Always open. Roles sit inside an .org block. An employer with two titles
    reads as one job, with a Current/Prior badge on each role. */
 .roles{display:grid;gap:0}
@@ -233,7 +233,7 @@ section{padding:54px 0}
 }
 .role li b{color:var(--ink);font-weight:600}
 
-/* ============================================================ CAPABILITIES
+/* ============================================================== CAPABILITIES
    Six categories in a 3x2 grid. nth-child draws the borders per cell. The
    interior rules meet cleanly at both breakpoints. */
 .caps{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--rule-2);background:var(--panel)}
@@ -256,7 +256,7 @@ section{padding:54px 0}
 .cert.prog::before{background:var(--sev-md)}
 .cert.prog{color:var(--sev-md)}
 
-/* ============================================================ WORK CARDS */
+/* ============================================================= WORK CARDS */
 .navgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--rule-2);border:1px solid var(--rule-2)}
 .ncard{
   background:var(--panel);padding:28px 26px 24px;text-decoration:none;
@@ -280,7 +280,7 @@ section{padding:54px 0}
 .ncard:hover .go .arw{transform:translateX(4px)}
 .ncard .arw{display:inline-block;transition:transform .18s;color:var(--signal)}
 
-/* ============================================================ SOCIAL MARKS
+/* ============================================================== SOCIAL MARKS
    Greyed back to sit behind the email and resume buttons. Each link needs an
    aria-label. There is no text to announce. */
 /* The .cta .ico-link half is what beats .cta a at (0,1,1). Without it these
@@ -297,7 +297,7 @@ section{padding:54px 0}
   color:var(--ink);background:none;transform:translateY(-2px);
 }
 
-/* ============================================================ MODALS */
+/* ================================================================= MODALS */
 .modal{
   position:fixed;inset:0;z-index:200;background:rgba(20,23,26,.62);
   backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;padding:24px;
@@ -336,17 +336,17 @@ section{padding:54px 0}
 .cert-covers li{position:relative;padding-left:20px;color:var(--mute);font-size:15px}
 .cert-covers li::before{content:"";position:absolute;left:0;top:.62em;width:7px;height:1px;background:var(--signal)}
 
-/* ============================================================ FOOTER */
+/* ================================================================= FOOTER */
 footer{padding:20px 0 40px;margin-top:auto}
 footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:center}
 footer span,footer a{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint)}
 footer a{text-decoration:none;transition:.15s}
 footer a:hover{color:var(--signal)}
 
-/* ============================================================ FOCUS */
+/* ================================================================== FOCUS */
 a:focus-visible,button:focus-visible{outline:2px solid var(--signal);outline-offset:3px}
 
-/* ============================================================ RESPONSIVE */
+/* ============================================================= RESPONSIVE */
 @media(max-width:1000px){
   .hero-grid{grid-template-columns:1fr;gap:40px}
   .shot{max-width:380px;margin:0 auto}
@@ -395,7 +395,7 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--signal);outline-off
   .pdf-fallback{display:block}
 }
 
-/* ============================================================ MOTION
+/* ==================================================================== MOTION
    Load: hairlines draw, content rises, redaction bars retract.
    Scroll: main.js flips .reveal to .in. Rules in MOTION LAYER. */
 
@@ -420,9 +420,7 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--signal);outline-off
   @view-transition{navigation:none}
 }
 
-/* ============================================================================
-   PAGE FURNITURE (subpages)
-   ========================================================================= */
+/* ============================================== PAGE FURNITURE (subpages) */
 .phead{padding:64px 0 46px}
 .back{
   font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
@@ -447,7 +445,7 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--signal);outline-off
 .panel-top .t{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase}
 .panel-top .s{font-family:var(--mono);font-size:10.5px;color:var(--faint);letter-spacing:.1em;text-transform:uppercase}
 
-/* ============================================================ KILL CHAIN */
+/* ============================================================= KILL CHAIN */
 .kc{border:1px solid var(--rule-2);background:var(--panel)}
 .kc-top{
   display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;
@@ -507,7 +505,7 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--signal);outline-off
   border:1px solid var(--rule-2);padding:4px 8px;background:var(--ground);
 }
 
-/* ============================================================ TERMINAL
+/* ================================================================== TERMINAL
    Light-mode terminal. Console cues (mono, prompt, cursor) on the panel
    colour instead of black. */
 .term{border:1px solid var(--rule-2);background:var(--panel);font-family:var(--mono)}
@@ -546,7 +544,7 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--signal);outline-off
 .cursor{display:inline-block;width:8px;height:14px;background:var(--signal);vertical-align:-2px;animation:blink 1.1s step-end infinite}
 @keyframes blink{50%{opacity:0}}
 
-/* ============================================================ RECORDS */
+/* ================================================================ RECORDS */
 .rec{border:1px solid var(--rule-2);background:var(--panel)}
 .rec-top{
   display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;
@@ -588,7 +586,7 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--signal);outline-off
 }
 .gh:hover{border-color:var(--signal)}
 
-/* ============================================================ EXERCISES */
+/* ============================================================== EXERCISES */
 .lab-ex{border:1px solid var(--rule-2);background:var(--panel);margin-bottom:8px}
 .lab-ex-top{
   display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;
@@ -600,7 +598,7 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--signal);outline-off
 .ex-h:first-of-type{margin-top:10px}
 .ex-sub{color:var(--mute);font-size:15.5px;line-height:1.6;max-width:70ch;margin-bottom:18px}
 
-/* Exercise 1: SIEM triage */
+/* Exercise 1, SIEM triage */
 .siem-grid{display:grid;grid-template-columns:340px 1fr}
 .siem-queue{border-right:1px solid var(--rule-2);max-height:460px;overflow-y:auto;scrollbar-width:thin}
 .siem-alert{
@@ -640,7 +638,7 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--signal);outline-off
 .sd-verdict.wrong .v{color:var(--sev-hi)}
 .sd-verdict p{font-size:14px;margin:0;color:var(--mute)}
 
-/* Exercise 2: packet capture */
+/* Exercise 2, packet capture */
 .pcap-filter{
   display:flex;align-items:center;gap:12px;padding:11px 18px;
   border-bottom:1px solid var(--rule-2);background:var(--ground);
@@ -681,7 +679,7 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--signal);outline-off
 }
 .pkt-note p{color:var(--mute);font-size:14.5px;line-height:1.62}
 
-/* Exercise 3: phishing hunt */
+/* Exercise 3, phishing hunt */
 .phish{display:grid;grid-template-columns:1fr 310px}
 .phish-mail{border-right:1px solid var(--rule-2)}
 .phish-hd{padding:16px 20px;border-bottom:1px solid var(--rule-2);background:var(--panel-2);display:grid;gap:7px}
@@ -711,7 +709,7 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--signal);outline-off
 }
 .phish-done p{font-size:13.5px;color:var(--mute);line-height:1.55}
 
-/* ============================================================ ABOUT */
+/* ================================================================== ABOUT */
 .bio{display:grid;grid-template-columns:1.55fr 1fr;gap:40px;align-items:start}
 .bio-main p{color:var(--mute);font-size:16.5px;line-height:1.72;max-width:60ch}
 .bio-main p+p{margin-top:16px}
@@ -723,11 +721,12 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--signal);outline-off
 .fact .v.wip{color:var(--sev-md)}
 .term-grid .samples .smp .fn{margin-bottom:4px}
 
-/* ============================================================ 404 */
+/* ==================================================================== 404 */
 .nf{padding:20px 22px;font-family:var(--mono);font-size:13px;line-height:2}
 .nf a{color:var(--signal)}
 
-/* ============================================================ RESPONSIVE */
+/* ===================================================== RESPONSIVE (subpages)
+   Widget layouts collapse to one column. */
 @media(max-width:1000px){
   .kc-body{grid-template-columns:1fr}
   .kc-nar{border-right:0;border-bottom:1px solid var(--rule)}
@@ -772,7 +771,7 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--signal);outline-off
 .org-name{font-size:18px;font-weight:700;letter-spacing:-.02em;line-height:1.2}
 .org-loc{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
 
-/* ============================================================ LAB FEED
+/* ================================================================== LAB FEED
    Selectors match what parts/feed.js.html emits. .feed-row with a
    sev-{done|active|note} modifier, plus the .feed-* cell classes. */
 .feed{border:1px solid var(--rule-2);background:var(--panel)}
@@ -816,7 +815,7 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--signal);outline-off
    should line up. */
 .feed-pad{padding:4px 18px 22px;color:var(--mute);font-size:15px;max-width:80ch;line-height:1.62}
 
-/* ============================================================ SIEM TRIAGE
+/* =============================================================== SIEM TRIAGE
    Matches parts/siem.js.html. .siem-row with a sev- modifier, plus the
    .siem-* detail classes. */
 .siem-row{
@@ -919,11 +918,11 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--signal);outline-off
 .shot-thumb:hover,.shot-thumb:focus-visible{border-color:var(--signal);transform:translateY(-2px)}
 @media(max-width:520px){.shot-thumb img{width:100%;height:auto;aspect-ratio:1}.shot-thumb{width:calc(50% - 5px)}}
 
-/* ============================================================ MOTION LAYER
+/* ============================================================== MOTION LAYER
    Scroll reveal, hover, widget swaps, smooth resize. All off under
    prefers-reduced-motion. Classes come from main.js, never the markup. */
 
-/* ---- Scroll reveal. Rules are at the end of this section. ---- */
+/* Scroll reveal rules are at the end of this section. */
 
 /* ---- Hover ---- */
 .ncard{position:relative;transition:background .2s,transform .2s,box-shadow .2s}
@@ -1027,7 +1026,7 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--signal);outline-off
   .shead.reveal .fill{transform:scaleX(1)!important}
 }
 
-/* ========================================================== PHOTO LIGHTBOX
+/* ============================================================ PHOTO LIGHTBOX
    Reuses the resume modal shell. The stage sizes to the image. */
 .photo-box{height:auto;max-height:92vh;width:min(1040px,100%)}
 .photo-stage{
@@ -1040,7 +1039,7 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--signal);outline-off
 /* Thumbnails are buttons now, so reset the default control styling. */
 button.shot-thumb{padding:0;font:inherit;color:inherit;cursor:zoom-in}
 
-/* ========================================================= SCROLLABLE PANES
+/* ========================================================== SCROLLABLE PANES
    Mobile scrollbars stay invisible until you scroll and an overflowing pane
    looks cut off. -webkit-appearance:none stops iOS treating the scrollbar as
    a transient overlay. The mask sits on the container, not its contents. */
@@ -1098,7 +1097,7 @@ button.shot-thumb{padding:0;font:inherit;color:inherit;cursor:zoom-in}
 }
 @media(pointer:coarse){.scroll-hint{display:inline}}
 
-/* =========================================================== SPOT THE PHISH
+/* ============================================================ SPOT THE PHISH
    Per-interaction animation, no batch to cascade. .fnd is a new node and
    animates on insertion. .phish-done and .flag.found animate on a class
    change. Only the counter needs JS. Its text changes in place. */
@@ -1132,7 +1131,7 @@ button.shot-thumb{padding:0;font:inherit;color:inherit;cursor:zoom-in}
 .phish-done.show .v{animation:cascadeIn .42s .1s cubic-bezier(.22,.68,.28,1) both}
 .phish-done.show p{animation:cascadeIn .42s .2s cubic-bezier(.22,.68,.28,1) both}
 
-/* ============================================================ TOUCH TARGETS
+/* ============================================================= TOUCH TARGETS
    Controls that sat under the recommended 44px. Padding, not font size, so
    desktop weight is unchanged. */
 @media(pointer:coarse){
@@ -1151,7 +1150,7 @@ button.shot-thumb{padding:0;font:inherit;color:inherit;cursor:zoom-in}
   .ico-link{width:44px;height:44px}
 }
 
-/* ==================================================== SURFACES AND SCENES
+/* ======================================================= SURFACES AND SCENES
    Two surfaces. Paper, and --void (near-black) for sections about live
    systems. Dark tokens mirror the light ones one for one, so a component
    moves between surfaces by swapping tokens.
@@ -1194,7 +1193,7 @@ button.shot-thumb{padding:0;font:inherit;color:inherit;cursor:zoom-in}
   --navh:62px;
 }
 
-/* ---- The dark surface ----
+/* ---- Dark surface ----
    isolation:isolate keeps mix-blend-mode on the noise layer compositing
    against the scene, not whatever is behind the section. */
 /* overflow:clip, not hidden. hidden makes this a scroll container and the
@@ -1214,7 +1213,7 @@ button.shot-thumb{padding:0;font:inherit;color:inherit;cursor:zoom-in}
 .scene-dark a{color:inherit}
 .scene-dark ::selection{background:var(--signal-d);color:var(--void)}
 
-/* ======================================================= BACKGROUND LAYERS
+/* ========================================================= BACKGROUND LAYERS
    Four stackable layers per scene. Separate elements, not pseudo-elements.
    A scene needs up to three at once. All pointer-events:none. */
 .bgl{position:absolute;inset:0;pointer-events:none;z-index:0}
@@ -1266,7 +1265,7 @@ button.shot-thumb{padding:0;font:inherit;color:inherit;cursor:zoom-in}
    resolution handled in JS against devicePixelRatio. */
 .hero-net{width:100%;height:100%;opacity:.9}
 
-/* ================================================== DIRECTIONAL ENTRANCES
+/* ===================================================== DIRECTIONAL ENTRANCES
    Direction, scale, clip and depth variants, plus a scroll-progress
    channel. */
 /* Durations come from tokens so the TOUCH MOTION block can lengthen every
@@ -1342,7 +1341,7 @@ html.js:not(.scrolled) .dark-top .nav-act a:focus-visible{
 }
 html.js:not(.scrolled) .dark-top .navtog{color:var(--void-ink);border-color:var(--void-rule-2)}
 
-/* ===================================================================== HERO
+/* ================================================== HERO ON THE DARK SURFACE
    The nav is sticky and still in flow. The hero is pulled up under it by its
    height and pads that back inside. */
 .hero.scene-dark{
@@ -1415,8 +1414,8 @@ html.js:not(.scrolled) .dark-top .navtog{color:var(--void-ink);border-color:var(
 .scene-dark .cert.prog{color:#E0A93B}
 .scene-dark .cert.prog::before{background:#E0A93B}
 
-/* =============================================================== WORK CARDS
-   On the dark surface. Each carries its own parallax offset from main.js. */
+/* ============================================ WORK CARDS ON THE DARK SURFACE
+   Each carries its own parallax offset from main.js. */
 /* Real gaps, not the light version's 1px hairline grid. A card hinging away
    from a shared background line exposes a bare block behind it. */
 .scene-dark .navgrid{background:none;border:0;gap:20px}
@@ -1429,7 +1428,7 @@ html.js:not(.scrolled) .dark-top .navtog{color:var(--void-ink);border-color:var(
 .scene-dark .ncard:hover{box-shadow:0 18px 40px -22px rgba(0,0,0,.9)}
 .scene-dark .ncard:hover::after,.scene-dark .ncard:focus-visible::after{box-shadow:inset 0 0 0 2px var(--signal-d)}
 
-/* ========================================================== SUBPAGE HEADERS
+/* =========================================================== SUBPAGE HEADERS
    Pulled up under the nav like the home hero, then cut to paper at the first
    section. body.dark-top is what lets the nav sit plateless here. */
 .phead.scene-dark{
@@ -1442,21 +1441,21 @@ html.js:not(.scrolled) .dark-top .navtog{color:var(--void-ink);border-color:var(
 .phead.scene-dark h1{color:var(--void-ink)}
 .phead.scene-dark .sub{color:var(--void-mute)}
 
-/* ================================================ DEPTH ON THE LIGHT SURFACE */
+/* ============================================= DEPTH ON THE LIGHT SURFACE */
 .org{background:var(--panel-hi);box-shadow:var(--e1);transition:box-shadow .3s var(--ease),transform .3s var(--ease)}
 .org:hover{box-shadow:var(--e2);transform:translateY(-2px)}
 .factband{background:var(--panel-hi);box-shadow:var(--e1)}
 .navgrid{box-shadow:var(--e2)}
 .ncard:hover,.ncard:focus-visible{box-shadow:var(--e3)}
 
-/* ==================================================== CONTINUOUS BACKGROUND
+/* ===================================================== CONTINUOUS BACKGROUND
    .sitebg is one fixed layer behind the document. Light sections show it
    through, dark scenes cover it. Blooms are positioned from --sp and drift
    for the length of the page instead of repeating per section. */
 .sitebg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
 .sitebg i{position:absolute;display:block}
 
-/* Everything in the document sits above it. */
+/* Everything in the document sits above .sitebg. */
 body>header,body>main,body>footer{position:relative;z-index:1}
 
 /* Alphas are low on purpose. Values that read as light on near-black read
@@ -1502,7 +1501,7 @@ body>header,body>main,body>footer{position:relative;z-index:1}
     radial-gradient(680px 500px at 90% 84%,rgba(72,122,142,.08),transparent 70%);
 }
 
-/* ---- The facts strip, now closing the dark opening run ---------------- */
+/* ---- Facts strip ---- */
 .factband.scene-dark{
   background:var(--void);box-shadow:none;
   border-top:1px solid var(--void-rule);border-bottom:0;
@@ -1516,7 +1515,7 @@ body>header,body>main,body>footer{position:relative;z-index:1}
   .factband.scene-dark .facts div{border-bottom-color:var(--void-rule)}
 }
 
-/* ========================================================= ITEM-LEVEL STAGGER
+/* ======================================================== ITEM-LEVEL STAGGER
    [data-stagger] hands the entrance down to children. Added by main.js. */
 .stag>*{
   opacity:0;transform:translateY(15px);
@@ -1530,7 +1529,7 @@ body>header,body>main,body>footer{position:relative;z-index:1}
   .sb-bloom,.sb-grid{transform:none;will-change:auto}
 }
 
-/* =============================================================== BOXED DARK
+/* ================================================================ BOXED DARK
    Below the hero the dark surface only appears boxed, inset on the paper.
    .darkbox pairs with .scene-dark for the tokens and adds the frame, lift
    and texture. */
@@ -1558,7 +1557,7 @@ body>header,body>main,body>footer{position:relative;z-index:1}
 }
 .darkbox>*{position:relative;z-index:1}
 
-/* ================================================= CAPABILITIES, STICKY SPLIT
+/* ================================================ CAPABILITIES, STICKY SPLIT
    Sticky heading left, cards tilting past it right. Below 900px the split
    collapses to a plain stack. Same as the JavaScript-off state. */
 .capsplit{
@@ -1583,7 +1582,7 @@ body>header,body>main,body>footer{position:relative;z-index:1}
   color:var(--void-faint);opacity:.85;
 }
 .capsplit .cap .lbl{display:block;margin-bottom:18px;color:var(--signal-d)}
-/* Two columns keep each card wide and short: one glance, not a list. */
+/* Two columns keep each card wide and short. One glance, not a list. */
 .capsplit .cap ul{list-style:none;display:grid;grid-template-columns:repeat(2,1fr);gap:10px 28px}
 .capsplit .cap li{font-size:14.5px;color:var(--void-mute);line-height:1.4}
 
@@ -1598,7 +1597,7 @@ body>header,body>main,body>footer{position:relative;z-index:1}
 }
 .tilt.in{opacity:1;transform:none}
 
-/* ---- The work panel ---------------------------------------------------- */
+/* ---- Work panel ---- */
 .workbox{padding:30px}
 .workbox .navgrid{background:none;border:0;gap:18px;box-shadow:none}
 
@@ -1617,7 +1616,7 @@ body>header,body>main,body>footer{position:relative;z-index:1}
 }
 
 
-/* ========================================================== CASE-OPEN INTRO */
+/* ======================================================== CASE-OPEN INTRO */
 html.intro,html.intro body{overflow:hidden}
 html.intro .hero .lbl,
 html.intro .hero h1 .red::after,
@@ -1761,7 +1760,7 @@ html.intro .scroll-cue{animation-play-state:paused}
 }
 
 
-/* ============================================================= TOUCH MOTION
+/* ============================================================== TOUCH MOTION
    Desktop entrances read as abrupt on a phone. The viewport is short and
    touch momentum is high. An element can enter and finish while your thumb
    is still moving. Entrances run about a third longer here. */
@@ -1786,7 +1785,7 @@ html.intro .scroll-cue{animation-play-state:paused}
 }
 
 
-/* ========================================================= BLACK TITLE BARS
+/* ========================================================== BLACK TITLE BARS
    Only the title bar goes black. The content under it stays on paper.
    Panels take a near-black outline instead of a grey hairline. --sev-hi/md/lo
    need dark twins. They are too dim on near-black. */
@@ -1832,7 +1831,7 @@ html.intro .scroll-cue{animation-play-state:paused}
 
 
 /* =================================================== RECORD AND FEED BULLETS
-   Same marker as the experience bullets: a short crimson rule, not a disc. */
+   Same marker as the experience bullets. A short crimson rule, not a disc. */
 .pts{list-style:none;display:grid;gap:10px;margin:0}
 .pts li{position:relative;padding-left:20px;line-height:1.58}
 .pts li::before{
@@ -1842,7 +1841,7 @@ html.intro .scroll-cue{animation-play-state:paused}
 /* The summary line above the bullets keeps its own spacing. */
 .rec-pad .rec-sum{margin-bottom:14px}
 
-/* ========================================================== EDUCATION BLOCK
+/* =========================================================== EDUCATION BLOCK
    Courses reuse .chip, the same token the records and lab feed use. */
 .edu{
   border:1px solid var(--rule-2);background:var(--panel-hi);

@@ -873,7 +873,7 @@ function makeModal(id, closeBtnId) {
   function frame() {
     queued = false;
 
-    // ---- reads ----
+    /* ---- Reads ---- */
     var vh = window.innerHeight;
     var y = window.pageYOffset || root.scrollTop;
     var maxY = root.scrollHeight - vh;
@@ -894,7 +894,7 @@ function makeModal(id, closeBtnId) {
       });
     }
 
-    // ---- writes ----
+    /* ---- Writes ---- */
     var sp = maxY > 0 ? (y / maxY).toFixed(3) : '0';
     if (sp !== lastSp) { lastSp = sp; root.style.setProperty('--sp', sp); }
 
@@ -1049,7 +1049,7 @@ function makeModal(id, closeBtnId) {
       ctx.beginPath(); ctx.arc(px, py, 2.1, 0, 6.2832); ctx.fill();
     }
 
-    // Nodes.
+    // Nodes, drawn over the links.
     for (i = 0; i < nodes.length; i++) {
       a = nodes[i];
       ctx.fillStyle = 'rgba(237,240,235,.5)';

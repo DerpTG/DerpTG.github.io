@@ -29,6 +29,64 @@
 })();
 
 
+/* ---------- Theme toggle ----------
+   build.py already resolved the theme before the first paint, so this only
+   flips the attribute. Everything visual follows from the token swap in
+   THEMES; nothing here touches colours.
+
+   The swap is deliberately instant. Transitioning it means either overriding
+   `transition` on every element for the duration, which clobbers whatever
+   entrance or hover is mid-flight, or a view transition, which snapshots the
+   page and so cross-fades the sun/moon instead of morphing it. The mark
+   animates; the surfaces cut. */
+(function () {
+  var btn = document.getElementById('themetog');
+  if (!btn) return;
+
+  var root = document.documentElement;
+  var meta = document.querySelector('meta[name="theme-color"]');
+  var KEY = 'fn.theme';
+  /* Mirrors --ground in each theme. Only the browser chrome reads it. */
+  var BAR = { light: '#E7E9E4', dark: '#0B0F11' };
+
+  function apply(theme) {
+    root.setAttribute('data-theme', theme);
+    btn.setAttribute('aria-label',
+      theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme');
+    if (meta) meta.setAttribute('content', BAR[theme]);
+  }
+
+  apply(root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light');
+
+  btn.addEventListener('click', function () {
+    var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    apply(next);
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+
+    // Restart the press animation on every click, not just the first.
+    btn.classList.remove('pop');
+    void btn.offsetWidth;
+    btn.classList.add('pop');
+  });
+
+  btn.addEventListener('animationend', function () {
+    btn.classList.remove('pop');
+  });
+
+  /* Follow the OS until the visitor picks a side. After that their choice
+     stands, on this browser, until they pick again. */
+  var mq = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)');
+  if (mq && mq.addEventListener) {
+    mq.addEventListener('change', function (e) {
+      var stored;
+      try { stored = localStorage.getItem(KEY); } catch (err) {}
+      if (stored === 'light' || stored === 'dark') return;
+      apply(e.matches ? 'dark' : 'light');
+    });
+  }
+})();
+
+
 /* Visible focusables in tab order, for the modal tab traps. Skips hidden
    elements and the PDF iframe. Focus escapes the trap on both. */
 function focusablesIn(el) {
@@ -211,8 +269,8 @@ function makeModal(id, closeBtnId) {
 
 /* ---------- Coursework modal ----------
    Keyed by each chip's data-course. Fields: code, name, blurb, covers[].
-   Chip labels come from the resume, not the catalogue. CYBER 362 and 366
-   differ. */
+   Chip labels follow the resume rather than the course catalogue. For
+   CYBER 362 and CYBER 366 the two wordings differ. */
 (function () {
   var m = makeModal('courseModal', 'closeCourse');
   if (!m) return;
@@ -436,8 +494,8 @@ function makeModal(id, closeBtnId) {
 
 /* ---------- Scroll reveals and widget swaps ----------
    All off under prefers-reduced-motion. CSS lives in MOTION LAYER.
-   Uses IntersectionObserver. Firefox still keeps animation-timeline behind
-   a flag. */
+   IntersectionObserver rather than a scroll-driven animation-timeline, which
+   would still need this path as a fallback. */
 (function () {
   var reduce = window.matchMedia &&
     window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -482,8 +540,9 @@ function makeModal(id, closeBtnId) {
           el.style.removeProperty('--rd');
         }, delay + 620);
       });
-      // Touch fires early, desktop late. Same as the motion engine below.
     }, {
+      // Touch starts early, desktop waits for the element to clear the fold.
+      // Same trade-off as the motion engine, tuned separately.
       rootMargin: (window.matchMedia && window.matchMedia('(pointer: coarse)').matches)
         ? '0px 0px 9% 0px' : '0px 0px -4% 0px',
       threshold: 0.02
@@ -810,8 +869,9 @@ function makeModal(id, closeBtnId) {
       entering.push(el);
     });
 
-    /* Root is inset to a mid-screen band. "Current" means the card level
-       with the heading, not the topmost one on screen. */
+    /* Capabilities live index. Root is inset to a mid-screen band, so
+       "current" means the card level with the heading, not the topmost one
+       on screen. */
     var navItems = document.querySelectorAll('.capnav li');
     var cards = document.querySelectorAll('.capsplit-list > .cap');
     if (navItems.length && navItems.length === cards.length) {
@@ -838,9 +898,9 @@ function makeModal(id, closeBtnId) {
     });
 
     /* threshold must be 0. .rv-clip starts at inset(0 0 102% 0) and a
-       clipped element always reports ratio 0. rootMargin does the waiting. */
-    /* Desktop waits for the element to clear the fold. Touch can't. The
-       viewport is short and momentum is high. Start it early instead. */
+       clipped element always reports ratio 0, so rootMargin does the waiting.
+       Desktop waits for the element to clear the fold. Touch can't: the
+       viewport is short and momentum is high, so it starts early instead. */
     var coarse = window.matchMedia &&
       window.matchMedia('(pointer: coarse)').matches;
 
@@ -930,7 +990,7 @@ function makeModal(id, closeBtnId) {
   });
 
   frame();
-  // Webfonts and the portrait both change measurements the pin maths depends on.
+  // Webfonts and the portrait both change the heights the frame loop measures.
   if (document.fonts && document.fonts.ready) {
     document.fonts.ready.then(frame);
   }
@@ -1113,7 +1173,7 @@ function makeModal(id, closeBtnId) {
 
 
 /* ---------- Case-open intro ----------
-   Runs about 3s, once per session. Any input ends it. aria-hidden throughout.
+   Runs about 3.3s, once per session. Any input ends it. aria-hidden throughout.
    parts/index_head.html sets html.intro before this runs. */
 (function () {
   var root = document.documentElement;
@@ -1189,9 +1249,9 @@ function makeModal(id, closeBtnId) {
   function play() {
     // Measured after a frame, once the panel has been laid out.
     requestAnimationFrame(function () {
-      /* Beats, in ms from the panel landing. */
       aim();
       scr.classList.add('in');
+      /* Beats, in ms from the panel landing. */
       at(900,  function () { aim(); cur.classList.add('move'); });   // glide, .95s
       at(2000, function () { go.classList.add('hot'); });            // arrives, hovers
       at(2380, function () { cur.classList.add('press'); go.classList.add('hit'); });

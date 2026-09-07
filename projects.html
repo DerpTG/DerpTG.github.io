@@ -4,11 +4,19 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<!-- Inline and pre-paint. Setting this from main.js flashes a solid nav
-     over the hero for a frame. See NAV OVER A DARK HERO in style.css. -->
-<script>document.documentElement.classList.add('js')</script>
+<!-- Inline and pre-paint. Both flags have to land before the first paint.
+     Setting .js from main.js flashes a solid nav over the hero for a frame
+     (see NAV OVER A DARK HERO in style.css); setting the theme from there
+     flashes the wrong theme. A stored choice wins over the OS preference.
+     Any storage failure falls back to light rather than throwing. -->
+<script>(function(){var r=document.documentElement;r.classList.add('js');var t;
+try{t=localStorage.getItem('fn.theme')}catch(e){}
+if(t!=='light'&&t!=='dark'){t=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}
+r.setAttribute('data-theme',t)})()</script>
 <title>Projects &middot; Felix Naroditskiy</title>
 <meta name="description" content="Ransomware kill chain reconstruction, malware analysis casework, IR playbooks, networking labs, risk analysis, and code.">
+<!-- Kept in step with the theme by main.js. -->
+<meta name="theme-color" content="#E7E9E4">
 <link rel="canonical" href="https://felixnaroditskiy.com/projects.html">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Felix Naroditskiy">
@@ -42,6 +50,28 @@
       <a href="about.html">About</a>
     </nav>
     <span class="nav-act">
+      <!-- Sun and moon are one mark: .ti-bite is parked off the corner for
+           the sun and slides over the disc to cut the crescent. The label
+           says what the click does, so it flips with the theme. -->
+      <button class="themetog" id="themetog" type="button" aria-label="Switch to dark theme">
+        <svg class="ti" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <mask id="timask" maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24">
+            <rect x="0" y="0" width="24" height="24" fill="#fff"/>
+            <circle class="ti-bite" cx="12" cy="12" r="6.2" fill="#000"/>
+          </mask>
+          <circle class="ti-core" cx="12" cy="12" r="6.2" mask="url(#timask)"/>
+          <g class="ti-rays" fill="none" stroke-linecap="round">
+            <line x1="12" y1="1.2" x2="12" y2="3.4"/>
+            <line x1="12" y1="20.6" x2="12" y2="22.8"/>
+            <line x1="1.2" y1="12" x2="3.4" y2="12"/>
+            <line x1="20.6" y1="12" x2="22.8" y2="12"/>
+            <line x1="4.6" y1="4.6" x2="6.2" y2="6.2"/>
+            <line x1="17.8" y1="17.8" x2="19.4" y2="19.4"/>
+            <line x1="19.4" y1="4.6" x2="17.8" y2="6.2"/>
+            <line x1="6.2" y1="17.8" x2="4.6" y2="19.4"/>
+          </g>
+        </svg>
+      </button>
       <a class="solid" href="index.html#top">Contact me</a>
     </span>
   </div>
@@ -186,10 +216,10 @@ p:["On the final day, ransomware was written to the original victim workstation,
 m:["Autopsy","FTK Imager","Disk timeline"],
 e:[["Action","Ransomware deployed","hot"],["Marker","Ransom note","hot"],["Dwell time","4 days","hot"],["Evidence base","12.7M pkts \u00b7 6 img \u00b7 7 mem","cool"],["Confidence","High","cool"]]}
 ];
-// Cache the rail + the detail slots we rewrite on each stage change.
+/* Cache the rail and the detail slots rewritten on each stage change. */
 var rail=document.getElementById('rail'),kcT=document.getElementById('kcT'),kcA=document.getElementById('kcA'),kcP=document.getElementById('kcP'),kcM=document.getElementById('kcM'),kcE=document.getElementById('kcE');
 
-// Fill the narrative + method + evidence panels from stage i.
+/* Fill the narrative, method and evidence panels from stage i. */
 function renderChain(i){
   var d=CHAIN[i];kcT.textContent=d.t;kcA.textContent=d.a;
   kcP.innerHTML=d.p.map(function(x){return '<p>'+x+'</p>'}).join('');
@@ -199,7 +229,8 @@ function renderChain(i){
   // Each evidence row is [label, value, tone]. The tone becomes a CSS class.
   kcE.innerHTML=d.e.map(function(r){var c=r[2]?' class="'+r[2]+'"':'';return '<div><span>'+r[0]+'</span><b'+c+'>'+r[1]+'</b></div>'}).join('');
 }
-// Wire each stage node. Highlight it and render its data. data-i is the index.
+/* Wire each stage node. Highlight it and render its data. data-i is the
+   stage index. */
 rail.querySelectorAll('.node').forEach(function(n){
   n.addEventListener('click',function(){
     rail.querySelectorAll('.node').forEach(function(x){x.classList.remove('on')});
@@ -247,18 +278,18 @@ lines:[["k","STATIC"],["v","221,421 strings, 359 flagged across 21 categories, t
 {f:"WannaCry",fam:"WannaCryptor",det:"57/61",lvl:"hi",sha:"35dae4081b11ca804fc410c3bd160fc111b871952eb5da2d1f46028e46c4e156",label:"trojan.wannacry/wanna",cat:"Ransomware",pack:"Not packed \u00b7 SFX ZIP",
 lines:[["k","STATIC"],["v","The full Windows Crypto API suite, CryptGenKey, CryptEncrypt, CryptDecrypt, alongside file destruction (DeleteFile, MoveFileEx) and service persistence (CreateService). 9 embedded ZIPs and 1 EXE in the resources: it drops its own components."],["k","DYNAMIC"],["cool","It never ran. Double-click returned a side-by-side configuration error and died on the spot."],["v","No encryption. No ransom note. No .WCRY extensions. No SMB scanning on 445. Nothing."],["cm","Regshot showed 86,068 keys deleted under COMPONENTS\\CanonicalData\\Catalogs, not the malware. That is Windows itself failing to resolve the missing SxS runtime the sample needed."],["k","VERDICT"],["warm","Verdict: static analysis found the full ransomware capability, but the sample never ran because a runtime dependency was missing. A failed detonation is still a result worth recording. The 86,068 registry deletions came from Windows chasing that missing runtime, not from the malware, and saying so keeps the finding honest."]]}
 ];
-// list = the left-hand sample menu; out = the terminal output pane.
+/* list is the left-hand sample menu, out the terminal output pane. */
 var list=document.getElementById('smpList'),out=document.getElementById('smpOut');
-// Escape helper so filenames/strings can't inject markup into the terminal.
+/* Escape characters that could break the terminal markup. */
 function esc(x){return String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
-// Build the clickable sample list. The first one starts selected (.on).
+/* Build the clickable sample list. The first entry starts selected. */
 SAMPLES.forEach(function(s,i){
   var b=document.createElement('button');b.className='smp'+(i===0?' on':'');
   b.innerHTML='<span class="det '+s.lvl+'">'+esc(s.det)+'</span><span class="fn">'+esc(s.f)+'</span><span class="fam">'+esc(s.fam.toUpperCase())+'</span>';
   b.addEventListener('click',function(){list.querySelectorAll('.smp').forEach(function(x){x.classList.remove('on')});b.classList.add('on');renderSample(i);});
   list.appendChild(b);
 });
-// Print sample i's triage record into the terminal pane as fake command output.
+/* Print sample i's triage record into the terminal pane as command output. */
 function renderSample(i){
   var s=SAMPLES[i],h='';
   h+='<span class="ln"><span class="p">$</span> <span class="v">triage '+esc(s.f)+'</span></span><span class="blank"></span>';
@@ -273,7 +304,7 @@ function renderSample(i){
     if(l[0]==='k'){h+='<span class="blank"></span><span class="ln"><span class="k">\u2500\u2500 '+esc(l[1])+' \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500</span></span>';}
     else{h+='<span class="ln"><span class="'+l[0]+'">'+esc(l[1])+'</span></span>';}
   });
-  // End with a fresh prompt + blinking cursor to sell the terminal illusion.
+  // A fresh prompt with a blinking cursor.
   h+='<span class="blank"></span><span class="ln"><span class="p">$</span> <span class="cursor"></span></span>';
   out.innerHTML=h;
 }

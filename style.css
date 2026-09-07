@@ -9,22 +9,45 @@
      --sev-hi / --sev-md / --sev-lo   severity
      --display / --mono               Archivo for text, Plex Mono for data
 
-   All text colors clear WCAG AA (4.5:1) against --ground.
+   All text colors clear WCAG AA (4.5:1) against every surface they are
+   painted on: --ground, --panel and --panel-2.
+
+   These are the light theme. THEMES at the end of this file redefines them
+   for dark, along with the --void set. Nothing outside that block needs a
+   theme-specific rule.
 */
 
 :root{
+  color-scheme:light;
   --ground:#E7E9E4;
   --panel:#F4F5F2;
   --panel-2:#DDE0DA;
   --ink:#14171A;
   --mute:#5A625F;
-  --faint:#606864;
+  --faint:#5D6460;
   --rule:#C4C8C1;
   --rule-2:#A9AEA6;
   --signal:#C8102E;
-  --sev-hi:#C8102E;
-  --sev-md:#8A6100;
+  /* Severity is functional, not the brand accent, so these are free to sit a
+     step darker than --signal. They have to clear AA on --panel-2, which the
+     kill chain's evidence rows use, and #C8102E/#8A6100 do not. */
+  --sev-hi:#C4102D;
+  --sev-md:#825C00;
   --sev-lo:#2E6A4C;
+
+  /* Text sitting on --signal, not on a surface. */
+  --on-signal:#FFFFFF;
+
+  /* Washes and scrims. Tinted from --ink and --signal, so they need a
+     value per theme rather than a colour-mix off one token. */
+  --scrim:rgba(20,23,26,.62);
+  --wash-signal:rgba(200,16,46,.1);
+  --wash-signal-2:rgba(200,16,46,.13);
+  --wash-signal-3:rgba(200,16,46,.42);
+  --wash-sev-md:rgba(130,92,0,.14);
+  --grid-ink:rgba(20,23,26,.05);
+  --e-lift:0 14px 30px -18px rgba(20,23,26,.5);
+  --e-lift-sm:0 10px 26px -20px rgba(20,23,26,.45);
 
   --display:'Archivo','Helvetica Neue',Arial,sans-serif;
   --mono:'IBM Plex Mono',ui-monospace,monospace;
@@ -50,7 +73,7 @@ main{flex:1}
 .wrap{max-width:var(--max);margin:0 auto;padding:0 var(--gut)}
 a{color:inherit}
 img{display:block;max-width:100%}
-::selection{background:var(--signal);color:#fff}
+::selection{background:var(--signal);color:var(--on-signal)}
 
 /* Utility label. Mono, uppercase, tracked. Data labels only, not headings
    or buttons. */
@@ -96,7 +119,7 @@ img{display:block;max-width:100%}
 .nav-act a:focus-visible,.nav-act button:focus-visible{
   background:var(--ink);border-color:var(--ink);color:var(--ground);
 }
-.nav-act .solid{background:var(--signal);border-color:var(--signal);color:#fff}
+.nav-act .solid{background:var(--signal);border-color:var(--signal);color:var(--on-signal)}
 .nav-act .solid:hover,.nav-act .solid:focus-visible{background:var(--ink);border-color:var(--ink);color:var(--ground)}
 .navtog{display:none}
 
@@ -145,7 +168,7 @@ img{display:block;max-width:100%}
 .cta a:hover,.cta button:hover,.cta a:focus-visible,.cta button:focus-visible{
   background:var(--ink);border-color:var(--ink);color:var(--ground);transform:translateY(-2px);
 }
-.cta .solid{background:var(--signal);border-color:var(--signal);color:#fff}
+.cta .solid{background:var(--signal);border-color:var(--signal);color:var(--on-signal)}
 .cta .solid:hover,.cta .solid:focus-visible{background:var(--ink);border-color:var(--ink);color:var(--ground)}
 .cta .plain{
   border:0;padding:13px 4px;color:var(--mute);font-weight:500;
@@ -181,7 +204,7 @@ img{display:block;max-width:100%}
   font:inherit;background:none;border:0;padding:0;cursor:pointer;
   color:var(--signal);border-bottom:1px solid currentColor;transition:.15s;
 }
-.wip-link:hover{background:rgba(200,16,46,.1)}
+.wip-link:hover{background:var(--wash-signal)}
 
 .scroll-cue{
   position:absolute;left:50%;bottom:30px;transform:translateX(-50%);
@@ -299,7 +322,7 @@ section{padding:54px 0}
 
 /* ================================================================= MODALS */
 .modal{
-  position:fixed;inset:0;z-index:200;background:rgba(20,23,26,.62);
+  position:fixed;inset:0;z-index:200;background:var(--scrim);
   backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;padding:24px;
 }
 .modal.show{display:flex}
@@ -319,7 +342,7 @@ section{padding:54px 0}
   background:none;transition:.15s;
 }
 .modal-hd a:hover,.modal-hd button:hover{background:var(--ink);border-color:var(--ink);color:var(--ground)}
-.modal-hd a.dl{background:var(--signal);border-color:var(--signal);color:#fff}
+.modal-hd a.dl{background:var(--signal);border-color:var(--signal);color:var(--on-signal)}
 .modal-hd a.dl:hover{background:var(--ink);border-color:var(--ink)}
 .modal-box iframe{flex:1;width:100%;border:0;background:#fff}
 /* iOS Safari will not render a PDF in an iframe. Coarse pointers only. */
@@ -688,8 +711,8 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--signal);outline-off
 .phish-body{padding:24px 22px;font-size:15px;line-height:1.7;color:var(--ink)}
 .phish-body p{margin-bottom:14px}
 .flag{cursor:pointer;border-bottom:1px dashed var(--faint);transition:.15s;padding:0 2px}
-.flag:hover{background:rgba(138,97,0,.14);border-bottom-color:var(--sev-md)}
-.flag.found{background:rgba(200,16,46,.13);border-bottom:1px solid var(--sev-hi);font-weight:500}
+.flag:hover{background:var(--wash-sev-md);border-bottom-color:var(--sev-md)}
+.flag.found{background:var(--wash-signal-2);border-bottom:1px solid var(--sev-hi);font-weight:500}
 .phish-side{padding:20px 18px}
 .phish-side .tag{
   display:block;margin-bottom:14px;font-family:var(--mono);font-size:9.5px;
@@ -856,7 +879,16 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--signal);outline-off
 }
 .siem-act:hover:not(:disabled){background:var(--ink);border-color:var(--ink);color:var(--ground)}
 .siem-act:disabled{opacity:.45;cursor:default}
-.siem-act.picked{background:var(--ink);border-color:var(--ink);color:var(--ground);opacity:1}
+
+/* Graded state. parts/siem.js.html marks the answer you picked picked-good
+   or picked-bad and the right one is-correct, so all three have to beat the
+   :disabled fade or the result reads as three identical greyed buttons. */
+.siem-act.picked-good,.siem-act.picked-bad,.siem-act.is-correct{opacity:1}
+.siem-act.picked-good{background:var(--sev-lo);border-color:var(--sev-lo);color:var(--on-signal)}
+.siem-act.picked-bad{background:var(--sev-hi);border-color:var(--sev-hi);color:var(--on-signal)}
+/* The right answer you missed. Outlined, not filled: it is the key, not
+   your call. */
+.siem-act.is-correct:not(.picked-good){border-color:var(--sev-lo);color:var(--sev-lo)}
 .siem-verdict:empty{display:none}
 .siem-verdict{margin-top:20px;padding:14px 16px;border-left:3px solid var(--rule-2);background:var(--ground)}
 .siem-verdict .v{
@@ -895,8 +927,8 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--signal);outline-off
 .org-mark img{width:38px;height:38px}
 .org-mark{width:38px;height:38px}
 
-/* The brand, menu toggle and action button compete for a 280px row. Shrink
-   the brand and tighten the button. */
+/* Below 400px the brand, menu toggle and action button crowd one row.
+   Shrink the brand and tighten the button. */
 @media(max-width:400px){
   .brand{font-size:13px;gap:7px}
   .nav .wrap{gap:8px}
@@ -930,11 +962,11 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--signal);outline-off
   content:"";position:absolute;inset:0;pointer-events:none;
   box-shadow:inset 0 0 0 1px transparent;transition:box-shadow .2s;
 }
-.ncard:hover,.ncard:focus-visible{transform:translateY(-4px);box-shadow:0 14px 30px -18px rgba(20,23,26,.5)}
+.ncard:hover,.ncard:focus-visible{transform:translateY(-4px);box-shadow:var(--e-lift)}
 .ncard:hover::after,.ncard:focus-visible::after{box-shadow:inset 0 0 0 2px var(--signal)}
 
 .org{transition:box-shadow .2s,border-color .2s}
-.org:hover{box-shadow:0 10px 26px -20px rgba(20,23,26,.45)}
+.org:hover{box-shadow:var(--e-lift-sm)}
 .role{position:relative;transition:background .18s}
 .role::before{
   content:"";position:absolute;left:0;top:0;bottom:0;width:2px;
@@ -1113,8 +1145,8 @@ button.shot-thumb{padding:0;font:inherit;color:inherit;cursor:zoom-in}
 /* Clicking a flag should register as a hit, not a silent restyle. */
 .flag.found{animation:flagHit .5s cubic-bezier(.22,.68,.28,1)}
 @keyframes flagHit{
-  0%{background:rgba(200,16,46,.42)}
-  100%{background:rgba(200,16,46,.13)}
+  0%{background:var(--wash-signal-3)}
+  100%{background:var(--wash-signal-2)}
 }
 
 /* Counter tick. main.js adds .bump when the text changes. */
@@ -1159,16 +1191,18 @@ button.shot-thumb{padding:0;font:inherit;color:inherit;cursor:zoom-in}
      --void-ink / -mute / -faint      text, primary to tertiary
      --void-rule / --void-rule-2      hairlines, subtle then structural
      --signal-d                       crimson lifted to clear AA on near-black;
-                                      #C8102E only reaches 3.2:1 there
+                                      #C8102E only reaches 3.3:1 there
 
-   All dark-surface text clears WCAG AA (4.5:1) against --void. */
+   All dark-surface text clears WCAG AA (4.5:1) against --void, --void-2 and
+   --void-3. Dark scenes exist in both themes: in light they sink below the
+   page, in dark they lift above it. See THEMES. */
 :root{
   --void:#0B0F11;
   --void-2:#141B1F;
   --void-3:#1E272C;
   --void-ink:#EDF0EB;
   --void-mute:#9DAAA7;
-  --void-faint:#7C8A87;
+  --void-faint:#82908D;
   --void-rule:#273338;
   --void-rule-2:#3A484E;
   --signal-d:#FF4A61;
@@ -1229,7 +1263,7 @@ button.shot-thumb{padding:0;font:inherit;color:inherit;cursor:zoom-in}
   mask-image:radial-gradient(ellipse 78% 72% at 50% 42%,#000 28%,transparent 76%);
 }
 /* Light-surface variant, for the few scenes that stay on paper. */
-.bgl-grid.on-light{--grid-c:rgba(20,23,26,.05)}
+.bgl-grid.on-light{--grid-c:var(--grid-ink)}
 
 /* Bloom. Two soft radials, crimson and a cool steel. The steel is the one
    exception to the crimson-only rule. Dark surface only, never on text. */
@@ -1402,10 +1436,12 @@ html.js:not(.scrolled) .dark-top .navtog{color:var(--void-ink);border-color:var(
 .scene-dark .cap:hover{background:var(--void-3)}
 .scene-dark .cap .lbl{color:var(--signal-d)}
 .scene-dark .cap li{color:var(--void-mute)}
+/* No opacity here. Dimming --void-faint any further drops the card index
+   under AA against --void-2, and the token is already the faint step. */
 .cap .idx{
   position:absolute;top:20px;right:22px;
   font-family:var(--mono);font-size:10px;letter-spacing:.14em;
-  color:var(--void-faint);opacity:.7;
+  color:var(--void-faint);
 }
 
 /* Certifications on the dark surface. */
@@ -1576,10 +1612,11 @@ body>header,body>main,body>footer{position:relative;z-index:1}
   background:var(--void);transform:translateY(-3px);
   border-color:var(--signal-d);box-shadow:0 26px 56px -28px rgba(0,0,0,.9);
 }
+/* No opacity, for the same reason as .cap .idx above. */
 .capsplit .cap .idx{
   position:absolute;top:28px;right:32px;
   font-family:var(--mono);font-size:11px;letter-spacing:.16em;
-  color:var(--void-faint);opacity:.85;
+  color:var(--void-faint);
 }
 .capsplit .cap .lbl{display:block;margin-bottom:18px;color:var(--signal-d)}
 /* Two columns keep each card wide and short. One glance, not a list. */
@@ -1771,7 +1808,7 @@ html.intro .scroll-cue{animation-play-state:paused}
   .tilt{transition-duration:.88s,1.2s}          /* opacity, transform */
   .hinge{transition-duration:1.15s,.68s}        /* transform, opacity */
   .stag>*{transition-duration:.72s,.72s}        /* opacity, transform */
-  .reveal{transition-duration:.78s,.78s}        /* reveal layer, same treatment */
+  .reveal{transition-duration:.78s,.78s}        /* opacity, transform */
 
   /* More travel too. A short distance over a long duration reads as
      drift. */
@@ -1825,8 +1862,8 @@ html.intro .scroll-cue{animation-play-state:paused}
 .kc-top .scroll-hint,.term-top .scroll-hint,
 .lab-ex-top .scroll-hint,.feed-top .scroll-hint{color:var(--void-faint)}
 
-/* The column-heading strip under a bar was tinted to separate it from the
-   panel. Against black it read as a third band. Back to the panel colour. */
+/* The column-heading strip under a bar keeps the panel colour. Tinting it
+   to separate the two read as a third band against the black above. */
 .rec-head,.feed-head{background:var(--panel)}
 
 
@@ -1888,3 +1925,171 @@ button.chip:hover,button.chip:focus-visible{
 }
 .scene-dark .ncard .go{border-top-color:var(--void-rule)}
 .ncard .go .ct{order:-1;margin-left:0;white-space:normal}
+
+
+/* ================================================================= THEMES
+   Light is the default and lives in :root. Dark is a token swap, nothing
+   more: no component below has a theme-specific rule.
+
+   The site paints two surfaces at once, so dark is not "invert everything".
+   In light the scenes SINK below the page (near-black on paper). In dark the
+   page becomes the near-black and the scenes LIFT above it, keeping the same
+   figure-ground reading with the roles exchanged. --void therefore lands
+   1.13:1 off --ground here, matching what --panel does on paper.
+
+   build.py sets data-theme before the first paint, so there is no flash and
+   no transition to suppress on load. main.js only flips the attribute. */
+:root[data-theme="dark"]{
+  color-scheme:dark;
+
+  --ground:#0B0F11;
+  --panel:#141B1F;
+  --panel-2:#1E272C;
+  --panel-hi:#1E272C;
+  --ink:#EDF0EB;
+  --mute:#9DAAA7;
+  --faint:#82908D;
+  --rule:#273338;
+  --rule-2:#3A484E;
+  --signal:#FF4A61;
+  --on-signal:#0B0F11;
+  --sev-hi:#FF4A61;
+  --sev-md:#E0A93B;
+  --sev-lo:#4FBF8B;
+
+  /* Scenes lift instead of sinking. --signal-d rises with them: #FF4A61 only
+     reaches 4.2:1 on the lifted hover surface. */
+  --void:#161D22;
+  --void-2:#1E262B;
+  --void-3:#262F35;
+  --void-mute:#9DAAA7;
+  --void-faint:#8E9A97;
+  --void-rule:#2E3A40;
+  --void-rule-2:#43515A;
+  --signal-d:#FF5E71;
+  --sev-hi-d:#FF5E71;
+
+  /* Ink-tinted elevation reads as haze on near-black. Go to true black. */
+  --e1:0 1px 2px rgba(0,0,0,.45),0 3px 10px -6px rgba(0,0,0,.7);
+  --e2:0 2px 4px rgba(0,0,0,.5),0 14px 30px -16px rgba(0,0,0,.8);
+  --e3:0 4px 8px rgba(0,0,0,.55),0 30px 64px -30px rgba(0,0,0,.9);
+  --e-lift:0 14px 30px -18px rgba(0,0,0,.9);
+  --e-lift-sm:0 10px 26px -20px rgba(0,0,0,.85);
+
+  --scrim:rgba(0,0,0,.72);
+  --wash-signal:rgba(255,94,113,.14);
+  --wash-signal-2:rgba(255,94,113,.17);
+  --wash-signal-3:rgba(255,94,113,.46);
+  --wash-sev-md:rgba(224,169,59,.16);
+  --grid-ink:rgba(237,240,235,.05);
+}
+
+/* The page background layers were tuned against paper. On near-black the
+   same alphas disappear, and the steel bloom needs to carry more of the
+   weight than the crimson or it tints the whole page pink. */
+:root[data-theme="dark"] .sb-bloom{
+  background:
+    radial-gradient(46vw 38vw at 18% 14%,rgba(255,74,97,.05),transparent 62%),
+    radial-gradient(54vw 44vw at 82% 60%,rgba(96,152,172,.075),transparent 66%),
+    radial-gradient(40vw 34vw at 56% 96%,rgba(224,169,59,.03),transparent 64%);
+}
+:root[data-theme="dark"] .sb-grid{
+  background-image:
+    linear-gradient(to right,rgba(237,240,235,.04) 1px,transparent 1px),
+    linear-gradient(to bottom,rgba(237,240,235,.04) 1px,transparent 1px);
+}
+:root[data-theme="dark"] .sb-noise{opacity:.05}
+
+/* Same for the per-section layers on what used to be the light surface. */
+:root[data-theme="dark"] .bgl-glow.on-light{
+  background:
+    radial-gradient(600px 420px at 10% 16%,rgba(255,74,97,.06),transparent 66%),
+    radial-gradient(680px 500px at 90% 84%,rgba(96,152,172,.075),transparent 70%);
+}
+
+/* The PDF frame keeps a white page under it either way. Without this the
+   viewer opens as a white slab on a near-black modal. */
+:root[data-theme="dark"] .modal-box iframe{background:var(--void-3)}
+
+
+/* ========================================================== THEME TOGGLE
+   One button, one SVG. The disc is masked by a second circle: parked off the
+   corner it does nothing and the rays make a sun; slid over the disc it bites
+   a crescent and the rays retract. Only transforms animate, so there is no
+   reliance on animatable SVG geometry attributes.
+
+   Hidden without JavaScript, since clicking it could not do anything. */
+html:not(.js) .themetog{display:none}
+
+/* Scoped to .nav-act so it beats `.nav-act a,.nav-act button`, which sets a
+   text button's padding and would otherwise squeeze the mark inside a
+   fixed-width box. */
+.nav-act .themetog{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:38px;height:38px;padding:0;flex-shrink:0;
+  border:1px solid var(--rule-2);background:none;color:var(--ink);
+  cursor:pointer;
+  transition:background .16s,border-color .16s,color .16s;
+}
+.themetog:hover,.themetog:focus-visible{
+  background:var(--ink);border-color:var(--ink);color:var(--ground);
+}
+.themetog .ti{
+  width:19px;height:19px;display:block;overflow:visible;
+  transform-box:view-box;transform-origin:12px 12px;
+  transition:transform .55s var(--ease-out);
+}
+.themetog .ti-core{fill:currentColor}
+.themetog .ti-bite{
+  transform-box:view-box;
+  transform:translate(11px,-11px);
+  transition:transform .5s var(--ease-out);
+}
+.themetog .ti-rays{
+  stroke:currentColor;stroke-width:1.7;
+  transform-box:view-box;transform-origin:12px 12px;
+  transition:transform .45s var(--ease-out),opacity .3s linear;
+}
+
+/* Moon. The disc is bitten, the rays fold away, the whole mark rotates so
+   the change reads as motion and not just a swap. */
+:root[data-theme="dark"] .themetog .ti{transform:rotate(-42deg)}
+:root[data-theme="dark"] .themetog .ti-bite{transform:translate(6px,-5px)}
+:root[data-theme="dark"] .themetog .ti-rays{transform:scale(.3);opacity:0}
+
+/* Click feedback, independent of the light/dark direction. main.js adds
+   .pop and drops it when the animation ends. */
+.themetog.pop .ti{animation:tipop .5s var(--ease-out)}
+@keyframes tipop{
+  0%{scale:1}
+  38%{scale:.82}
+  100%{scale:1}
+}
+
+/* Over a dark hero the nav has no plate, so the toggle borrows the same
+   treatment the other nav controls get. Those rules only select `a`. */
+html.js:not(.scrolled) .dark-top .themetog{
+  border-color:var(--void-rule-2);color:var(--void-ink);
+}
+html.js:not(.scrolled) .dark-top .themetog:hover,
+html.js:not(.scrolled) .dark-top .themetog:focus-visible{
+  background:var(--void-ink);border-color:var(--void-ink);color:var(--void);
+}
+
+/* The toggle is a fourth control competing for a 320px row, which the
+   existing narrow-width block was not sized for. Everything tightens a step
+   so the bar still fits without dropping an affordance. */
+@media(max-width:400px){
+  .nav .wrap{gap:6px}
+  .nav-act{gap:6px}
+  .brand{font-size:12px;gap:6px}
+  .navtog{padding:7px 8px;font-size:9.5px}
+  .nav-act a,.nav-act button{padding:7px 9px;font-size:11.5px}
+  .nav-act .themetog{width:32px;height:32px}
+  .themetog .ti{width:16px;height:16px}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .themetog .ti,.themetog .ti-bite,.themetog .ti-rays{transition:none}
+  .themetog.pop .ti{animation:none}
+}

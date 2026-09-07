@@ -68,8 +68,8 @@ document.querySelectorAll('.flag').forEach(function(el){
 totalFlags = Object.keys(renderedIds).length;
 phishProg.textContent = '0 / ' + totalFlags;
 
-/* Wire every flag. Click or Enter marks it found. A flag id used in more
-   than one place marks all of its instances together. */
+/* Wire every flag. Click, Enter or Space marks it found. A flag id used in
+   more than one place marks all of its instances together. */
 function markFound(el){
   var id = el.getAttribute('data-flag');
   if (foundSet[id]) return;            // already found

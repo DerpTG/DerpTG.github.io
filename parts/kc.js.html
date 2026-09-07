@@ -43,10 +43,10 @@ p:["On the final day, ransomware was written to the original victim workstation,
 m:["Autopsy","FTK Imager","Disk timeline"],
 e:[["Action","Ransomware deployed","hot"],["Marker","Ransom note","hot"],["Dwell time","4 days","hot"],["Evidence base","12.7M pkts \u00b7 6 img \u00b7 7 mem","cool"],["Confidence","High","cool"]]}
 ];
-// Cache the rail + the detail slots we rewrite on each stage change.
+/* Cache the rail and the detail slots rewritten on each stage change. */
 var rail=document.getElementById('rail'),kcT=document.getElementById('kcT'),kcA=document.getElementById('kcA'),kcP=document.getElementById('kcP'),kcM=document.getElementById('kcM'),kcE=document.getElementById('kcE');
 
-// Fill the narrative + method + evidence panels from stage i.
+/* Fill the narrative, method and evidence panels from stage i. */
 function renderChain(i){
   var d=CHAIN[i];kcT.textContent=d.t;kcA.textContent=d.a;
   kcP.innerHTML=d.p.map(function(x){return '<p>'+x+'</p>'}).join('');
@@ -56,7 +56,8 @@ function renderChain(i){
   // Each evidence row is [label, value, tone]. The tone becomes a CSS class.
   kcE.innerHTML=d.e.map(function(r){var c=r[2]?' class="'+r[2]+'"':'';return '<div><span>'+r[0]+'</span><b'+c+'>'+r[1]+'</b></div>'}).join('');
 }
-// Wire each stage node. Highlight it and render its data. data-i is the index.
+/* Wire each stage node. Highlight it and render its data. data-i is the
+   stage index. */
 rail.querySelectorAll('.node').forEach(function(n){
   n.addEventListener('click',function(){
     rail.querySelectorAll('.node').forEach(function(x){x.classList.remove('on')});

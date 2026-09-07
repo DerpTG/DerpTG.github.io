@@ -24,7 +24,7 @@ def head(page, title, desc, canon, og_desc=None, tw_desc=None,
          doc='', preload='', extra='', body_attr=''):
     """Render <!DOCTYPE> through </header>.
 
-    Optional slots, used only by index.html:
+    Optional slots. Every page sets body_attr; the rest are index only.
       og_desc, tw_desc  shorter social-card copy. Both default to desc.
       doc               comment block between the doctype and <html>
       preload           <link rel="preload">, before the font stylesheet
@@ -44,11 +44,19 @@ def head(page, title, desc, canon, og_desc=None, tw_desc=None,
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<!-- Inline and pre-paint. Setting this from main.js flashes a solid nav
-     over the hero for a frame. See NAV OVER A DARK HERO in style.css. -->
-<script>document.documentElement.classList.add('js')</script>
+<!-- Inline and pre-paint. Both flags have to land before the first paint.
+     Setting .js from main.js flashes a solid nav over the hero for a frame
+     (see NAV OVER A DARK HERO in style.css); setting the theme from there
+     flashes the wrong theme. A stored choice wins over the OS preference.
+     Any storage failure falls back to light rather than throwing. -->
+<script>(function(){{var r=document.documentElement;r.classList.add('js');var t;
+try{{t=localStorage.getItem('fn.theme')}}catch(e){{}}
+if(t!=='light'&&t!=='dark'){{t=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}}
+r.setAttribute('data-theme',t)}})()</script>
 <title>{title}</title>
 <meta name="description" content="{desc}">
+<!-- Kept in step with the theme by main.js. -->
+<meta name="theme-color" content="#E7E9E4">
 <link rel="canonical" href="https://felixnaroditskiy.com/{canon}">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Felix Naroditskiy">
@@ -79,6 +87,28 @@ def head(page, title, desc, canon, og_desc=None, tw_desc=None,
 {nav}
     </nav>
     <span class="nav-act">
+      <!-- Sun and moon are one mark: .ti-bite is parked off the corner for
+           the sun and slides over the disc to cut the crescent. The label
+           says what the click does, so it flips with the theme. -->
+      <button class="themetog" id="themetog" type="button" aria-label="Switch to dark theme">
+        <svg class="ti" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <mask id="timask" maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24">
+            <rect x="0" y="0" width="24" height="24" fill="#fff"/>
+            <circle class="ti-bite" cx="12" cy="12" r="6.2" fill="#000"/>
+          </mask>
+          <circle class="ti-core" cx="12" cy="12" r="6.2" mask="url(#timask)"/>
+          <g class="ti-rays" fill="none" stroke-linecap="round">
+            <line x1="12" y1="1.2" x2="12" y2="3.4"/>
+            <line x1="12" y1="20.6" x2="12" y2="22.8"/>
+            <line x1="1.2" y1="12" x2="3.4" y2="12"/>
+            <line x1="20.6" y1="12" x2="22.8" y2="12"/>
+            <line x1="4.6" y1="4.6" x2="6.2" y2="6.2"/>
+            <line x1="17.8" y1="17.8" x2="19.4" y2="19.4"/>
+            <line x1="19.4" y1="4.6" x2="17.8" y2="6.2"/>
+            <line x1="6.2" y1="17.8" x2="4.6" y2="19.4"/>
+          </g>
+        </svg>
+      </button>
       <a class="solid" href="index.html#top">Contact me</a>
     </span>
   </div>
@@ -108,6 +138,7 @@ RESUME_MODAL = """
 """
 
 
+# Index only. The certification badges are the only triggers.
 CERT_MODAL = """
 <div class="modal" id="certModal" role="dialog" aria-modal="true" aria-label="Certification detail">
   <div class="modal-box cert-box">

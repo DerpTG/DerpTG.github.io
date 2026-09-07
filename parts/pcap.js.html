@@ -27,10 +27,15 @@ var PACKETS = [
    note:'The summary that closes it. This workstation normally sends a couple of megabytes an hour, and it just pushed 41 MB to an external host in a minute and a half, right after grabbing Flexin\u2019s design files. Put together, that\u2019s exfiltration.'}
 ];
 
+/* pcapList is the frame list, pcapDetail the dissection pane below it.
+   pOpen is the index of the open row, or null when every row is closed. */
 var pcapList=document.getElementById('pcapList'),pcapDetail=document.getElementById('pcapDetail');
 var pOpen=null;
+
+/* Escape characters that could break the row markup. */
 function pEsc(x){return String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
+/* Build one clickable row per packet. tone becomes a t-* class. */
 function pcapRender(){
   pcapList.innerHTML='';
   PACKETS.forEach(function(p,i){
@@ -47,6 +52,9 @@ function pcapRender(){
     pcapList.appendChild(row);
   });
 }
+
+/* Open packet i in the detail pane, or close it if it is already open.
+   Only one row is open at a time. */
 function pcapToggle(i,row){
   if(pOpen===i){
     pOpen=null;pcapDetail.className='pcap-detail';pcapDetail.innerHTML='';

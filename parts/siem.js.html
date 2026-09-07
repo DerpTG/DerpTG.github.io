@@ -101,6 +101,7 @@ var siemScore  = document.getElementById('siemScore');
 var sAnswered = [];   // disposition chosen per alert, once answered
 var sCorrect  = 0;    // running count of correct calls
 
+/* Escape characters that could break the queue and detail markup. */
 function sEsc(x){return String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
 /* Build the left-rail queue. */
@@ -176,6 +177,7 @@ function siemLock(i, choice){
     '<p>' + sEsc(a.why[choice]) + '</p>';
 }
 
+/* Keep the header readout in step with the queue. */
 function siemUpdateScore(){
   var done = sAnswered.filter(function(x){ return x; }).length;
   siemScore.textContent = 'TRIAGED ' + done + ' / ' + ALERTS.length +

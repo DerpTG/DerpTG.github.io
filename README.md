@@ -19,9 +19,11 @@ Direction is **"evidence room"**: a cool gray-green ground rather than paper, ne
 
 - `--ground #E7E9E4` · `--panel #F4F5F2` · `--ink #14171A` · `--signal #C8102E`
 - **Type:** Archivo for display and prose, IBM Plex Mono for data only. If it isn't machine-readable (a date, a count, a hash, an identifier) it isn't mono.
-- Every text colour clears WCAG AA (4.5:1) against both surfaces.
+- Every text colour clears WCAG AA (4.5:1) against every surface it is painted on, in both themes. Checked by measuring the rendered pages, not by eye.
 
 **Two surfaces.** The evidence room is the resting state. A near-black counter-surface (`--void`) carries tokens mirroring the light ones one for one, so a component moves between them by swapping tokens rather than being rewritten. `--signal-d` is the lifted crimson for dark backgrounds, and the severity trio has `-d` twins, because the paper values are too dim on near-black.
+
+**Light and dark.** A sun/moon button in the header switches them, and the choice is remembered per browser; with no choice stored the site follows the OS. Because the page paints two surfaces at once, dark is not an inversion. In light the scenes **sink** below the page — near-black on paper. In dark the page becomes the near-black and the scenes **lift** above it, landing the same distance off the ground that `--panel` sits at on paper, so the figure-ground reading survives with the roles exchanged. It is a pure token swap: no component carries a theme-specific rule. `build.py` resolves the theme in an inline script before the first paint, so there is no flash and nothing to fade on load. The site-open animation is untouched by it.
 
 **Where the dark goes.** Full-bleed in page headers. Below them it appears boxed — `.darkbox` panels inset on the paper, so nothing bands across the page. On the subpages the contrast comes from title bars: the terminal path, `projects.log`, the lab feed header, each exercise header, the kill chain. Each bar is near-black with a crimson block starting the title and a matching outline on the panel, while the content underneath stays on paper where dense technical text reads best.
 
@@ -45,7 +47,7 @@ Each widget is a data array plus a render function, kept simple so the code stay
 
 HTML, CSS, and vanilla JavaScript. No libraries, no frameworks, no build step for the browser. Scrolling is native. GitHub Pages, automatic deploy on every push.
 
-Motion runs from JavaScript rather than CSS `animation-timeline`, since Firefox still keeps scroll-driven animations behind a flag. Every animation class is added by JS and never ships in the markup, so with JavaScript off nothing is hidden, and the whole layer is disabled under `prefers-reduced-motion`.
+Motion runs from JavaScript rather than CSS `animation-timeline`, so the same code path covers every browser without a separate fallback. Every animation class is added by JS and never ships in the markup, so with JavaScript off nothing is hidden, and the whole layer is disabled under `prefers-reduced-motion`.
 
 Named sections in the source, each carrying its own notes:
 
@@ -55,6 +57,7 @@ Named sections in the source, each carrying its own notes:
 | `Motion engine` (js) | nav plate, directional entrances, the scroll channel |
 | `Hero node field` (js) | the canvas background on every page header |
 | `Case-open intro` (js) | the opening animation |
+| `THEMES` (css) · `Theme toggle` (js) | the dark token set and the sun/moon switch |
 
 ## Build
 

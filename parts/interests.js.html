@@ -54,6 +54,11 @@ var INTERESTS = [
     lines: [
       'I\u2019ve read, and continue to read, a lot of dystopian fiction. This includes the Hunger Games and Maze Runner series, transitioning into other novels from James Dashner, Marie Lu, and Victoria Aveyard.',
       'I\u2019m always a fan of action, excitement, and magic, which also includes the Harry Potter series. This love has extended into movies, where I\u2019m a big action and Marvel fan, including the occasional comedy from Adam Sandler or Sacha Baron Cohen.'
+    ],
+    imgs: [
+      ['img/books/book-1', 'The Hunger Games trilogy. Where the dystopian habit started.'],
+      ['img/books/book-2', 'The Maze Runner trilogy, by James Dashner.'],
+      ['img/books/book-3', 'The shelf. Dystopian up top, Harry Potter below.']
     ]
   }
 ];
@@ -79,7 +84,7 @@ INTERESTS.forEach(function (it, i) {
   intList.appendChild(b);
 });
 
-/* Print interest i into the output pane as fake command output. */
+/* Print interest i into the output pane as command output. */
 function renderInterest(i) {
   var it = INTERESTS[i], h = '';
   // The typed command line.

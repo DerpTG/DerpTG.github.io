@@ -6,7 +6,7 @@ Edit parts/, not them.
 
 Run:  python build.py
 """
-import io, os
+import base64, hashlib, io, os, re
 
 SITE = os.path.dirname(os.path.abspath(__file__))
 PARTS = os.path.join(SITE, 'parts')
@@ -27,7 +27,7 @@ def head(page, title, desc, canon, og_desc=None, tw_desc=None,
     Optional slots. Every page sets body_attr; the rest are index only.
       og_desc, tw_desc  shorter social-card copy. Both default to desc.
       doc               comment block between the doctype and <html>
-      preload           <link rel="preload">, before the font stylesheet
+      preload           extra <link rel="preload">, ahead of the font preload
       extra             extra <head> content (JSON-LD)
       body_attr         <body> attributes. .dark-top starts the nav plateless.
     """
@@ -43,7 +43,9 @@ def head(page, title, desc, canon, og_desc=None, tw_desc=None,
 {doc}<html lang="en">
 <head>
 <meta charset="utf-8">
+__CSP__
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <!-- Inline and pre-paint. Both flags have to land before the first paint.
      Setting .js from main.js flashes a solid nav over the hero for a frame
      (see NAV OVER A DARK HERO in style.css); setting the theme from there
@@ -71,9 +73,7 @@ r.setAttribute('data-theme',t)}})()</script>
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="alternate icon" href="favicon-32.png" type="image/png" sizes="32x32">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-{preload}<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+{preload}<link rel="preload" as="font" type="font/woff2" href="fonts/archivo-var.woff2" crossorigin>
 <link rel="stylesheet" href="style.css">
 {extra}</head>
 <body{body_attr}>
@@ -187,13 +187,49 @@ def footer(next_href, next_label):
 """ % (next_href, next_label)
 
 
+# Attribute-less <script> only, which is exactly the inline executable ones.
+# <script src> and <script type="application/ld+json"> are left alone: the
+# first is covered by 'self', the second is a data block and never executed.
+INLINE_SCRIPT = re.compile(r'<script>(.*?)</script>', re.S)
+
+# frame-ancestors, report-uri and sandbox are ignored in a meta CSP, so they
+# are left out rather than shipped as a directive the browser warns about.
+# Clickjacking cover needs a real response header; GitHub Pages cannot set one.
+CSP = ("default-src 'self'; base-uri 'self'; object-src 'none'; "
+       "form-action 'none'; img-src 'self' data:; style-src 'self'; "
+       "font-src 'self'; script-src 'self' %s")
+
+
+def apply_csp(html):
+    """Swap the placeholder for a policy pinning each inline script by hash.
+
+    Runs on the finished page, so the hashes cover whatever the parts actually
+    contributed. Get one wrong and the block silently stops executing, so the
+    count is printed on every build as a smoke check.
+    """
+    seen, hashes = set(), []
+    for m in INLINE_SCRIPT.finditer(html):
+        digest = hashlib.sha256(m.group(1).encode('utf-8')).digest()
+        h = "'sha256-%s'" % base64.b64encode(digest).decode('ascii')
+        if h not in seen:
+            seen.add(h)
+            hashes.append(h)
+    meta = ('<meta http-equiv="Content-Security-Policy" content="%s">'
+            % (CSP % ' '.join(hashes)))
+    return html.replace('__CSP__', meta), len(hashes)
+
+
 def write(name, html):
+    html, n = apply_csp(html)
+    if '__CSP__' in html:
+        raise AssertionError('%s: CSP placeholder not substituted' % name)
     # newline='\n' keeps LF output. Without it Windows writes CRLF and every
     # line of every page shows as changed on each build.
     with io.open(os.path.join(SITE, name), 'w', encoding='utf-8',
                  newline='\n') as f:
         f.write(html)
-    print('  %-16s %6d bytes' % (name, len(html.encode('utf-8'))))
+    print('  %-16s %6d bytes  %d inline script hash%s'
+          % (name, len(html.encode('utf-8')), n, '' if n == 1 else 'es'))
 
 
 def build():
@@ -209,7 +245,7 @@ def build():
                og_desc='Digital forensics, malware analysis, and incident response. Ransomware casework, malware triage, and hands-on labs.',
                tw_desc='Digital forensics, malware analysis, and incident response.',
                doc=INDEX_DOC,
-               preload='<link rel="preload" as="image" href="img/felix.jpg" imagesrcset="img/felix-sm.jpg 450w, img/felix.jpg 900w" imagesizes="380px">\n',
+               preload='<link rel="preload" as="image" type="image/webp" imagesrcset="img/felix-sm.webp 450w, img/felix.webp 900w" imagesizes="380px">\n',
                extra=part('index_head.html'),
                body_attr=' id="top" class="dark-top"')
           + part('index_body.html')
@@ -217,7 +253,7 @@ def build():
           + CERT_MODAL
           + COURSE_MODAL
           + footer('projects.html', 'Start with the projects')
-          + '\n<script src="main.js"></script>\n</body>\n</html>\n')
+          + '\n<script src="main.js" defer></script>\n</body>\n</html>\n')
 
     # ---- projects.html ----
     write('projects.html',
@@ -229,7 +265,7 @@ def build():
           + footer('lab.html', 'Next: the lab')
           + part('kc.js.html') + '\n' + part('malware.js.html') + '\n'
           + part('projects.js.html')
-          + '\n<script src="main.js"></script>\n</body>\n</html>\n')
+          + '\n<script src="main.js" defer></script>\n</body>\n</html>\n')
 
     # ---- lab.html ----
     write('lab.html',
@@ -241,7 +277,7 @@ def build():
           + footer('about.html', 'Next: about')
           + part('feed.js.html') + '\n' + part('siem.js.html') + '\n'
           + part('pcap.js.html') + '\n' + part('phish.js.html')
-          + '\n<script src="main.js"></script>\n</body>\n</html>\n')
+          + '\n<script src="main.js" defer></script>\n</body>\n</html>\n')
 
     # ---- about.html ----
     write('about.html',
@@ -252,7 +288,7 @@ def build():
           + part('about_body.html')
           + footer('index.html', 'Get in touch')
           + part('interests.js.html')
-          + '\n<script src="main.js"></script>\n</body>\n</html>\n')
+          + '\n<script src="main.js" defer></script>\n</body>\n</html>\n')
 
     # ---- 404.html ----
     write('404.html',
@@ -263,7 +299,7 @@ def build():
               '<meta name="robots" content="noindex">')
           + part('404_body.html')
           + footer('index.html', 'Back to safety')
-          + '\n<script src="main.js"></script>\n</body>\n</html>\n')
+          + '\n<script src="main.js" defer></script>\n</body>\n</html>\n')
 
     print('Done. Edit parts/, not the generated HTML.')
 

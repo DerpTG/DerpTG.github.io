@@ -5,7 +5,9 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'none'; img-src 'self' data:; style-src 'self'; font-src 'self'; script-src 'self' 'sha256-rIglr3Nb0Jq8bKWrRMF+RymWuaJkFZ/ih3xE3V1AUic=' 'sha256-1pwwZcttcXv+8/1s1O1FLu7i6bk+bEanC2ufNxWPrpY='">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <!-- Inline and pre-paint. Both flags have to land before the first paint.
      Setting .js from main.js flashes a solid nav over the hero for a frame
      (see NAV OVER A DARK HERO in style.css); setting the theme from there
@@ -33,10 +35,8 @@ r.setAttribute('data-theme',t)})()</script>
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="alternate icon" href="favicon-32.png" type="image/png" sizes="32x32">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preload" as="image" href="img/felix.jpg" imagesrcset="img/felix-sm.jpg 450w, img/felix.jpg 900w" imagesizes="380px">
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="preload" as="image" type="image/webp" imagesrcset="img/felix-sm.webp 450w, img/felix.webp 900w" imagesizes="380px">
+<link rel="preload" as="font" type="font/woff2" href="fonts/archivo-var.woff2" crossorigin>
 <link rel="stylesheet" href="style.css">
 <script>
 /* Tag <html> before the first paint if the intro is due. .intro pauses the
@@ -134,8 +134,13 @@ r.setAttribute('data-theme',t)})()</script>
 
     <!-- Portrait, tagged like an evidence photograph. -->
     <figure class="shot">
-      <img src="img/felix.jpg" srcset="img/felix-sm.jpg 450w, img/felix.jpg 900w" sizes="(max-width:1000px) 380px, 380px"
-           width="900" height="900" alt="Felix Naroditskiy" fetchpriority="high">
+      <!-- The portrait is the LCP element and the heaviest request on the
+           site, so it ships as WebP with the JPEG kept as the fallback. -->
+      <picture>
+        <source type="image/webp" srcset="img/felix-sm.webp 450w, img/felix.webp 900w" sizes="380px">
+        <img src="img/felix.jpg" srcset="img/felix-sm.jpg 450w, img/felix.jpg 900w" sizes="380px"
+             width="900" height="900" alt="Felix Naroditskiy" fetchpriority="high">
+      </picture>
       <figcaption class="shot-tag">
         <span class="row"><span class="k">Name</span><span class="v">F. Naroditskiy</span></span>
         <span class="row"><span class="k">Role</span><span class="v">Cybersecurity Specialist</span></span>
@@ -416,6 +421,6 @@ r.setAttribute('data-theme',t)})()</script>
   </div>
 </footer>
 
-<script src="main.js"></script>
+<script src="main.js" defer></script>
 </body>
 </html>

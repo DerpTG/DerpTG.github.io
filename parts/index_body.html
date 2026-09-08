@@ -28,8 +28,13 @@
 
     <!-- Portrait, tagged like an evidence photograph. -->
     <figure class="shot">
-      <img src="img/felix.jpg" srcset="img/felix-sm.jpg 450w, img/felix.jpg 900w" sizes="(max-width:1000px) 380px, 380px"
-           width="900" height="900" alt="Felix Naroditskiy" fetchpriority="high">
+      <!-- The portrait is the LCP element and the heaviest request on the
+           site, so it ships as WebP with the JPEG kept as the fallback. -->
+      <picture>
+        <source type="image/webp" srcset="img/felix-sm.webp 450w, img/felix.webp 900w" sizes="380px">
+        <img src="img/felix.jpg" srcset="img/felix-sm.jpg 450w, img/felix.jpg 900w" sizes="380px"
+             width="900" height="900" alt="Felix Naroditskiy" fetchpriority="high">
+      </picture>
       <figcaption class="shot-tag">
         <span class="row"><span class="k">Name</span><span class="v">F. Naroditskiy</span></span>
         <span class="row"><span class="k">Role</span><span class="v">Cybersecurity Specialist</span></span>

@@ -47,6 +47,12 @@ Each widget is a data array plus a render function, kept simple so the code stay
 
 HTML, CSS, and vanilla JavaScript. No libraries, no frameworks, no build step for the browser. Scrolling is native. GitHub Pages, automatic deploy on every push.
 
+Nothing is fetched from a third party at runtime. Archivo and IBM Plex Mono are self-hosted in `fonts/` (latin subset, `fonts/OFL.txt`); Archivo is a single variable file covering 400–800. That removes a render-blocking stylesheet on someone else's origin from the critical path and lets the whole policy below stay `'self'`. `main.js` is deferred, so `style.css` is the only render-blocking request left.
+
+**Content Security Policy.** `build.py` emits one as a `<meta>`, SHA-256 hashing every inline `<script>` it assembled — no `'unsafe-inline'`, no nonces (which a static host cannot rotate). Change a widget and the hash follows on the next build; the per-page hash count is printed so a miss is visible. The policy is `default-src 'self'` with `object-src 'none'`, `base-uri 'self'` and `form-action 'none'`.
+
+Four headers a scanner will still flag cannot be set from this repo: `Strict-Transport-Security`, `X-Frame-Options`, `X-Content-Type-Options`, and `Cache-Control`. GitHub Pages does not let you set response headers, and `frame-ancestors` is ignored inside a `<meta>` CSP by design. Fixing them means putting a proxy that can add headers in front of the domain, or moving to a host with a headers file.
+
 Motion runs from JavaScript rather than CSS `animation-timeline`, so the same code path covers every browser without a separate fallback. Every animation class is added by JS and never ships in the markup, so with JavaScript off nothing is hidden, and the whole layer is disabled under `prefers-reduced-motion`.
 
 Named sections in the source, each carrying its own notes:
@@ -84,6 +90,7 @@ Page bodies and the widget scripts live in `parts/`. **Edit those, re-run, commi
 ├── main.js             Nav, modals, lightbox, motion, intro
 ├── build.py            Page assembler
 ├── parts/              Page bodies + widget scripts
+├── fonts/              Self-hosted woff2 + OFL.txt
 ├── img/                Portrait, logos, and the interest photo folders
 │                       (each photo as name.jpg + name-sm.jpg)
 ├── favicon.svg         Brand mark (+ PNG/ICO fallbacks, apple-touch-icon)

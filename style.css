@@ -17,6 +17,35 @@
    theme-specific rule.
 */
 
+/* Fonts are self-hosted, not pulled from Google. The hosted route costs a
+   render-blocking stylesheet on a third origin before the first paint, and it
+   is the one thing on the page that could not be covered by a 'self' CSP.
+   Latin subset only, which is all this site sets.
+
+   Archivo is one variable file spanning 400-800; Plex Mono ships a file per
+   weight. Both are SIL OFL 1.1, see fonts/OFL.txt. Regenerate with
+   scratchpad getfonts.py if a weight is ever added. */
+@font-face{
+  font-family:'Archivo';font-style:normal;font-weight:400 800;
+  font-display:swap;src:url(fonts/archivo-var.woff2) format('woff2');
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face{
+  font-family:'IBM Plex Mono';font-style:normal;font-weight:400;
+  font-display:swap;src:url(fonts/plex-mono-400.woff2) format('woff2');
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face{
+  font-family:'IBM Plex Mono';font-style:normal;font-weight:500;
+  font-display:swap;src:url(fonts/plex-mono-500.woff2) format('woff2');
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face{
+  font-family:'IBM Plex Mono';font-style:normal;font-weight:600;
+  font-display:swap;src:url(fonts/plex-mono-600.woff2) format('woff2');
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+
 :root{
   color-scheme:light;
   --ground:#E7E9E4;
@@ -180,6 +209,7 @@ img{display:block;max-width:100%}
 
 /* Portrait, tagged like an evidence photograph. */
 .shot{border:1px solid var(--rule-2);background:var(--panel)}
+.shot picture{display:block}
 .shot img{width:100%;height:auto;aspect-ratio:1;object-fit:cover;filter:saturate(1.02) contrast(1.02)}
 .shot-tag{
   border-top:1px solid var(--rule-2);padding:13px 15px;

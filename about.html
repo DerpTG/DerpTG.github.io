@@ -3,7 +3,9 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'none'; img-src 'self' data:; style-src 'self'; font-src 'self'; script-src 'self' 'sha256-rIglr3Nb0Jq8bKWrRMF+RymWuaJkFZ/ih3xE3V1AUic=' 'sha256-h1zlwm3P/DbEvytzgFSOilw+WERDGhB8f5kQ6zsR8Zk='">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <!-- Inline and pre-paint. Both flags have to land before the first paint.
      Setting .js from main.js flashes a solid nav over the hero for a frame
      (see NAV OVER A DARK HERO in style.css); setting the theme from there
@@ -31,9 +33,7 @@ r.setAttribute('data-theme',t)})()</script>
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="alternate icon" href="favicon-32.png" type="image/png" sizes="32x32">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="preload" as="font" type="font/woff2" href="fonts/archivo-var.woff2" crossorigin>
 <link rel="stylesheet" href="style.css">
 </head>
 <body class="dark-top">
@@ -269,6 +269,6 @@ document.addEventListener('click', function (e) {
 
 renderInterest(0);  // open on the first interest
 </script>
-<script src="main.js"></script>
+<script src="main.js" defer></script>
 </body>
 </html>

@@ -467,6 +467,11 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--signal);outline-off
 @media(max-width:1000px){
   .hero-grid{grid-template-columns:1fr;gap:40px}
   .shot{max-width:380px;margin:0 auto}
+  /* Once the hero stacks, the portrait fills the bottom of it and the cue's
+     34px rule is drawn behind the photo card, leaving the word orphaned
+     underneath. The affordance is for a mouse anyway: a stacked hero is
+     already taller than the viewport it is read on. */
+  .scroll-cue{display:none}
   .facts{grid-template-columns:repeat(2,1fr)}
   .facts div:nth-child(2){border-right:0}
   .facts div:nth-child(-n+2){border-bottom:1px solid var(--rule)}
@@ -861,10 +866,6 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--signal);outline-off
 }
 @media(max-width:760px){
   .feed-head,.rec-head{display:none}
-  .feed-btn{grid-template-columns:70px 1fr;gap:10px 14px}
-  .f-when{display:none}
-  .f-tools{grid-column:1/-1;justify-content:flex-start}
-  .f-pad{padding-left:18px}
   .rec-btn{grid-template-columns:44px 1fr 26px;gap:10px}
   .rc-cat,.rc-src{display:none}
   .pcap-head,.pcap-row{grid-template-columns:40px 62px 54px 1fr}
@@ -1005,6 +1006,10 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--signal);outline-off
   .feed-btn{grid-template-columns:74px 1fr 24px;gap:10px 12px}
   .feed-status{display:none}
   .feed-tools{grid-column:1/-1;justify-content:flex-start}
+  /* Pinned. .feed-tools spans every column, so auto-placement pushed the
+     caret past it onto a third row in column 1, where text-align:right
+     parked it under the title instead of at the end of the row. */
+  .feed-caret{grid-column:3;grid-row:1}
   .rec-btn{grid-template-columns:44px 1fr 26px;gap:10px}
   .rc-cat,.rc-src{display:none}
 }

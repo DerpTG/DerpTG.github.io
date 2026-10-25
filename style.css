@@ -873,8 +873,8 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--signal);outline-off
 }
 
 /* ============================================================ EMPLOYER MARKS
-   Real logo files, boxed on the panel colour. Keeps the Stemuli mark's own
-   palette off the crimson. */
+   Real logo files, boxed on the panel colour. Keeps each mark's own palette
+   off the accent. */
 .org{border:1px solid var(--rule-2);background:var(--panel);margin-bottom:20px}
 .org:last-child{margin-bottom:0}
 .org-hd{
@@ -1284,8 +1284,9 @@ button.shot-thumb{padding:0;font:inherit;color:inherit;cursor:zoom-in}
      --void / --void-2 / --void-3     surfaces, base to raised
      --void-ink / -mute / -faint      text, primary to tertiary
      --void-rule / --void-rule-2      hairlines, subtle then structural
-     --signal-d                       crimson lifted to clear AA on near-black;
-                                      #C8102E only reaches 3.3:1 there
+     --signal-d                       the accent lifted to clear AA on
+                                      near-black; the paper value only
+                                      reaches 3.3:1 there
 
    All dark-surface text clears WCAG AA (4.5:1) against --void, --void-2 and
    --void-3. Dark scenes exist in both themes: in light they sink below the
@@ -1503,7 +1504,7 @@ html.js:not(.scrolled) .dark-top .navtog{color:var(--void-ink);border-color:var(
 .scene-dark .hero .lbl,.hero.scene-dark .lbl{color:var(--signal-d)}
 .scene-dark .hero h1 .red::after,.hero.scene-dark h1 .red::after{background:var(--void-ink)}
 .scene-dark .hero h1 .red:nth-child(2)::after,.hero.scene-dark h1 .red:nth-child(2)::after{background:var(--signal-d)}
-/* The whole tagline carries the crimson, not a phrase inside it. Separates
+/* The whole tagline carries the accent, not a phrase inside it. Separates
    it from the white name above. */
 .hero.scene-dark .tagline{color:var(--signal-d)}
 .hero.scene-dark .lede{color:var(--void-mute)}
@@ -1985,7 +1986,7 @@ html.intro .scroll-cue{animation-play-state:paused}
   color:var(--void-ink);
 }
 
-/* Titles, with a crimson block starting each one. .term-top is left out. Its
+/* Titles, with an accent block starting each one. .term-top is left out. Its
    path already opens with a prompt marker. */
 .kc-top .t,.rec-top .t,.feed-top .t,.lab-ex-top .t,.panel-top .t{color:var(--void-ink)}
 .kc-top .t::before,.rec-top .t::before,.feed-top .t::before,
@@ -2013,7 +2014,7 @@ html.intro .scroll-cue{animation-play-state:paused}
 
 
 /* =================================================== RECORD AND FEED BULLETS
-   Same marker as the experience bullets. A short crimson rule, not a disc. */
+   Same marker as the experience bullets. A short accent rule, not a disc. */
 .pts{list-style:none;display:grid;gap:10px;margin:0}
 .pts li{position:relative;padding-left:20px;line-height:1.58}
 .pts li::before{

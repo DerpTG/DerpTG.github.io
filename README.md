@@ -1,6 +1,6 @@
 # DerpTG.github.io
 
-My personal cybersecurity portfolio. Digital forensics, malware analysis, and incident response, with the governance and compliance work alongside it.
+My personal cybersecurity portfolio. Security operations, incident response, identity and cloud security, and GRC, with the digital forensics and malware analysis behind it.
 
 **Live at:** [felixnaroditskiy.com](https://felixnaroditskiy.com)
 
@@ -15,17 +15,29 @@ My personal cybersecurity portfolio. Digital forensics, malware analysis, and in
 
 ## Design
 
-Direction is **"evidence room"**: a cool gray-green ground rather than paper, near-black ink, and one saturated crimson used strictly as an index marker, never as decoration.
+Direction is **"evidence room at sunset"**: a cool gray-green ground rather than paper, near-black ink, and a single accent hue that walks the sunset arc as you move down a page.
 
-- `--ground #E7E9E4` · `--panel #F4F5F2` · `--ink #14171A` · `--signal #C8102E`
+- `--ground #E7E9E4` · `--panel #F4F5F2` · `--ink #14171A` · `--signal oklch(.505 .18 var(--acc-h))`
 - **Type:** Archivo for display and prose, IBM Plex Mono for data only. If it isn't machine-readable (a date, a count, a hash, an identifier) it isn't mono.
 - Every text colour clears WCAG AA (4.5:1) against every surface it is painted on, in both themes. Checked by measuring the rendered pages, not by eye.
 
-**Two surfaces.** The evidence room is the resting state. A near-black counter-surface (`--void`) carries tokens mirroring the light ones one for one, so a component moves between them by swapping tokens rather than being rewritten. `--signal-d` is the lifted crimson for dark backgrounds, and the severity trio has `-d` twins, because the paper values are too dim on near-black.
+**One hue, moving.** `--acc-h` is the accent hue in degrees, and `main.js` walks it from 265 (dawn indigo) to 395 (sunset orange) with scroll depth. Everything accent-coloured is mixed off `--signal`, so index marks, links, buttons, the hero's node field, the background blooms and the footer skyline all travel together: the foot of a page is a different colour from its head. The property is registered with `@property` so it interpolates as a number rather than stepping between whole degrees.
+
+Lightness and chroma are held fixed, which is the whole reason the sweep is safe. `oklch(.505 .18 H)` clears **4.58:1** at its worst hue (265, the blue end) against `--ground`, `--panel` and `--panel-2`, and stays inside sRGB; the dark-surface twin `oklch(.72 .14 H)` clears **5.14:1**. Raise L and the blue end fails AA, raise C and it clips. Change either and re-measure across the arc, not at one hue.
+
+**Severity is exempt.** `--sev-hi/md/lo` stay fixed red, amber and green and deliberately do not follow `--acc-h`. A CRIT badge that turns blue at the top of the page is a bug, not a theme.
+
+**Two surfaces.** The evidence room is the resting state. A near-black counter-surface (`--void`) carries tokens mirroring the light ones one for one, so a component moves between them by swapping tokens rather than being rewritten. `--signal-d` is the lifted accent for dark backgrounds, and the severity trio has `-d` twins, because the paper values are too dim on near-black.
 
 **Light and dark.** A sun/moon button in the header switches them, and the choice is remembered per browser; with no choice stored the site follows the OS. Because the page paints two surfaces at once, dark is not an inversion. In light the scenes **sink** below the page — near-black on paper. In dark the page becomes the near-black and the scenes **lift** above it, landing the same distance off the ground that `--panel` sits at on paper, so the figure-ground reading survives with the roles exchanged. It is a pure token swap: no component carries a theme-specific rule. `build.py` resolves the theme in an inline script before the first paint, so there is no flash and nothing to fade on load. The site-open animation is untouched by it.
 
-**Where the dark goes.** Full-bleed in page headers. Below them it appears boxed — `.darkbox` panels inset on the paper, so nothing bands across the page. On the subpages the contrast comes from title bars: the terminal path, `projects.log`, the lab feed header, each exercise header, the kill chain. Each bar is near-black with a crimson block starting the title and a matching outline on the panel, while the content underneath stays on paper where dense technical text reads best.
+**Where the dark goes.** Full-bleed in page headers. Below them it appears boxed — `.darkbox` panels inset on the paper, so nothing bands across the page. On the subpages the contrast comes from title bars: the terminal path, `projects.log`, the lab feed header, each exercise header, the kill chain. Each bar is near-black with an accent block starting the title and a matching outline on the panel, while the content underneath stays on paper where dense technical text reads best.
+
+**The sky.** Page headers are dark scenes that sit at the top of a page, so tracking `--acc-h` would only ever paint them the cold end of the arc. They span the whole arc at once instead, from their own fixed base `--sky-h`: indigo overhead, through violet and magenta, to a gold horizon on the bottom edge. Fixed rather than scrolled, because on a short page (404) the header is still on screen when `--acc-h` reaches the far end, and a base of 395 put the horizon at cyan. The warm half is pushed below the fold on purpose — header copy sits top-left, and a peak any higher washes out the scroll cue. Worst header text contrast measures 6.64:1.
+
+**Drift.** `.sb-drift` carries two soft blooms on a 52-second loop behind every page, so the sky is never completely still even on a page nobody is scrolling. Its own element, because `.sb-bloom`'s transform is already spoken for by the scroll parallax and two transforms cannot share one property. Off outright under reduced motion, which also means the accent holds at its `:root` default rather than walking.
+
+**Philadelphia.** A single-stroke Center City skyline runs across the footer of every page — Liberty Place, City Hall with Billy Penn on top, the two Comcast towers, the Ben Franklin Bridge. It is a CSS *mask* filled with `var(--signal)` rather than a background image, so it arrives at whatever hue the foot of the page has reached, which is the warm end. `aspect-ratio` pins the box to the drawing's own proportions so `mask-size: 100% auto` fills it exactly at any width: no squashing, no clipped antenna. Under 640px it shows half the drawing at twice the size, since at phone width the full span turns every landmark into a hairline.
 
 **Signature:** the hero name is revealed by retracting redaction bars. Pure CSS, over ordinary markup, so it stays selectable, indexable, and readable with animation off.
 
@@ -60,7 +72,7 @@ Named sections in the source, each carrying its own notes:
 | Where | What |
 |-------|------|
 | `MOTION LAYER` (css) · `Scroll reveals and widget swaps` (js) | scroll reveals, hover, widget swaps, animated pane heights |
-| `Motion engine` (js) | nav plate, directional entrances, the scroll channel |
+| `Motion engine` (js) | nav plate, directional entrances, the scroll channel (writes `--sp` and `--acc-h`) |
 | `Hero node field` (js) | the canvas background on every page header |
 | `Case-open intro` (js) | the opening animation |
 | `THEMES` (css) · `Theme toggle` (js) | the dark token set and the sun/moon switch |

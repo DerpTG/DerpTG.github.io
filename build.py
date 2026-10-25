@@ -78,7 +78,7 @@ r.setAttribute('data-theme',t)}})()</script>
 {extra}</head>
 <body{body_attr}>
 <!-- Fixed background behind the whole document. Decorative. -->
-<div class="sitebg" aria-hidden="true"><i class="sb-bloom"></i><i class="sb-grid"></i><i class="sb-noise"></i></div>
+<div class="sitebg" aria-hidden="true"><i class="sb-bloom"></i><i class="sb-drift"></i><i class="sb-grid"></i><i class="sb-noise"></i></div>
 <header class="nav">
   <div class="wrap">
     <a class="brand" href="index.html"><i aria-hidden="true"></i>F. NARODITSKIY</a>
@@ -183,6 +183,7 @@ def footer(next_href, next_label):
     <span>&copy; 2026 F. Naroditskiy</span>
     <a href="%s">%s &rarr;</a>
   </div>
+  <i class="skyline" aria-hidden="true"></i>
 </footer>
 """ % (next_href, next_label)
 
@@ -240,10 +241,10 @@ def build():
     # <body id="top" class="dark-top">, and the three modals.
     write('index.html',
           head('index.html', 'Felix Naroditskiy · Cybersecurity',
-               'Felix Naroditskiy works in digital forensics, malware analysis, and incident response, with the security governance and IT systems work alongside it. Ransomware casework, malware triage, hands-on labs, and privacy compliance.',
+               'Felix Naroditskiy is a cyber security analyst working in security operations, incident response, identity, and cloud security, with the governance and IT systems work alongside it. Ransomware casework, malware triage, hands-on labs, and privacy compliance.',
                '',
-               og_desc='Digital forensics, malware analysis, and incident response. Ransomware casework, malware triage, and hands-on labs.',
-               tw_desc='Digital forensics, malware analysis, and incident response.',
+               og_desc='Security operations, incident response, and digital forensics. Ransomware casework, malware triage, and hands-on labs.',
+               tw_desc='Security operations, incident response, and digital forensics.',
                doc=INDEX_DOC,
                preload='<link rel="preload" as="image" type="image/webp" imagesrcset="img/felix-sm.webp 450w, img/felix.webp 900w" imagesizes="380px">\n',
                extra=part('index_head.html'),

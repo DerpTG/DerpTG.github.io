@@ -5,6 +5,14 @@
    the three exercises, interests) have their own scripts in parts/. */
 
 
+/* The one value two blocks share: the accent hue in degrees, as the scroll
+   channel last wrote it. CSS reads the same number off --acc-h; the hero
+   canvas reads it from here rather than through getComputedStyle, which
+   would force a style recalc inside an animation loop. Falls back to the
+   :root value if the scroll channel never runs. */
+var FN = { accH: 12 };
+
+
 /* ---------- Mobile nav ---------- */
 (function () {
   var tog = document.getElementById('navtog');
@@ -956,7 +964,18 @@ function makeModal(id, closeBtnId) {
 
     /* ---- Writes ---- */
     var sp = maxY > 0 ? (y / maxY).toFixed(3) : '0';
-    if (sp !== lastSp) { lastSp = sp; root.style.setProperty('--sp', sp); }
+    if (sp !== lastSp) {
+      lastSp = sp;
+      root.style.setProperty('--sp', sp);
+      /* Dawn at the top of the page, sunset at the bottom. 265 to 395 crosses
+         indigo, violet, magenta and red on the way to orange. The far end is
+         written as 395 rather than its equivalent 35 so the number climbs
+         through the arc instead of unwinding the long way round the wheel.
+         L and C are fixed in CSS, so every hue along the way holds the same
+         contrast; see the --acc-h note in style.css. */
+      FN.accH = 265 + parseFloat(sp) * 130;
+      root.style.setProperty('--acc-h', FN.accH.toFixed(1));
+    }
 
     for (i = 0; i < scenes.length; i++) {
       scenes[i].el.style.setProperty('--p', sceneP[i].toFixed(4));
@@ -1009,6 +1028,25 @@ function makeModal(id, closeBtnId) {
   var ctx = cv.getContext('2d');
   var reduce = window.matchMedia &&
     window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* The node field used to carry its own copy of the crimson. It now paints
+     from FN.accH so it travels with everything else. Canvas 2D takes a CSS
+     Color 4 string only where the browser parses one: on assignment of an
+     unparseable value it keeps whatever it had, which is what the probe
+     looks for. The fallback is the midpoint of the arc. */
+  var CSS4 = (function () {
+    try {
+      var t = document.createElement('canvas').getContext('2d');
+      t.fillStyle = '#000';
+      t.fillStyle = 'oklch(.72 .14 30)';
+      return t.fillStyle !== '#000';
+    } catch (e) { return false; }
+  })();
+
+  function accent(alpha) {
+    return CSS4 ? 'oklch(.72 .14 ' + FN.accH.toFixed(1) + ' / ' + alpha + ')'
+                : 'rgba(232,118,128,' + alpha + ')';
+  }
 
   var nodes = [], packets = [], w = 0, h = 0, dpr = 1;
   var raf = 0, visible = true;
@@ -1089,8 +1127,7 @@ function makeModal(id, closeBtnId) {
         a = nodes[i];
         dx = a.x - pointer.x; dy = a.y - pointer.y; d2 = dx * dx + dy * dy;
         if (d2 > 34000) continue;
-        ctx.strokeStyle = 'rgba(255,74,97,' +
-          (0.30 * (1 - Math.sqrt(d2) / 184)).toFixed(3) + ')';
+        ctx.strokeStyle = accent((0.30 * (1 - Math.sqrt(d2) / 184)).toFixed(3));
         ctx.beginPath();
         ctx.moveTo(a.x, a.y); ctx.lineTo(pointer.x, pointer.y);
         ctx.stroke();
@@ -1105,7 +1142,7 @@ function makeModal(id, closeBtnId) {
       a = nodes[p.a]; b = nodes[p.b];
       if (!a || !b) { packets.splice(i, 1); continue; }
       var px = a.x + (b.x - a.x) * p.t, py = a.y + (b.y - a.y) * p.t;
-      ctx.fillStyle = 'rgba(255,74,97,' + (0.9 * Math.sin(p.t * Math.PI)).toFixed(3) + ')';
+      ctx.fillStyle = accent((0.9 * Math.sin(p.t * Math.PI)).toFixed(3));
       ctx.beginPath(); ctx.arc(px, py, 2.1, 0, 6.2832); ctx.fill();
     }
 
@@ -1190,7 +1227,7 @@ function makeModal(id, closeBtnId) {
       '<div class="intro-body">' +
         '<span class="intro-k">Case file</span>' +
         '<span class="intro-nm">F. Naroditskiy</span>' +
-        '<span class="intro-sub">Cybersecurity &middot; IT &middot; Incident response</span>' +
+        '<span class="intro-sub">Security operations &middot; Cloud security &middot; GRC</span>' +
         '<span class="intro-go"><span class="h">Start investigation</span>' +
           '<span class="d">Open the site</span><span class="arw">&rarr;</span></span>' +
       '</div>' +
